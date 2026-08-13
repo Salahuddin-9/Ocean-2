@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ── Production security model ──────────────────────────────────────────
+    // The Ocean Express server is the single writer for all collections; it
+    // syncs through the Firebase Admin SDK (service account), which bypasses
+    // these rules. Clients must be authenticated to read anything, and users
+    // may only modify their own profile document.
+    //
+    // All unauthenticated access is denied. There is deliberately no
+    // `allow read, write: if true` anywhere in this file.
+
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // Everything else (posts, messages, conversations, chatMessages, reels,
+    // sosAlerts, ...) is written only by the server via the Admin SDK.
+    match /{document=**} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}

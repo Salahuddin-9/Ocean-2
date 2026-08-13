@@ -1,0 +1,61 @@
+{
+  "events": [],
+  "questions": [],
+  "topics": [
+    {
+      "id": "topic-design",
+      "name": "Design",
+      "emoji": "🎨",
+      "description": "UI/UX, product & visual design",
+      "members": []
+    },
+    {
+      "id": "topic-coding",
+      "name": "Coding",
+      "emoji": "💻",
+      "description": "Software, web & AI projects",
+      "members": []
+    },
+    {
+      "id": "topic-music",
+      "name": "Music",
+      "emoji": "🎵",
+      "description": "Artists, tracks & production",
+      "members": []
+    },
+    {
+      "id": "topic-ai",
+      "name": "AI",
+      "emoji": "🤖",
+      "description": "Machine learning & generative AI",
+      "members": []
+    },
+    {
+      "id": "topic-art",
+      "name": "Art",
+      "emoji": "🖌️",
+      "description": "Illustration, photography & film",
+      "members": []
+    }
+  ],
+  "tips": [],
+  "balances": {
+    "user-1786095382876": 100,
+    "user-1786095503027": 101,
+    "user-1786095503062": 1,
+    "user-1786095775916": 51,
+    "user-1786095775950": 51,
+    "user-1786095822300": 81,
+    "user-1786095822334": 1,
+    "user-1786096039517": 66,
+    "user-1784039727891": 20,
+    "user-1786096039551": 16,
+    "user-1786103085345": 25,
+    "user-1786103199178": 35,
+    "user-1786103327984": 35,
+    "user-1786596110104": 100,
+    "user-1786596120740": 100,
+    "user-1786596131393": 100,
+    "user-1786596563623": 100
+  }
+}

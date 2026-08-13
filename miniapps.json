@@ -1,0 +1,23 @@
+{
+  "apps": [
+    {
+      "id": "app-1786561892014-2993",
+      "name": "TestApp",
+      "developerId": "user-1786561890783",
+      "developerName": "Smoke Test 4",
+      "description": "smoke",
+      "bundleUrl": "https://example.com/app.html",
+      "icon": "??",
+      "price": 0,
+      "permissions": [],
+      "installedBy": [
+        "user-1786561890783"
+      ],
+      "ratingSum": 0,
+      "ratingCount": 0,
+      "createdAt": 1786561892014
+    }
+  ],
+  "events": [],
+  "commissions": []
+}

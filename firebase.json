@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-remixportfoliopr-5e8f32a9-0249-406e-936b-daf1a633abd0",
+      "rules": "firestore.rules"
+    }
+  ]
+}

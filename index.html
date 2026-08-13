@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      // Suppress benign Vite HMR/WebSocket connection errors early before any other script runs
+      (function() {
+        const isDevWebSocketError = (msg, reason) => {
+          const combined = `${msg} ${reason ? String(reason) : ''} ${reason?.message || ''}`.toLowerCase();
+          return (
+            combined.includes('websocket') ||
+            combined.includes('vite') ||
+            combined.includes('failed to connect') ||
+            combined.includes('closed without opened') ||
+            combined.includes('connection refused')
+          );
+        };
+
+        // 1. Intercept Unhandled Rejections in the capture phase (stopImmediatePropagation is key)
+        window.addEventListener('unhandledrejection', (event) => {
+          const message = event.reason?.message || String(event.reason || '');
+          if (isDevWebSocketError(message, event.reason)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }, true);
+
+        // 2. Intercept Error events in the capture phase
+        window.addEventListener('error', (event) => {
+          const message = event.message || event.error?.message || '';
+          if (isDevWebSocketError(message, event.error)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }, true);
+
+        // 3. Intercept direct property assignments to window.onerror and window.onunhandledrejection
+        let currentOnError = null;
+        Object.defineProperty(window, 'onerror', {
+          get() {
+            return currentOnError;
+          },
+          set(fn) {
+            if (typeof fn === 'function') {
+              currentOnError = function(message, source, lineno, colno, error) {
+                const msgStr = String(message || '');
+                if (isDevWebSocketError(msgStr, error)) {
+                  return true; // prevent default
+                }
+                return fn.apply(this, arguments);
+              };
+            } else {
+              currentOnError = fn;
+            }
+          },
+          configurable: true,
+          enumerable: true
+        });
+
+        let currentOnUnhandledRejection = null;
+        Object.defineProperty(window, 'onunhandledrejection', {
+          get() {
+            return currentOnUnhandledRejection;
+          },
+          set(fn) {
+            if (typeof fn === 'function') {
+              currentOnUnhandledRejection = function(event) {
+                const message = event.reason?.message || String(event.reason || '');
+                if (isDevWebSocketError(message, event.reason)) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  event.stopImmediatePropagation();
+                  return true;
+                }
+                return fn.apply(this, arguments);
+              };
+            } else {
+              currentOnUnhandledRejection = fn;
+            }
+          },
+          configurable: true,
+          enumerable: true
+        });
+
+        // 4. Intercept console.error to avoid spamming the developer/UI logs with benign websocket issues
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+          const msg = args.map(arg => {
+            try { return typeof arg === 'object' ? JSON.stringify(arg) : String(arg); } catch(e) { return String(arg); }
+          }).join(' ');
+          if (isDevWebSocketError(msg)) {
+            return;
+          }
+          originalConsoleError.apply(console, args);
+        };
+
+        const originalConsoleWarn = console.warn;
+        console.warn = function(...args) {
+          const msg = args.map(arg => {
+            try { return typeof arg === 'object' ? JSON.stringify(arg) : String(arg); } catch(e) { return String(arg); }
+          }).join(' ');
+          if (isDevWebSocketError(msg)) {
+            return;
+          }
+          originalConsoleWarn.apply(console, args);
+        };
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

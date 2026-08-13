@@ -1,0 +1,19 @@
+{
+  "stories": [
+    {
+      "id": "story-1786561870015-9938",
+      "userId": "user-1786561869331",
+      "userName": "Smoke Test 3",
+      "mediaUrl": "/uploads/test.jpg",
+      "kind": "image",
+      "caption": "smoke",
+      "closeFriends": false,
+      "private": false,
+      "recipientIds": [],
+      "viewers": [],
+      "reactions": [],
+      "createdAt": 1786561870015,
+      "expiresAt": 1786648270015
+    }
+  ]
+}
