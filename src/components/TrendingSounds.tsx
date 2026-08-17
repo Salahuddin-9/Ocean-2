@@ -134,7 +134,7 @@ export default function TrendingSounds({ token, currentUser, onClose }: Trending
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+          className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
         >
           {/* Header row */}
           <div className="flex items-center justify-between max-w-xl mx-auto mb-4">

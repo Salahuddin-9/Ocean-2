@@ -35,7 +35,7 @@ export default function VoiceNotePlayback({ audioUrl, postId = 'default', theme 
     e.stopPropagation();
     if (summaryLoading) return;
     setSummaryLoading(true);
-    const token = localStorage.getItem('turtle_auth_token') || localStorage.getItem('secure_auth_token');
+    const token = localStorage.getItem('secure_auth_token');
     try {
       const cachedRes = await fetch(`/api/ai/voice-summary?audioUrl=${encodeURIComponent(audioUrl)}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}

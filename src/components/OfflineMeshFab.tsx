@@ -8,9 +8,10 @@ import OfflineChatView from './OfflineChatView';
  * Ocean — Offline Mesh Floating Button
  * ------------------------------------
  * Always-visible entry point to the offline peer-to-peer messaging system
- * (Bluetooth + LAN + store-and-forward queue). Sits on the opposite corner of
- * the SOS button so they never overlap. Shows a live badge with the number of
- * queued (undelivered) messages.
+ * (Bluetooth + LAN + store-and-forward queue). Sits stacked with the SOS and
+ * Emergency buttons on the side opposite the bottom nav so it never covers the
+ * messaging icons. Shows a live badge with the number of queued (undelivered)
+ * messages.
  */
 interface OfflineMeshFabProps {
   currentUser?: { id: string; name: string } | null;
@@ -28,7 +29,7 @@ export default function OfflineMeshFab({ currentUser, token, navSide = 'left' }:
     return off;
   }, []);
 
-  const sideCls = navSide === 'right' ? 'right-6' : 'left-6';
+  const sideCls = navSide === 'right' ? 'left-6' : 'right-6';
   const queued = status.queued;
 
   return (

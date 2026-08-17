@@ -1,22 +1,122 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-/* CRITICAL FIX: In Tailwind v4 the `dark:` variant defaults to
-   @media (prefers-color-scheme: dark). This app toggles a `.dark` CLASS on
-   <html> instead, so without this line every `dark:*` utility ignored the
-   in-app toggle and the UI stayed half-light/half-dark. This variant makes
-   `dark:*` follow the `.dark` class (element itself or any ancestor). */
+/* Tailwind v4 defaults `dark:` to prefers-color-scheme. This app toggles a
+   `.dark` CLASS on <html>, so this variant makes `dark:*` follow that class. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   NEXUS DESIGN SYSTEM TOKENS
+   "Premium Minimalism": Inter type, white + soft-indigo surfaces,
+   a single Action-Indigo accent, and ambient (not line) elevation.
+   ============================================================ */
 @theme {
-  --font-sans: "Times New Roman", "TimesNewRoman", "NewTimesRoman", "Times", "Georgia", serif;
-  --font-display: "Times New Roman", "TimesNewRoman", "NewTimesRoman", "Times", "Georgia", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, monospace;
+
+  /* Brand / action color */
+  --color-primary: #3525cd;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #4f46e5;
+  --color-on-primary-container: #dad7ff;
+  --color-inverse-primary: #c3c0ff;
+
+  /* Surfaces */
+  --color-background: #f9f9ff;
+  --color-on-background: #141b2b;
+  --color-surface: #f9f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f3ff;
+  --color-surface-container: #e9edff;
+  --color-surface-container-high: #e1e8fd;
+  --color-surface-container-highest: #dce2f7;
+  --color-surface-variant: #dce2f7;
+  --color-on-surface: #141b2b;
+  --color-on-surface-variant: #464555;
+  --color-inverse-surface: #293040;
+  --color-inverse-on-surface: #edf0ff;
+
+  /* Lines */
+  --color-outline: #777587;
+  --color-outline-variant: #c7c4d8;
+
+  /* Status */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* Pressed state for the Action-Indigo primary */
+  --color-primary-pressed: #2a1da3;
+
+  /* Radii — 12px standard, 24px large, full for pills/avatars */
+  --radius-nexus: 0.75rem;   /* 12px */
+  --radius-nexus-lg: 1.5rem; /* 24px */
+
+  /* Elevation — soft ambient shadows, not borders */
+  --shadow-level-1: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --shadow-level-2: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
+
+/* Semantic variables consumed by the global override blocks below.
+   Light = white/indigo; Dark = deep indigo-tinted near-black. */
+:root {
+  --nexus-bg: #f9f9ff;
+  --nexus-surface: #ffffff;
+  --nexus-surface-2: #f1f3ff;
+  --nexus-surface-3: #e9edff;
+  --nexus-text: #141b2b;
+  --nexus-text-muted: #464555;
+  --nexus-primary: #3525cd;
+  --nexus-primary-pressed: #2a1da3;
+  --nexus-border: #dce2f7;
+  --nexus-shadow-1: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --nexus-shadow-2: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+html.dark {
+  --nexus-bg: #0b0d18;
+  --nexus-surface: #151826;
+  --nexus-surface-2: #1c2030;
+  --nexus-surface-3: #232838;
+  --nexus-text: #edf0ff;
+  --nexus-text-muted: #9aa0b5;
+  --nexus-primary: #4f46e5;
+  --nexus-primary-pressed: #4338ca;
+  --nexus-border: #2a3042;
+  --nexus-shadow-1: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --nexus-shadow-2: 0 10px 40px rgba(0, 0, 0, 0.40);
+
+  /* Material-style token utilities resolve to the dark Nexus palette */
+  --color-background: #0b0d18;
+  --color-on-background: #edf0ff;
+  --color-surface: #151826;
+  --color-surface-container-lowest: #151826;
+  --color-surface-container-low: #1c2030;
+  --color-surface-container: #1c2030;
+  --color-surface-container-high: #232838;
+  --color-surface-container-highest: #232838;
+  --color-surface-variant: #2a3042;
+  --color-on-surface: #edf0ff;
+  --color-on-surface-variant: #9aa0b5;
+  --color-outline: #9aa0b5;
+  --color-outline-variant: #2a3042;
+  --color-primary: #4f46e5;
+  --color-primary-pressed: #4338ca;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #4f46e5;
+  --color-on-primary-container: #dad7ff;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+}
+
+/* Convenience elevation helpers (opt-in) */
+.nexus-shadow-1 { box-shadow: var(--nexus-shadow-1); }
+.nexus-shadow-2 { box-shadow: var(--nexus-shadow-2); }
 
 /* Custom subtle pattern for background */
 .bg-dots {
-  background-image: radial-gradient(#e5e2d9 1px, transparent 1px);
+  background-image: radial-gradient(#c7c4d8 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -25,58 +125,211 @@
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Pure Black Modern Dark Theme & Light Theme Contrast Controls */
+/* ===================== LIGHT MODE (Nexus) ===================== */
+html:not(.dark),
+html.light {
+  color-scheme: light;
+  background-color: var(--nexus-bg) !important;
+  color: var(--nexus-text) !important;
+}
+html:not(.dark) body,
+html.light body {
+  background-color: var(--nexus-bg) !important;
+  color: var(--nexus-text) !important;
+}
+
+/* Primary brand surfaces (Ocean brown #3a342a) -> Action Indigo */
+html:not(.dark) [class*="bg-[#3a342a]"] {
+  background-color: var(--nexus-primary) !important;
+  color: #ffffff !important;
+}
+html:not(.dark) [class*="bg-[#3a342a]"] * {
+  color: #ffffff !important;
+}
+html:not(.dark) [class*="hover:bg-[#52493b]"]:hover {
+  background-color: var(--nexus-primary-pressed) !important;
+}
+/* Secondary brand surfaces (#5c5446) -> soft indigo tint */
+html:not(.dark) [class*="bg-[#5c5446]"] {
+  background-color: var(--nexus-surface-3) !important;
+  color: var(--nexus-text) !important;
+}
+html:not(.dark) [class*="bg-[#5c5446]"] * {
+  color: var(--nexus-text) !important;
+}
+/* Cream text used on dark buttons -> white for contrast on indigo */
+html:not(.dark) [class*="text-[#f4f1ea]"] {
+  color: #ffffff !important;
+}
+
+/* White / cream surfaces -> Nexus white surface */
+html:not(.dark) .bg-white,
+html:not(.dark) .post-card,
+html:not(.dark) .bg-surface-phone,
+html:not(.dark) .bg-surface-card,
+html:not(.dark) [class*="bg-[#f"] {
+  background-color: var(--nexus-surface) !important;
+  color: var(--nexus-text) !important;
+}
+
+/* Soft gray / stone / amber / emerald fills -> Nexus tinted surface */
+html:not(.dark) .bg-stone-50,
+html:not(.dark) .bg-stone-100,
+html:not(.dark) .bg-gray-50,
+html:not(.dark) .bg-gray-100,
+html:not(.dark) .bg-slate-50,
+html:not(.dark) .bg-amber-50,
+html:not(.dark) .bg-amber-100,
+html:not(.dark) .bg-emerald-50,
+html:not(.dark) .bg-emerald-100,
+html:not(.dark) .bg-neutral-50,
+html:not(.dark) .bg-zinc-50 {
+  background-color: var(--nexus-surface-2) !important;
+  color: var(--nexus-text) !important;
+}
+
+/* Headings / strong text -> on-surface */
+html:not(.dark) [class*="text-[#3a342a]"],
+html:not(.dark) [class*="text-[#5c5446]"],
+html:not(.dark) .text-stone-900,
+html:not(.dark) .text-stone-800,
+html:not(.dark) .text-stone-700,
+html:not(.dark) .text-slate-900,
+html:not(.dark) .text-slate-800,
+html:not(.dark) .text-slate-700,
+html:not(.dark) .text-gray-900,
+html:not(.dark) .text-gray-800,
+html:not(.dark) .text-gray-700,
+html:not(.dark) .text-zinc-900,
+html:not(.dark) .text-black {
+  color: var(--nexus-text) !important;
+}
+
+/* Secondary / muted text -> on-surface-variant */
+html:not(.dark) [class*="text-[#8a8172]"],
+html:not(.dark) .text-stone-600,
+html:not(.dark) .text-stone-500,
+html:not(.dark) .text-stone-400,
+html:not(.dark) .text-slate-600,
+html:not(.dark) .text-slate-500,
+html:not(.dark) .text-slate-400,
+html:not(.dark) .text-gray-600,
+html:not(.dark) .text-gray-500,
+html:not(.dark) .text-gray-400,
+html:not(.dark) .text-zinc-600,
+html:not(.dark) .text-zinc-500,
+html:not(.dark) .text-zinc-400 {
+  color: var(--nexus-text-muted) !important;
+}
+
+/* Borders -> outline-variant */
+html:not(.dark) .border-stone-200,
+html:not(.dark) .border-stone-300,
+html:not(.dark) .border-gray-200,
+html:not(.dark) .border-gray-300,
+html:not(.dark) .border-slate-200,
+html:not(.dark) .border-slate-300,
+html:not(.dark) [class*="border-[#ebdcca]"],
+html:not(.dark) [class*="border-[#cfcac0]"],
+html:not(.dark) [class*="border-[#e5e2d9]"] {
+  border-color: var(--nexus-border) !important;
+}
+
+/* Inputs / textareas / selects */
+html:not(.dark) input,
+html:not(.dark) textarea,
+html:not(.dark) select {
+  background-color: var(--nexus-surface) !important;
+  color: var(--nexus-text) !important;
+  border-color: var(--nexus-border) !important;
+}
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: var(--nexus-text-muted) !important;
+}
+/* Input focus glow — Nexus "Action Indigo" ring */
+html:not(.dark) input:focus,
+html:not(.dark) textarea:focus,
+html:not(.dark) select:focus {
+  border-color: var(--nexus-primary) !important;
+  box-shadow: 0 0 0 2px rgba(53, 37, 205, 0.2) !important;
+  outline: none !important;
+}
+
+/* Hover fills */
+html:not(.dark) .hover\:bg-gray-100:hover,
+html:not(.dark) .hover\:bg-stone-100:hover,
+html:not(.dark) .hover\:bg-gray-50:hover,
+html:not(.dark) .hover\:bg-stone-50:hover {
+  background-color: var(--nexus-surface-2) !important;
+}
+
+/* Prevent white-on-white inside white cards */
+html:not(.dark) .bg-white .text-white:not(button):not([class*="bg-"]):not(span[class*="bg-"]),
+html:not(.dark) [class*="bg-[#f"] .text-white:not(button):not([class*="bg-"]):not(span[class*="bg-"]) {
+  color: var(--nexus-text) !important;
+}
+
+/* ===================== DARK MODE (Nexus) ===================== */
 html.dark {
   color-scheme: dark;
-  background-color: #000000 !important;
-  color: #f4f4f5 !important;
+  background-color: var(--nexus-bg) !important;
+  color: var(--nexus-text) !important;
 }
-
 html.dark body {
-  background-color: #000000 !important;
-  color: #f4f4f5 !important;
+  background-color: var(--nexus-bg) !important;
+  color: var(--nexus-text) !important;
 }
 
-/* Dark mode surface overrides - pure black & dark charcoal tone */
-html.dark [class*="bg-[#f4f1ea]"],
-html.dark [class*="bg-[#fcfaf4]"],
-html.dark [class*="bg-[#f9f7f2]"],
-html.dark [class*="bg-[#fdfbf7]"],
-html.dark [class*="bg-[#f5f2eb]"],
-html.dark [class*="bg-[#fbf9f4]"],
-html.dark [class*="bg-[#faf6ee]"],
-html.dark [class*="bg-[#f0ede6]"],
-html.dark [class*="bg-[#e5e2d9]"],
-html.dark [class*="bg-[#f5f0e6]"],
-html.dark [class*="bg-[#efeadf]"],
+/* Primary brand -> indigo (slightly lifted on dark) */
+html.dark [class*="bg-[#3a342a]"] {
+  background-color: var(--nexus-primary) !important;
+  color: #ffffff !important;
+}
+html.dark [class*="bg-[#3a342a]"] * {
+  color: #ffffff !important;
+}
+html.dark [class*="hover:bg-[#52493b]"]:hover {
+  background-color: var(--nexus-primary-pressed) !important;
+}
+html.dark [class*="bg-[#5c5446]"] {
+  background-color: var(--nexus-surface-3) !important;
+  color: var(--nexus-text) !important;
+}
+html.dark [class*="bg-[#5c5446]"] * {
+  color: var(--nexus-text) !important;
+}
+html.dark [class*="text-[#f4f1ea]"] {
+  color: var(--nexus-text) !important;
+}
+
+/* White / cream surfaces -> dark charcoal surfaces */
 html.dark .bg-white,
 html.dark .post-card,
 html.dark .bg-surface-phone,
-html.dark .bg-surface-card {
-  background-color: #0d0d10 !important;
-  color: #f4f4f5 !important;
+html.dark .bg-surface-card,
+html.dark [class*="bg-[#f"] {
+  background-color: var(--nexus-surface) !important;
+  color: var(--nexus-text) !important;
 }
-
-/* Semi-transparent light backgrounds mapped to dark translucent in dark mode */
-html.dark [class*="bg-[#ebdcca]"],
-html.dark [class*="bg-[#cfcac0]"],
-html.dark [class*="bg-[#dcd6c8]"],
 html.dark .bg-stone-50,
 html.dark .bg-stone-100,
 html.dark .bg-stone-200,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-slate-50,
+html.dark .bg-slate-100,
 html.dark .bg-amber-50,
 html.dark .bg-amber-100,
 html.dark .bg-emerald-50,
 html.dark .bg-emerald-100,
-html.dark .bg-gray-50,
-html.dark .bg-gray-100,
-html.dark .bg-slate-50,
-html.dark .bg-slate-100 {
-  background-color: #18181b !important;
-  color: #f4f4f5 !important;
+html.dark .bg-neutral-50,
+html.dark .bg-zinc-50 {
+  background-color: var(--nexus-surface-2) !important;
+  color: var(--nexus-text) !important;
 }
 
-/* ALL primary dark text classes become Crisp Light Text in Dark Mode */
+/* Dark-mode text classes -> crisp light text */
 html.dark [class*="text-[#3a342a]"],
 html.dark [class*="text-[#5c5446]"],
 html.dark [class*="text-[#18181b]"],
@@ -97,15 +350,9 @@ html.dark .text-zinc-950,
 html.dark .text-zinc-900,
 html.dark .text-zinc-800,
 html.dark .text-zinc-700,
-html.dark .text-black,
-html.dark .text-amber-950,
-html.dark .text-amber-900,
-html.dark .text-emerald-950,
-html.dark .text-emerald-900 {
-  color: #f4f4f5 !important;
+html.dark .text-black {
+  color: var(--nexus-text) !important;
 }
-
-/* ALL secondary/muted dark text classes become Muted Light Gray in Dark Mode */
 html.dark [class*="text-[#8a8172]"],
 html.dark .text-stone-600,
 html.dark .text-stone-500,
@@ -119,150 +366,59 @@ html.dark .text-gray-400,
 html.dark .text-zinc-600,
 html.dark .text-zinc-500,
 html.dark .text-zinc-400 {
-  color: #a1a1aa !important;
+  color: var(--nexus-text-muted) !important;
 }
 
-/* Border overrides in dark mode */
-html.dark [class*="border-[#ebdcca]"],
-html.dark [class*="border-[#cfcac0]"],
-html.dark [class*="border-[#e5e2d9]"],
+/* Borders in dark mode */
 html.dark .border-stone-200,
 html.dark .border-stone-300,
 html.dark .border-stone-400,
 html.dark .border-gray-200,
 html.dark .border-gray-300,
 html.dark .border-slate-200,
-html.dark .border-slate-300 {
-  border-color: #27272a !important;
+html.dark .border-slate-300,
+html.dark [class*="border-[#ebdcca]"],
+html.dark [class*="border-[#cfcac0]"],
+html.dark [class*="border-[#e5e2d9]"] {
+  border-color: var(--nexus-border) !important;
 }
 
-/* Inputs, Textareas, Selects in dark mode */
+/* Inputs in dark mode */
 html.dark input,
 html.dark textarea,
 html.dark select {
-  background-color: #18181b !important;
-  color: #ffffff !important;
-  border-color: #3f3f46 !important;
+  background-color: var(--nexus-surface-2) !important;
+  color: var(--nexus-text) !important;
+  border-color: var(--nexus-border) !important;
 }
-
 html.dark input::placeholder,
 html.dark textarea::placeholder {
-  color: #71717a !important;
+  color: var(--nexus-text-muted) !important;
+}
+/* Input focus glow — Nexus "Action Indigo" ring */
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: var(--nexus-primary) !important;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4) !important;
+  outline: none !important;
 }
 
-/* Buttons in dark mode */
+/* Buttons that were light -> dark surface */
 html.dark button.bg-white,
 html.dark .bg-white\/80 {
-  background-color: #18181b !important;
-  color: #f4f4f5 !important;
+  background-color: var(--nexus-surface) !important;
+  color: var(--nexus-text) !important;
 }
 
-html.dark button[class*="bg-[#3a342a]"],
-html.dark [class*="bg-[#3a342a]"] {
-  background-color: #27272a !important;
-  color: #ffffff !important;
-}
-
-/* Additional hardcoded light surfaces (stone/gray/neutral) → dark charcoal */
-html.dark .bg-stone-100,
-html.dark .bg-gray-100,
-html.dark .bg-gray-50,
-html.dark .bg-slate-50,
-html.dark .bg-neutral-50,
-html.dark .bg-zinc-50 {
-  background-color: #18181b !important;
-}
-
-/* Secondary text colors used on light cards → readable gray in dark mode */
-html.dark .text-stone-700,
-html.dark .text-stone-600,
-html.dark .text-gray-700,
-html.dark .text-gray-600,
-html.dark .text-slate-700,
-html.dark .text-zinc-700 {
-  color: #a1a1aa !important;
-}
-
-html.dark .text-gray-500,
-html.dark .text-stone-500,
-html.dark .text-slate-500,
-html.dark .text-neutral-600,
-html.dark .text-zinc-500 {
-  color: #71717a !important;
-}
-
-html.dark .text-gray-400,
-html.dark .text-stone-400,
-html.dark .text-slate-400,
-html.dark .text-zinc-400 {
-  color: #71717a !important;
-}
-
-/* Hover surfaces that were light (hover:bg-gray-100 / stone-100) → dark */
+/* Hover surfaces that were light -> dark tint */
 html.dark .hover\:bg-gray-100:hover,
 html.dark .hover\:bg-stone-100:hover,
 html.dark .hover\:bg-gray-50:hover,
 html.dark .hover\:bg-stone-50:hover {
-  background-color: #27272a !important;
+  background-color: var(--nexus-surface-2) !important;
 }
 
-/* Very light borders that were invisible in dark mode */
-html.dark .border-gray-100,
-html.dark .border-stone-100,
-html.dark .border-gray-50 {
-  border-color: #27272a !important;
-}
-
-/* ==================== LIGHT MODE ENHANCEMENTS ==================== */
-html:not(.dark),
-html.light {
-  color-scheme: light;
-  background-color: #f4f1ea !important;
-  color: #3a342a !important;
-}
-
-html:not(.dark) body,
-html.light body {
-  background-color: #f4f1ea !important;
-  color: #3a342a !important;
-}
-
-/* Ensure light mode card text on white/cream surfaces is always dark */
-html:not(.dark) .bg-white,
-html:not(.dark) [class*="bg-[#f"],
-html:not(.dark) .post-card,
-html:not(.dark) .bg-surface-phone,
-html:not(.dark) .bg-surface-card {
-  color: #3a342a;
-}
-
-/* All primary dark text classes stay dark in Light Mode */
-html:not(.dark) [class*="text-[#3a342a]"],
-html:not(.dark) [class*="text-[#5c5446]"],
-html:not(.dark) .text-stone-900,
-html:not(.dark) .text-stone-800,
-html:not(.dark) .text-stone-700,
-html:not(.dark) .text-slate-900,
-html:not(.dark) .text-slate-800,
-html:not(.dark) .text-black,
-html:not(.dark) .text-zinc-900 {
-  color: #3a342a;
-}
-
-/* All secondary text classes in Light Mode */
-html:not(.dark) [class*="text-[#8a8172]"],
-html:not(.dark) .text-stone-600,
-html:not(.dark) .text-stone-500,
-html:not(.dark) .text-gray-600,
-html:not(.dark) .text-gray-500 {
-  color: #5c5446;
-}
-
-/* In Light Mode, prevent hardcoded white text inside white surfaces from becoming invisible */
-html:not(.dark) .bg-white .text-white:not(button):not([class*="bg-"]):not(span[class*="bg-"]),
-html:not(.dark) [class*="bg-[#f"] .text-white:not(button):not([class*="bg-"]):not(span[class*="bg-"]) {
-  color: #3a342a;
-}
 body {
   transition: filter 0.3s ease, background-color 0.3s ease;
 }
@@ -272,22 +428,230 @@ html, body {
   max-width: 100vw;
 }
 
-/* Modern premium scrollbar-free viewport - keeps page scrollable but eliminates visible bars completely */
+/* Modern premium scrollbar-free viewport */
 ::-webkit-scrollbar {
   display: none;
   width: 0px;
   height: 0px;
 }
-
 * {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
 
-/* ============================================ */
-/* Sensory-Safe Mode (Feature 157)               */
-/* Toggled by src/components/SensorySafeMode.tsx */
-/* ============================================ */
+/* =====================================================================
+   NEXUS COMPLETE COVERAGE
+   Closes every remaining gap in the legacy "Ocean brown" palette so the
+   whole app reads as the Nexus design system. Appended last so these win
+   the cascade over the coarse-grained catch-alls above.
+   ===================================================================== */
+
+/* -------------------- LIGHT MODE -------------------- */
+
+/* Warm cream/beige fills -> soft indigo surface (was #ebdcca & friends) */
+html:not(.dark) [class*="bg-[#ebdcca]"],
+html:not(.dark) [class*="bg-[#eae6dc]"],
+html:not(.dark) [class*="bg-[#e9e4d9]"],
+html:not(.dark) [class*="bg-[#e8e2d2]"],
+html:not(.dark) [class*="bg-[#e5e2d9]"],
+html:not(.dark) [class*="bg-[#e4dccb]"],
+html:not(.dark) [class*="bg-[#d8cdb8]"],
+html:not(.dark) [class*="bg-[#d9cfb8]"],
+html:not(.dark) [class*="bg-[#d2c9b4]"],
+html:not(.dark) [class*="bg-[#e0ddd2]"] {
+  background-color: var(--nexus-surface-3) !important;
+}
+
+/* Warm off-white fills -> indigo-tinted surface-2 */
+html:not(.dark) [class*="bg-[#f6f1e7]"],
+html:not(.dark) [class*="bg-[#f0ede6]"],
+html:not(.dark) [class*="bg-[#f5f2eb]"],
+html:not(.dark) [class*="bg-[#f5f0e6]"],
+html:not(.dark) [class*="bg-[#f9f7f2]"],
+html:not(.dark) [class*="bg-[#fbf9f4]"] {
+  background-color: var(--nexus-surface-2) !important;
+}
+
+/* Dark brown fills (slider thumbs, icon buttons) -> Action Indigo */
+html:not(.dark) [class*="bg-[#2e2920]"],
+html:not(.dark) [class*="bg-[#52493b]"] {
+  background-color: var(--nexus-primary) !important;
+}
+
+/* Muted brown fills -> indigo outline-variant */
+html:not(.dark) [class*="bg-[#8a8172]"],
+html:not(.dark) [class*="bg-[#cfcac0]"],
+html:not(.dark) [class*="bg-[#b9a98c]"],
+html:not(.dark) [class*="bg-[#c9c2b4]"],
+html:not(.dark) [class*="bg-[#c9bfae]"],
+html:not(.dark) [class*="bg-[#b0a797]"],
+html:not(.dark) [class*="bg-[#a8b8b0]"] {
+  background-color: var(--nexus-surface-variant, #dce2f7) !important;
+}
+
+/* Dark chat-canvas hexes -> Nexus dark palette (chat stays intentionally dark) */
+html:not(.dark) [class*="bg-[#000000]"],
+html:not(.dark) [class*="bg-[#0b0a0e]"],
+html:not(.dark) [class*="bg-[#0d0d12]"],
+html:not(.dark) [class*="bg-[#0a0a0d]"] {
+  background-color: var(--nexus-bg) !important;
+}
+html:not(.dark) [class*="bg-[#121215]"],
+html:not(.dark) [class*="bg-[#1f1f28]"],
+html:not(.dark) [class*="bg-[#181622]"],
+html:not(.dark) [class*="bg-[#1c1812]"],
+html:not(.dark) [class*="bg-[#1c1811]"],
+html:not(.dark) [class*="bg-[#1a1610]"] {
+  background-color: var(--nexus-surface) !important;
+}
+
+/* Text: light tones on brand surfaces -> white */
+html:not(.dark) [class*="text-[#fcfaf4]"],
+html:not(.dark) [class*="text-[#ebdcca]"],
+html:not(.dark) [class*="text-[#faf6ee]"],
+html:not(.dark) [class*="text-[#fbf9f4]"] {
+  color: #ffffff !important;
+}
+
+/* Text: muted browns -> on-surface-variant */
+html:not(.dark) [class*="text-[#cfcac0]"],
+html:not(.dark) [class*="text-[#b0a797]"],
+html:not(.dark) [class*="text-[#b9a98c]"],
+html:not(.dark) [class*="text-[#aaa090]"],
+html:not(.dark) [class*="text-[#a19685]"],
+html:not(.dark) [class*="text-[#d4cfc5]"],
+html:not(.dark) [class*="text-[#b7ae9d]"],
+html:not(.dark) [class*="text-[#b5ac98]"],
+html:not(.dark) [class*="text-[#b0a896]"],
+html:not(.dark) [class*="text-[#b0a595]"] {
+  color: var(--nexus-text-muted) !important;
+}
+
+/* Borders: remaining legacy hexes -> Nexus line colors */
+html:not(.dark) [class*="border-[#3a342a]"] {
+  border-color: var(--nexus-primary) !important;
+}
+html:not(.dark) [class*="border-[#8a8172]"],
+html:not(.dark) [class*="border-[#f0e8da]"],
+html:not(.dark) [class*="border-[#d2c9b4]"],
+html:not(.dark) [class*="border-[#b0a797]"],
+html:not(.dark) [class*="border-[#fcfaf4]"],
+html:not(.dark) [class*="border-[#f4f1ea]"],
+html:not(.dark) [class*="border-[#3e3428]"] {
+  border-color: var(--nexus-border) !important;
+}
+
+/* Light-mode stone borders on the dark chat canvas */
+html:not(.dark) .border-stone-800,
+html:not(.dark) .border-stone-700,
+html:not(.dark) .border-stone-600 {
+  border-color: #2a3042 !important;
+}
+
+/* Legacy focus rings -> Nexus "Action Indigo" glow */
+html:not(.dark) .focus\:ring-\[#8a8172\]:focus {
+  --tw-ring-color: var(--nexus-primary) !important;
+}
+
+/* Selection */
+html:not(.dark) ::selection {
+  background-color: var(--nexus-surface-3) !important;
+  color: var(--nexus-text) !important;
+}
+
+/* -------------------- DARK MODE -------------------- */
+
+html.dark [class*="bg-[#ebdcca]"],
+html.dark [class*="bg-[#eae6dc]"],
+html.dark [class*="bg-[#e9e4d9]"],
+html.dark [class*="bg-[#e8e2d2]"],
+html.dark [class*="bg-[#e5e2d9]"],
+html.dark [class*="bg-[#e4dccb]"],
+html.dark [class*="bg-[#d8cdb8]"],
+html.dark [class*="bg-[#d9cfb8]"],
+html.dark [class*="bg-[#d2c9b4]"],
+html.dark [class*="bg-[#e0ddd2]"] {
+  background-color: var(--nexus-surface-3) !important;
+}
+html.dark [class*="bg-[#f6f1e7]"],
+html.dark [class*="bg-[#f0ede6]"],
+html.dark [class*="bg-[#f5f2eb]"],
+html.dark [class*="bg-[#f5f0e6]"],
+html.dark [class*="bg-[#f9f7f2]"],
+html.dark [class*="bg-[#fbf9f4]"] {
+  background-color: var(--nexus-surface-2) !important;
+}
+html.dark [class*="bg-[#2e2920]"],
+html.dark [class*="bg-[#52493b]"] {
+  background-color: var(--nexus-primary) !important;
+}
+html.dark [class*="bg-[#8a8172]"],
+html.dark [class*="bg-[#cfcac0]"],
+html.dark [class*="bg-[#b9a98c]"],
+html.dark [class*="bg-[#c9c2b4]"],
+html.dark [class*="bg-[#c9bfae]"],
+html.dark [class*="bg-[#b0a797]"],
+html.dark [class*="bg-[#a8b8b0]"] {
+  background-color: var(--nexus-surface-3) !important;
+}
+html.dark [class*="bg-[#000000]"],
+html.dark [class*="bg-[#0b0a0e]"],
+html.dark [class*="bg-[#0d0d12]"],
+html.dark [class*="bg-[#0a0a0d]"] {
+  background-color: var(--nexus-bg) !important;
+}
+html.dark [class*="bg-[#121215]"],
+html.dark [class*="bg-[#1f1f28]"],
+html.dark [class*="bg-[#181622]"],
+html.dark [class*="bg-[#1c1812]"],
+html.dark [class*="bg-[#1c1811]"],
+html.dark [class*="bg-[#1a1610]"] {
+  background-color: var(--nexus-surface) !important;
+}
+html.dark [class*="text-[#fcfaf4]"],
+html.dark [class*="text-[#ebdcca]"],
+html.dark [class*="text-[#faf6ee]"],
+html.dark [class*="text-[#fbf9f4]"] {
+  color: var(--nexus-text) !important;
+}
+html.dark [class*="text-[#cfcac0]"],
+html.dark [class*="text-[#b0a797]"],
+html.dark [class*="text-[#b9a98c]"],
+html.dark [class*="text-[#aaa090]"],
+html.dark [class*="text-[#a19685]"],
+html.dark [class*="text-[#d4cfc5]"],
+html.dark [class*="text-[#b7ae9d]"],
+html.dark [class*="text-[#b5ac98]"],
+html.dark [class*="text-[#b0a896]"],
+html.dark [class*="text-[#b0a595]"] {
+  color: var(--nexus-text-muted) !important;
+}
+html.dark [class*="border-[#3a342a]"] {
+  border-color: var(--nexus-primary) !important;
+}
+html.dark [class*="border-[#8a8172]"],
+html.dark [class*="border-[#f0e8da]"],
+html.dark [class*="border-[#d2c9b4]"],
+html.dark [class*="border-[#b0a797]"],
+html.dark [class*="border-[#fcfaf4]"],
+html.dark [class*="border-[#f4f1ea]"],
+html.dark [class*="border-[#3e3428]"] {
+  border-color: var(--nexus-border) !important;
+}
+html.dark .border-stone-800,
+html.dark .border-stone-700,
+html.dark .border-stone-600 {
+  border-color: var(--nexus-border) !important;
+}
+html.dark .focus\:ring-\[#8a8172\]:focus {
+  --tw-ring-color: var(--nexus-primary) !important;
+}
+html.dark ::selection {
+  background-color: var(--nexus-surface-3) !important;
+  color: var(--nexus-text) !important;
+}
+
+/* ==================== Sensory-Safe Mode (Feature 157) ==================== */
 html.sensory-safe *,
 html.sensory-safe *::before,
 html.sensory-safe *::after {
@@ -296,18 +660,17 @@ html.sensory-safe *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
-
-/* Low-contrast calming palette override for key surfaces */
 html.sensory-safe {
-  background-color: #f1eee7;
+  background-color: #eef0f8;
 }
 html.sensory-safe body {
-  background-color: #f1eee7;
+  background-color: #eef0f8;
   filter: saturate(0.72);
+}
+html.dark.sensory-safe {
+  background-color: #0a0b14;
 }
 html.dark.sensory-safe body {
-  background-color: #17171a;
+  background-color: #0a0b14;
   filter: saturate(0.72);
 }
-
-

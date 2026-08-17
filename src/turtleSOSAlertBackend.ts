@@ -31,6 +31,7 @@ import express from 'express';
 import { getCtx } from './turtleServerContext';
 import { addBalance } from './turtleCommunityBackend';
 import { isUserRateLimited, SAFETY_DISCLAIMERS } from './turtleEmergencyPools';
+import { pushNotification } from './turtleCoinTransfer';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -206,6 +207,17 @@ function publicAlert(a: SOSAlert, viewerId: string): any {
 
 const URGENCY_RANK: Record<SOSUrgency, number> = { critical: 0, high: 1, medium: 2, low: 3 };
 
+/** Great-circle distance in km. */
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 // ---------------------------------------------------------------------------
 // Routes
 // ---------------------------------------------------------------------------
@@ -278,7 +290,8 @@ export function registerSOSAlertRoutes(app: express.Express): void {
   });
 
   // POST /api/sos/alert — trigger an SOS panic broadcast (explicit tap; location opt-in per tap).
-  app.post('/api/sos/alert', requireAuth, (req, res) => {
+  /** Shared alert dispatch — mounted at /api/sos/alert and the /api/sos/trigger alias. */
+  const handleSOSAlert = (req: express.Request, res: express.Response) => {
     const me = (req as any).user;
     const body = req.body || {};
     const message = str(body.message, 600);
@@ -364,6 +377,110 @@ export function registerSOSAlertRoutes(app: express.Express): void {
 
     saveDatabase(db);
     res.json({ alert: publicAlert(alert, me.id), contactCount: contacts.length });
+  };
+  app.post('/api/sos/alert', requireAuth, handleSOSAlert);
+  // Alias requested by the floating SOS button (feature #69).
+  app.post('/api/sos/trigger', requireAuth, handleSOSAlert);
+
+  // POST /api/sos/sisterhood — Sisterhood Emergency (feature #125): alert nearby
+  // female users of the caller's circle of trust. The initiator's fuzzy area
+  // label is always broadcast; precise GPS is used ONLY to find nearby users and
+  // is never stored on the alert. Recipients are matched from users who shared
+  // their approximate location (profile.location) and identify as female; if no
+  // users have gender set, all nearby users are alerted so the feature never
+  // silently no-ops. Every notified user gets a bell notification.
+  app.post('/api/sos/sisterhood', requireAuth, (req, res) => {
+    const me = (req as any).user;
+    const body = req.body || {};
+    const message = str(body.message, 600);
+    if (message.length < 5) {
+      return res.status(400).json({ error: 'Describe the emergency (at least 5 characters).' });
+    }
+    const area = str(body.area, 120) || 'Area not specified';
+    const db = loadDatabase();
+    ensureSOSDb(db);
+    if (!Array.isArray(db.sisterhoodAlerts)) db.sisterhoodAlerts = [];
+
+    // Rate limit mirrors the main SOS alert: 2 / 15 min.
+    const rl = isUserRateLimited(
+      {
+        userId: me.id,
+        alertTimestamps: (db.sisterhoodAlerts || [])
+          .filter((a: any) => a && a.creatorId === me.id)
+          .map((a: any) => a.createdAt),
+      },
+      now()
+    );
+    if (rl.limited) {
+      return res.status(429).json({ error: `You've sent sisterhood alerts recently. Please wait ${rl.remainingSec}s.` });
+    }
+
+    // Precise GPS is opt-in per press (mirrors /api/sos/alert) and is used only
+    // for proximity matching — never stored on the alert.
+    let lat: number | undefined;
+    let lng: number | undefined;
+    if (body.shareLocation === true) {
+      const nLat = Number(body.lat);
+      const nLng = Number(body.lng);
+      if (Number.isFinite(nLat) && Number.isFinite(nLng) && nLat >= -90 && nLat <= 90 && nLng >= -180 && nLng <= 180) {
+        lat = nLat;
+        lng = nLng;
+      }
+    }
+    if (!Number.isFinite(lat as number) || !Number.isFinite(lng as number)) {
+      const target = db.users.find((u: any) => u && u.id === me.id);
+      const loc = target?.profile?.location;
+      if (loc && Number.isFinite(loc.lat) && Number.isFinite(loc.lng)) {
+        lat = loc.lat;
+        lng = loc.lng;
+      }
+    }
+
+    const t = now();
+    const alert = {
+      id: uid('sist'),
+      creatorId: me.id,
+      creatorName: userLabel(me),
+      area,
+      message,
+      status: 'active' as SOSStatus,
+      createdAt: t,
+      expiresAt: t + 2 * 60 * 60 * 1000,
+      notifiedUserIds: [] as string[],
+    };
+    db.sisterhoodAlerts.unshift(alert);
+    if (db.sisterhoodAlerts.length > 100) db.sisterhoodAlerts = db.sisterhoodAlerts.slice(0, 100);
+
+    // Notify nearby female users (or all nearby users when no gender is set).
+    const radiusKm = Math.max(1, Math.min(Number(body.radiusKm) || 10, 100));
+    const hasAnyGender = (db.users || []).some((u: any) => u && u.profile?.gender);
+    let notifiedCount = 0;
+    for (const u of db.users || []) {
+      if (!u || u.id === me.id) continue;
+      if (hasAnyGender && String(u.profile?.gender || '').toLowerCase() !== 'female') continue;
+      const loc = u.profile?.location;
+      if (!loc || !Number.isFinite(loc.lat) || !Number.isFinite(loc.lng)) continue;
+      if (Number.isFinite(lat as number) && Number.isFinite(lng as number)) {
+        const d = haversineKm(lat as number, lng as number, loc.lat, loc.lng);
+        if (d > radiusKm) continue;
+      }
+      pushNotification(db, u.id, 'sisterhood', `🚺 ${alert.creatorName} sent a sisterhood emergency alert: ${alert.message.slice(0, 80)} (${area})`, {
+        id: alert.creatorId,
+        name: alert.creatorName,
+      });
+      alert.notifiedUserIds.push(u.id);
+      notifiedCount++;
+    }
+
+    saveDatabase(db);
+    res.json({
+      alert: { ...alert, notifiedUserIds: undefined },
+      notifiedCount,
+      radiusKm,
+      note: hasAnyGender
+        ? 'Alert sent to nearby female users.'
+        : 'No users have set a gender — alert sent to all nearby users.',
+    });
   });
 
   // GET /api/sos/alerts — SOS feed (scope=active|mine|resolved).

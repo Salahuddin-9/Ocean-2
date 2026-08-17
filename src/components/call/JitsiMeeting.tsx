@@ -1,14 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
 /**
  * JitsiMeeting — embed a Jitsi Meet conference (from jitsi-meet-master) in a
  * full-screen modal. Works with zero API keys: it loads the open-source Jitsi
- * Meet iframe API from a configurable host (defaults to the public meet.jit.si).
- * Set JITSI_HOST in the environment to point at a self-hosted Jitsi server.
+ * Meet iframe API from a configurable host.
+ *
+ * Default host is `8x8.vc` (the open public Jitsi deployment that permits free
+ * iframe embedding on mobile/4G); if its external_api.js cannot be reached the
+ * component automatically falls back to `meet.jit.si`. Set VITE_JITSI_HOST in
+ * the environment to pin a specific (e.g. self-hosted) server.
  */
 
-const DEFAULT_JITSI_HOST = 'meet.jit.si';
+const DEFAULT_JITSI_HOST = '8x8.vc';
+const FALLBACK_JITSI_HOST = 'meet.jit.si';
 
 interface JitsiMeetingProps {
   roomName: string;
@@ -27,23 +32,31 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, displayNam
   const containerRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<any>(null);
   const [scriptError, setScriptError] = useState(false);
+  const [resolvedHost, setResolvedHost] = useState<string>('');
 
   // Single source of truth for the Jitsi host — every link (iframe, "open in
   // new tab", error fallback) honors VITE_JITSI_HOST instead of hardcoding it.
-  const host = (import.meta as any)?.env?.VITE_JITSI_HOST || DEFAULT_JITSI_HOST;
+  // Stable across renders (import.meta.env is static) so the effect never
+  // re-runs on a fresh array identity.
+  const hostCandidates = useMemo(() => {
+    const envHost = (import.meta as any)?.env?.VITE_JITSI_HOST;
+    return envHost ? [envHost] : [DEFAULT_JITSI_HOST, FALLBACK_JITSI_HOST];
+  }, []);
+
   const safeRoom = roomName.replace(/[^a-zA-Z0-9-_]/g, '-').slice(0, 80);
-  const meetingUrl = `https://${host}/${safeRoom}`;
+  const meetingUrl = `https://${resolvedHost || hostCandidates[0]}/${safeRoom}`;
 
   useEffect(() => {
     let disposed = false;
+    let resizeObserver: ResizeObserver | null = null;
 
-    const ensureScript = (): Promise<any> => {
+    const ensureScript = (host: string): Promise<any> => {
       return new Promise((resolve, reject) => {
         if (window.JitsiMeetExternalAPI) {
           resolve(window.JitsiMeetExternalAPI);
           return;
         }
-        const existing = document.querySelector('script[data-jitsi-api]');
+        const existing = document.querySelector(`script[data-jitsi-api="${host}"]`);
         if (existing) {
           const check = () =>
             window.JitsiMeetExternalAPI ? resolve(window.JitsiMeetExternalAPI) : setTimeout(check, 200);
@@ -52,37 +65,91 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, displayNam
         }
         const script = document.createElement('script');
         script.src = `https://${host}/external_api.js`;
-        script.dataset.jitsiApi = '1';
+        script.dataset.jitsiApi = host;
         script.async = true;
         script.onload = () =>
           window.JitsiMeetExternalAPI ? resolve(window.JitsiMeetExternalAPI) : reject(new Error('Jitsi API missing'));
-        script.onerror = () => reject(new Error('Failed to load Jitsi API script'));
+        script.onerror = () => reject(new Error(`Failed to load Jitsi API script from ${host}`));
         document.head.appendChild(script);
       });
     };
 
-    ensureScript()
-      .then((Api) => {
+    // Try each candidate host in order so a flaky/unreachable default (common
+    // on mobile 4G) degrades to the next public instance instead of a blank
+    // screen. The first host whose external_api.js loads wins.
+    const loadWithFallback = async (hosts: string[]): Promise<{ host: string; Api: any }> => {
+      let lastErr: any = null;
+      for (const host of hosts) {
+        try {
+          const Api = await ensureScript(host);
+          if (Api) return { host, Api };
+        } catch (e) {
+          lastErr = e;
+          console.warn(`Jitsi: ${host} unavailable, trying next host.`, e);
+        }
+      }
+      throw lastErr || new Error('All Jitsi hosts failed');
+    };
+
+    loadWithFallback(hostCandidates)
+      .then(({ host, Api }) => {
         if (disposed || !containerRef.current) return;
+        setResolvedHost(host);
+
+        // Mobile viewport scaling: the iframe API reliably fills the screen
+        // when given explicit pixel dimensions (the '100%' string form is
+        // known to collapse to 0-height on some mobile browsers). Measure the
+        // container and keep it in sync via ResizeObserver (rotation, browser
+        // chrome show/hide, split-screen).
+        const el = containerRef.current;
+        const width = el.clientWidth || window.innerWidth || 1280;
+        const height = el.clientHeight || window.innerHeight || 720;
+
         apiRef.current = new Api(host, {
           roomName: safeRoom,
-          width: '100%',
-          height: '100%',
-          parentNode: containerRef.current,
+          width,
+          height,
+          parentNode: el,
           userInfo: { displayName: displayName || 'Guest' },
           configOverwrite: {
             disableInviteFunctions: false,
+            // Keep the meeting inside the iframe on mobile: without this the
+            // client can redirect to the native "open in Jitsi app" deep link,
+            // which leaves the iframe blank.
+            disableDeepLinking: true,
+            // Explicitly allow third-party requests (Gravatar avatars etc.) so
+            // the lobby renders fully rather than being stripped blank.
+            disableThirdPartyRequests: false,
             prejoinPageEnabled: false,
             startWithAudioMuted: false,
             // Audio-only meetings (isVideo=false) never turn the camera on.
             startWithVideoMuted: isVideo ? false : true,
           },
           interfaceConfigOverwrite: {
+            // Hide the "Download the app" promo that can overlay/redirect the
+            // embedded meeting on phones.
+            MOBILE_APP_PROMO: false,
             SHOW_JITSI_WATERMARK: false,
             SHOW_WATERMARK_FOR_GUESTS: false,
             DEFAULT_BACKGROUND: '#0b0a0e',
           },
         });
+
+        try {
+          resizeObserver = new ResizeObserver(() => {
+            const container = containerRef.current;
+            if (container && apiRef.current) {
+              try {
+                apiRef.current.resize(container.clientWidth, container.clientHeight);
+              } catch (e) {
+                /* ignore */
+              }
+            }
+          });
+          resizeObserver.observe(el);
+        } catch (e) {
+          // ResizeObserver unavailable (very old browsers) — initial size still applies.
+        }
       })
       .catch(() => {
         if (!disposed) setScriptError(true);
@@ -90,6 +157,13 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, displayNam
 
     return () => {
       disposed = true;
+      if (resizeObserver) {
+        try {
+          resizeObserver.disconnect();
+        } catch (e) {
+          /* ignore */
+        }
+      }
       if (apiRef.current) {
         try {
           apiRef.current.dispose();
@@ -99,7 +173,7 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, displayNam
         apiRef.current = null;
       }
     };
-  }, [roomName, displayName, isVideo, host, safeRoom]);
+  }, [roomName, displayName, isVideo, safeRoom, hostCandidates]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
@@ -142,7 +216,7 @@ export const JitsiMeeting: React.FC<JitsiMeetingProps> = ({ roomName, displayNam
               rel="noopener noreferrer"
               className="mt-2 px-4 py-2 rounded-xl bg-emerald-500 text-black text-xs font-bold"
             >
-              Open {host} instead
+              Open {resolvedHost || hostCandidates[0]} instead
             </a>
           </div>
         )}

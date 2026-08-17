@@ -19,6 +19,7 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import { isUserRateLimited } from './turtleEmergencyPools';
+import { getCtx } from './turtleServerContext';
 
 const EMERGENCY_FILE = path.join(process.cwd(), 'emergency.json');
 
@@ -145,6 +146,10 @@ function userPoolRateLimit(userId: string): { limited: boolean; remainingSec: nu
 // ---------------------------------------------------------------------------
 
 export function registerEmergencyPoolsRoutes(app: express.Express) {
+  // Pool actions are identity-bound (createdById / participantIds / voterId /
+  // beneficiaryName), so every mutating route requires a signed-in user. Without
+  // this, `(req as any).user` is undefined and the handlers crash with 500.
+  const { requireAuth } = getCtx();
   loadStore();
 
   // List pools (optional ?status= active|resolved|mine, ?category=)
@@ -177,7 +182,7 @@ export function registerEmergencyPoolsRoutes(app: express.Express) {
   });
 
   // Create pool
-  app.post('/api/emergency/pools', (req, res) => {
+  app.post('/api/emergency/pools', requireAuth, (req, res) => {
     const me = (req as any).user;
     const { title, description, urgency, category, locationLabel, targetFunding, voteThresholdPct } = req.body || {};
 
@@ -218,7 +223,7 @@ export function registerEmergencyPoolsRoutes(app: express.Express) {
   });
 
   // Join / leave a pool
-  app.post('/api/emergency/pools/:id/join', (req, res) => {
+  app.post('/api/emergency/pools/:id/join', requireAuth, (req, res) => {
     const me = (req as any).user;
     const pool = store.pools.find(p => p.id === req.params.id);
     if (!pool) return res.status(404).json({ error: 'Pool not found.' });
@@ -235,7 +240,7 @@ export function registerEmergencyPoolsRoutes(app: express.Express) {
   });
 
   // Contribute funds
-  app.post('/api/emergency/pools/:id/contribute', (req, res) => {
+  app.post('/api/emergency/pools/:id/contribute', requireAuth, (req, res) => {
     const me = (req as any).user;
     const pool = store.pools.find(p => p.id === req.params.id);
     if (!pool) return res.status(404).json({ error: 'Pool not found.' });
@@ -258,7 +263,7 @@ export function registerEmergencyPoolsRoutes(app: express.Express) {
   });
 
   // Mark pool resolved
-  app.post('/api/emergency/pools/:id/resolve', (req, res) => {
+  app.post('/api/emergency/pools/:id/resolve', requireAuth, (req, res) => {
     const me = (req as any).user;
     const pool = store.pools.find(p => p.id === req.params.id);
     if (!pool) return res.status(404).json({ error: 'Pool not found.' });
@@ -271,7 +276,7 @@ export function registerEmergencyPoolsRoutes(app: express.Express) {
   });
 
   // Submit disbursement claim
-  app.post('/api/emergency/pools/:id/requests', (req, res) => {
+  app.post('/api/emergency/pools/:id/requests', requireAuth, (req, res) => {
     const me = (req as any).user;
     const pool = store.pools.find(p => p.id === req.params.id);
     if (!pool) return res.status(404).json({ error: 'Pool not found.' });
@@ -304,7 +309,7 @@ export function registerEmergencyPoolsRoutes(app: express.Express) {
   });
 
   // Vote on a claim
-  app.post('/api/emergency/pools/:id/requests/:requestId/vote', (req, res) => {
+  app.post('/api/emergency/pools/:id/requests/:requestId/vote', requireAuth, (req, res) => {
     const me = (req as any).user;
     const pool = store.pools.find(p => p.id === req.params.id);
     const request = store.requests.find(r => r.id === req.params.requestId && r.poolId === req.params.id);

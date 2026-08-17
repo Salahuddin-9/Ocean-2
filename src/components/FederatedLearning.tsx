@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, BrainCircuit, Upload, Loader2, Activity } from 'lucide-react';
+import SimulationModeBadge from './SimulationModeBadge';
 
 /**
  * Ocean — Federated Learning Node (Feature 241)
@@ -64,7 +65,7 @@ export default function FederatedLearning({ token, currentUser, onClose }: Feder
     } catch (e: any) { toast(e.message, 'destructive'); } finally { setBusy(false); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -91,6 +92,11 @@ export default function FederatedLearning({ token, currentUser, onClose }: Feder
                   <p className="font-mono text-[9px] uppercase tracking-wider text-[#8a8172] dark:text-zinc-400">Train locally, share only deltas · feature 241</p>
                 </div>
               </div>
+
+              <SimulationModeBadge
+                title="Hand-tuned deltas stand in for real on-device training"
+                detail="The sliders let you express a local-model delta, and the server aggregates it FedAvg-style — but no real gradient descent runs on this device. A production node would train a small model on-device (TF.js / ONNX Runtime) from actual engagement data, add secure aggregation + differential privacy, and upload only encrypted weight deltas."
+              />
 
               {model && (
                 <div className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3">

@@ -699,7 +699,62 @@ function findPostById(db: any, postId: string): any {
 
 export function registerSmartCommunityRoutes(app: express.Express): void {
   const ctx = getCtx();
-  const { requireAuth, loadDatabase, saveDatabase, getRequestUser } = ctx;
+  const { requireAuth, loadDatabase, saveDatabase, loadCommunity, getRequestUser } = ctx;
+
+  /**
+   * Group inactivity detection (Feature 118): flag community topics with no
+   * recent activity. A topic's lastActivity is the newest post timestamp that
+   * mentions it (by name or emoji); otherwise the topic is considered idle.
+   * Threshold: 30 days. Each result carries a ready-to-send AI reactivation
+   * prompt (the LLM is used only when the user actually asks to summarize).
+   */
+  function detectInactiveGroups(db: any): {
+    id: string;
+    name: string;
+    emoji: string;
+    memberCount: number;
+    lastActivityAt: number | null;
+    idleDays: number;
+    reactivationPrompt: string;
+  }[] {
+    try {
+      const state = loadCommunity();
+      const topics = Array.isArray(state?.topics) ? state.topics : [];
+      if (topics.length === 0) return [];
+      const posts = (db.posts || []) as any[];
+      const t = Date.now();
+      const INACTIVE_MS = 30 * 24 * 60 * 60 * 1000;
+      const out: { id: string; name: string; emoji: string; memberCount: number; lastActivityAt: number | null; idleDays: number; reactivationPrompt: string }[] = [];
+      for (const topic of topics) {
+        if (!topic || !topic.id) continue;
+        const name = String(topic.name || '').toLowerCase();
+        const emoji = String(topic.emoji || '');
+        let last = 0;
+        for (const p of posts) {
+          const text = `${postText(p)} ${p?.type || ''} ${p?.category || ''}`.toLowerCase();
+          if (name && text.includes(name)) last = Math.max(last, postTimestamp(p));
+          else if (emoji && text.includes(emoji)) last = Math.max(last, postTimestamp(p));
+        }
+        const lastActivityAt = last > 0 ? last : null;
+        const idleDays = lastActivityAt ? Math.max(0, Math.floor((t - lastActivityAt) / 86400000)) : null;
+        if (idleDays === null || idleDays >= 30) {
+          out.push({
+            id: topic.id,
+            name: topic.name,
+            emoji: topic.emoji || '',
+            memberCount: Array.isArray(topic.members) ? topic.members.length : 0,
+            lastActivityAt,
+            idleDays,
+            reactivationPrompt: `Your group “${topic.name}” has been quiet for ${idleDays === null ? 'a while' : idleDays + ' days'}. Post an engaging discussion starter with a question to bring members back.`,
+          });
+        }
+      }
+      return out;
+    } catch (e: any) {
+      console.warn('[smart-community] inactivity detection error:', e?.message || e);
+      return [];
+    }
+  }
 
   // POST /api/community/smart/scan — run the heuristic scan (requireAuth)
   app.post('/api/community/smart/scan', requireAuth, (req, res) => {
@@ -707,6 +762,7 @@ export function registerSmartCommunityRoutes(app: express.Express): void {
       const db = loadDatabase();
       const sc = ensureSmartCommunity(db);
       const { scanned, detections } = scanCommunity(db);
+      const inactiveGroups = detectInactiveGroups(db);
 
       // Keep the most recent ~200 detections.
       sc.scanResults = [...detections, ...sc.scanResults].slice(0, 200);
@@ -730,7 +786,13 @@ export function registerSmartCommunityRoutes(app: express.Express): void {
       }
 
       saveDatabase(db);
-      res.json({ scanned, detections, countByTag: countByTag(detections), autoFlagMode: sc.settings.autoFlagMode });
+      res.json({
+        scanned,
+        detections,
+        countByTag: countByTag(detections),
+        autoFlagMode: sc.settings.autoFlagMode,
+        inactiveGroups,
+      });
     } catch (e: any) {
       console.warn('[smart-community] scan error:', e?.message || e);
       res.status(500).json({ error: 'Scan failed.' });
@@ -749,6 +811,7 @@ export function registerSmartCommunityRoutes(app: express.Express): void {
       countByTag: countByTag(detections),
       flaggedPosts: detections.filter((d) => isActionable(d, sc.settings)),
       flags,
+      inactiveGroups: detectInactiveGroups(db),
       lastScanAt: detections.length > 0 ? detections[0].createdAt : null,
       settings: sc.settings,
       viewerId: viewer?.id ?? null,

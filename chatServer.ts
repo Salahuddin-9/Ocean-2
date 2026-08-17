@@ -2,6 +2,9 @@ import { WebSocket, WebSocketServer } from 'ws';
 import * as fs from 'fs';
 import * as path from 'path';
 import { draftCopilotResponse } from './src/turtleChatAiHelper.js';
+// Azan auto-mute (feature 223): per-recipient notification suppression during
+// prayer windows. Pure helper — no routes, no side effects at import.
+import { azanMuteMapForUsers } from './src/turtleAzanBackend.js';
 
 // Load and save DB functions to match server.ts
 const DB_FILE = path.join(process.cwd(), 'database.json');
@@ -99,6 +102,15 @@ const lastSeenUsers = new Map<string, number>();
 const typingStates = new Map<string, Set<string>>();
 // boardId -> Set of WebSockets subscribed to a shared whiteboard (feature 109)
 const whiteboardRooms = new Map<string, Set<WebSocket>>();
+// ── Meet room mesh signaling (SimpleWebRTC-style group video rooms) ────────
+// roomId -> userId -> { name } (the authoritative membership list per room).
+// Signaling itself is stateless: 'sending-signal' is relayed straight to the
+// target's live sockets. Membership drives the 'all-users' snapshot, the
+// 'user-connected' fan-out, and disconnect cleanup.
+const meetRooms = new Map<string, Map<string, { name: string }>>();
+// userId -> Set<roomId> — reverse index so a dropped socket can clean up
+// every room it joined without scanning all rooms.
+const userMeetRooms = new Map<string, Set<string>>();
 // Track simulated online users to make the network feel alive in real-time
 const simulatedOnlineUsers = new Set<string>();
 // Caller of last resort for busy detection: userId -> outstanding offer
@@ -114,12 +126,18 @@ export function setupChatServer(server: any) {
 
   // Handle server upgrade request
   server.on('upgrade', (request: any, socket: any, head: any) => {
-    // Only upgrade ws paths
-    const url = new URL(request.url, `http://${request.headers.host}`);
-    if (url.pathname === '/ws/chat') {
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request);
-      });
+    // Only upgrade ws paths. A malformed request or a socket that died before
+    // the upgrade completed must never crash the process (common over Ngrok).
+    try {
+      const url = new URL(request.url, `http://${request.headers.host}`);
+      if (url.pathname === '/ws/chat') {
+        wss.handleUpgrade(request, socket, head, (ws) => {
+          wss.emit('connection', ws, request);
+        });
+      }
+    } catch (e) {
+      console.error('WebSocket upgrade error:', e);
+      try { socket.destroy(); } catch { /* ignore */ }
     }
   });
 
@@ -339,16 +357,25 @@ export function setupChatServer(server: any) {
             newMsg.status = 'delivered';
           }
 
+          // Azan auto-mute (feature 223): when a recipient has auto-mute enabled
+          // and we're inside a prayer window, suppress the in-app notification
+          // (no badge/unread notif) and tag their broadcast as `muted` so the
+          // client can skip the chime/toast while still delivering the message.
+          const azanMutes = azanMuteMapForUsers(db, conv.participants || []);
           otherParticipants.forEach((pId: string) => {
+            if (azanMutes.get(pId)) return; // muted — skip the notification entry
             addNotification(db, pId, 'chat_message', { id: authenticatedUserId, name: sender?.name || 'Someone' }, { interestText: text || (mediaName ? `File: ${mediaName}` : 'Attachment') });
           });
 
           saveDatabase(db);
 
-          // Broadcast message to all online participants
-          sendToUsers(conv.participants || [], {
-            type: 'message_received',
-            message: newMsg
+          // Broadcast message to all online participants (per-recipient muted flag)
+          (conv.participants || []).forEach((pId: string) => {
+            sendToUsers([pId], {
+              type: 'message_received',
+              message: newMsg,
+              muted: azanMutes.get(pId) || false
+            });
           });
 
           return;
@@ -587,7 +614,13 @@ export function setupChatServer(server: any) {
         // These relay lightweight ring/answer/cancel/end events between the
         // two peers over the existing chat socket. The actual media (SDP/ICE)
         // is exchanged via the /api/meet/room/:id/signal REST relay.
-
+        //
+        // Strict boundary: a peer that vanished mid-call (Ngrok tunnel drop,
+        // firewall RST, device sleep) must never take the process down. Every
+        // relay below is guarded by sendToUsers()/safeSend() which never throw,
+        // and the whole block is additionally wrapped here so a malformed
+        // payload only aborts this one relay instead of the whole handler.
+        try {
         if (type === 'call_offer') {
           const { to, callId, callType, fromName } = payload;
           if (!to || !callId) return;
@@ -599,6 +632,19 @@ export function setupChatServer(server: any) {
           const now = Date.now();
           for (const [uid, entry] of busyCalls.entries()) {
             if (entry.expires < now) busyCalls.delete(uid);
+          }
+          // Never drop the offer silently: if the target has no live socket
+          // (offline / mid-reconnect) tell the caller immediately instead of
+          // letting them ring into the void for the full 45s timeout. Also
+          // avoids recording a stale busy slot for an offline user.
+          const targetConns = userConnections.get(to);
+          if (!targetConns || targetConns.size === 0) {
+            sendToUsers([authenticatedUserId as string], {
+              type: 'call_unreachable',
+              fromUserId: to,
+              callId,
+            });
+            return;
           }
           if (busyCalls.has(to)) {
             sendToUsers([authenticatedUserId as string], {
@@ -669,7 +715,11 @@ export function setupChatServer(server: any) {
         if (type === 'call_answer') {
           const { to, callId, accepted } = payload;
           if (!to) return;
-          busyCalls.delete(to);
+          // The busy slot is owned by the ANSWERING user (the callee recorded
+          // in call_offer's busyCalls.set(to, ...)). Deleting the caller's key
+          // here left the callee's slot lingering for 45s, silently turning the
+          // NEXT offer to that callee into call_busy. Clear the right entry.
+          busyCalls.delete(authenticatedUserId as string);
           sendToUsers([to], {
             type: 'call_answer',
             fromUserId: authenticatedUserId,
@@ -689,6 +739,9 @@ export function setupChatServer(server: any) {
             callId,
           });
           return;
+        }
+        } catch (relayErr) {
+          console.error('Call signaling relay error (type=' + String(type) + '):', relayErr);
         }
 
         // === Shared Workspace Whiteboard relay (feature 109) ===
@@ -739,12 +792,111 @@ export function setupChatServer(server: any) {
           return;
         }
 
+        // === MEET ROOM MESH SIGNALING (SimpleWebRTC-style group video rooms) ===
+        // Standard mesh WebRTC event vocabulary, relayed over the existing
+        // authenticated /ws/chat socket:
+        //   client → server: 'join-room' | 'sending-signal' | 'leave-room'
+        //   server → client: 'all-users' | 'user-connected' | 'returning-signal'
+        //                    | 'user-disconnected'
+        // The actual media plane (SDP offers/answers + ICE candidates) travels
+        // inside 'sending-signal'/'returning-signal' envelopes. Every relay is
+        // guarded by safeSend()/sendToUsers() which never throw, so a peer that
+        // vanished mid-room can never take the process down. Each handler below
+        // is ALSO wrapped in its own try-catch so network fluctuations or empty
+        // ICE candidates never crash this socket or the main Express thread.
+        try {
+        if (type === 'join-room') {
+          const { roomId, name } = payload;
+          if (!roomId || typeof roomId !== 'string') return;
+          const uid = authenticatedUserId as string;
+          let room = meetRooms.get(roomId);
+          if (!room) {
+            room = new Map<string, { name: string }>();
+            meetRooms.set(roomId, room);
+          }
+          if (!room.has(uid)) room.set(uid, { name: String(name || uid).slice(0, 60) });
+          if (!userMeetRooms.has(uid)) userMeetRooms.set(uid, new Set<string>());
+          userMeetRooms.get(uid)!.add(roomId);
+
+          // 1) Snapshot of everyone already in the room → the newcomer.
+          const existing = Array.from(room.entries())
+            .filter(([id]) => id !== uid)
+            .map(([id, info]) => ({ userId: id, name: info.name }));
+          safeSend(ws, JSON.stringify({ type: 'all-users', roomId, users: existing }));
+
+          // 2) Fan-out 'user-connected' to the existing members so they can
+          //    open a peer connection to the newcomer (they initiate; the
+          //    newcomer answers — exactly one offer per pair, no glare).
+          const announce = JSON.stringify({ type: 'user-connected', roomId, userId: uid, name: String(name || uid).slice(0, 60) });
+          room.forEach((_info, otherId) => {
+            if (otherId === uid) return;
+            const conns = userConnections.get(otherId);
+            if (conns) conns.forEach((s) => safeSend(s, announce));
+          });
+          return;
+        }
+
+        if (type === 'sending-signal') {
+          const { roomId, userToSignal, signal } = payload;
+          if (!roomId || !userToSignal) return;
+          // Empty or malformed ICE candidates / SDP must NEVER propagate out of
+          // this handler — the target's peer connection tolerates a skipped
+          // candidate (handled client-side), so a bad signal only aborts this
+          // one relay rather than dropping the whole socket or crashing the
+          // process. Normalize the signal envelope defensively.
+          if (!signal || (typeof signal !== 'object')) return;
+          const room = meetRooms.get(roomId);
+          if (!room || !room.has(userToSignal)) return; // target left the room
+          const out = JSON.stringify({
+            type: 'returning-signal',
+            roomId,
+            fromUserId: authenticatedUserId,
+            signal: signal || null,
+          });
+          const conns = userConnections.get(userToSignal);
+          if (conns) conns.forEach((s) => safeSend(s, out));
+          return;
+        }
+
+        if (type === 'leave-room') {
+          const { roomId } = payload;
+          if (!roomId) return;
+          leaveMeetRoom(authenticatedUserId as string, roomId);
+          return;
+        }
+        } catch (meetErr) {
+          // Absolute error boundary for meet-room signaling: a transient network
+          // blip or a malformed envelope must not tear down the WebSocket or the
+          // Express thread. Inform the sender and continue.
+          console.error('Meet room signaling error (type=' + String(type) + '):', meetErr);
+          try {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: 'error', message: 'Meet room signaling failed' }));
+            }
+          } catch { /* ignore */ }
+        }
+
       } catch (err) {
         console.error('WebSocket message parsing/handling error:', err);
+        // Tell the sender the relay failed instead of letting the call hang
+        // silently; the other peer may still recover via the REST hangup path.
+        try {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'error', message: 'Message handling failed' }));
+          }
+        } catch { /* ignore */ }
       }
     });
 
+    // Socket-level errors (Ngrok tunnel teardown, RST, abrupt disconnect) MUST
+    // have a listener, otherwise Node treats them as uncaught exceptions and
+    // kills the process mid-call.
+    ws.on('error', (err) => {
+      console.warn('WebSocket socket error (peer dropped):', (err as any)?.message || err);
+    });
+
     ws.on('close', () => {
+      try {
       // Remove this socket from any subscribed whiteboard rooms (feature 109)
       whiteboardRooms.forEach((members, boardId) => {
         if (members.delete(ws) && members.size === 0) whiteboardRooms.delete(boardId);
@@ -754,6 +906,16 @@ export function setupChatServer(server: any) {
         if (conns) {
           conns.delete(ws);
           if (conns.size === 0) {
+            // Last socket of this user closed — leave every meet room they
+            // joined (broadcasts 'user-disconnected' to remaining members).
+            try {
+              const userRooms = userMeetRooms.get(authenticatedUserId);
+              if (userRooms) {
+                Array.from(userRooms).forEach((rId) => leaveMeetRoom(authenticatedUserId as string, rId));
+              }
+            } catch (e) {
+              console.error('Meet room cleanup on close error:', e);
+            }
             userConnections.delete(authenticatedUserId);
             onlineUsers.delete(authenticatedUserId);
             const now = Date.now();
@@ -791,6 +953,9 @@ export function setupChatServer(server: any) {
             });
           }
         }
+      }
+      } catch (e) {
+        console.error('WebSocket close handler error:', e);
       }
     });
   });
@@ -897,10 +1062,14 @@ export function setupChatServer(server: any) {
           db2.chatMessages.push(replyMsg);
           saveDatabase(db2);
 
-          // Broadcast message
-          sendToUsers(conv.participants || [], {
-            type: 'message_received',
-            message: replyMsg
+          // Broadcast message (Azan auto-mute feature 223: per-recipient muted flag)
+          const azanMutes2 = azanMuteMapForUsers(db2, conv.participants || []);
+          (conv.participants || []).forEach((pId: string) => {
+            sendToUsers([pId], {
+              type: 'message_received',
+              message: replyMsg,
+              muted: azanMutes2.get(pId) || false
+            });
           });
 
         }, messageSendDelay);
@@ -914,30 +1083,71 @@ export function setupChatServer(server: any) {
     }, typingOnDelay);
   }
 
-  // Utility to send to multiple users
+  /**
+   * Send one payload to a socket without ever throwing. A peer that drops
+   * mid-call (Ngrok tunnel teardown, device sleep, firewall RST) can leave the
+   * underlying stream in CLOSING/CLOSED between the readyState check and
+   * ws.send(); without this guard the synchronous throw would propagate out of
+   * the relay handler and kill the Node process.
+   */
+  function safeSend(ws: WebSocket, payload: string) {
+    try {
+      if (ws.readyState === WebSocket.OPEN) ws.send(payload);
+    } catch (e) {
+      console.warn('Socket send failed (peer disconnected):', e);
+    }
+  }
+
+  // Utility to send to multiple users (never throws)
   function sendToUsers(userIds: string[], data: any) {
-    const payload = JSON.stringify(data);
+    let payload: string;
+    try {
+      payload = JSON.stringify(data);
+    } catch (e) {
+      console.error('sendToUsers: payload serialization failed:', e);
+      return;
+    }
     userIds.forEach((userId) => {
       const conns = userConnections.get(userId);
       if (conns) {
-        conns.forEach((ws) => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(payload);
-          }
-        });
+        conns.forEach((ws) => safeSend(ws, payload));
       }
     });
   }
 
-  // Utility to broadcast to all connected clients
-  function broadcast(data: any) {
-    const payload = JSON.stringify(data);
-    userConnections.forEach((conns) => {
-      conns.forEach((ws) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(payload);
-        }
+  /**
+   * Remove a user from a meet room and tell the remaining members. Idempotent
+   * (safe to call twice — e.g. explicit 'leave-room' then socket close).
+   */
+  function leaveMeetRoom(userId: string, roomId: string): void {
+    const room = meetRooms.get(roomId);
+    if (room) {
+      room.delete(userId);
+      if (room.size === 0) meetRooms.delete(roomId);
+    }
+    userMeetRooms.get(userId)?.delete(roomId);
+    if (userMeetRooms.get(userId)?.size === 0) userMeetRooms.delete(userId);
+    if (room && room.size > 0) {
+      const out = JSON.stringify({ type: 'user-disconnected', roomId, userId });
+      room.forEach((_info, otherId) => {
+        if (otherId === userId) return;
+        const conns = userConnections.get(otherId);
+        if (conns) conns.forEach((s) => safeSend(s, out));
       });
+    }
+  }
+
+  // Utility to broadcast to all connected clients (never throws)
+  function broadcast(data: any) {
+    let payload: string;
+    try {
+      payload = JSON.stringify(data);
+    } catch (e) {
+      console.error('broadcast: payload serialization failed:', e);
+      return;
+    }
+    userConnections.forEach((conns) => {
+      conns.forEach((ws) => safeSend(ws, payload));
     });
   }
 
@@ -1016,13 +1226,21 @@ export function getUserStatus(userId: string) {
 
 // Global broadcast helper for REST API triggers
 export function broadcastMessageToUsers(userIds: string[], data: any) {
-  const payload = JSON.stringify(data);
+  let payload: string;
+  try {
+    payload = JSON.stringify(data);
+  } catch (e) {
+    console.error('broadcastMessageToUsers: payload serialization failed:', e);
+    return;
+  }
   userIds.forEach((userId) => {
     const conns = userConnections.get(userId);
     if (conns) {
       conns.forEach((ws) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(payload);
+        try {
+          if (ws.readyState === WebSocket.OPEN) ws.send(payload);
+        } catch (e) {
+          console.warn('Socket send failed (peer disconnected):', e);
         }
       });
     }

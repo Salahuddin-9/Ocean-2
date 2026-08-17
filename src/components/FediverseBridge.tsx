@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Globe, Send, Download, Inbox } from 'lucide-react';
+import { X, Globe, Send, Download, Inbox, Check } from 'lucide-react';
+import SimulationModeBadge from './SimulationModeBadge';
 
 /**
  * Ocean — ActivityPub / Fediverse Bridge (Feature 236)
@@ -24,6 +25,27 @@ export default function FediverseBridge({ token, currentUser, onClose }: Fediver
   const [remote, setRemote] = useState<RemotePost[]>([]);
   const [content, setContent] = useState('');
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // The user's federated identity: acct:user@host + the ActivityPub actor URL.
+  // Discovery is real (webfinger + actor document are served by the backend);
+  // only cross-server delivery needs a public domain + remote instances.
+  const handle = currentUser
+    ? `acct:${(currentUser.name || currentUser.id).toLowerCase().replace(/\s+/g, '.')}@${window.location.host}`
+    : '';
+  const actorUrl = currentUser
+    ? `${window.location.origin}/api/fediverse/actor/${encodeURIComponent((currentUser.name || currentUser.id).toLowerCase().replace(/\s+/g, '.'))}`
+    : '';
+
+  const copyHandle = async () => {
+    try {
+      await navigator.clipboard.writeText(actorUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast('Copy blocked by the browser.', 'destructive');
+    }
+  };
 
   const toast = (message: string, variant?: string) =>
     window.dispatchEvent(new CustomEvent('show-toast', { detail: { message, variant } }));
@@ -76,7 +98,7 @@ export default function FediverseBridge({ token, currentUser, onClose }: Fediver
     } catch (e: any) { toast(e.message, 'destructive'); } finally { setBusy(false); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -103,6 +125,27 @@ export default function FediverseBridge({ token, currentUser, onClose }: Fediver
                   <p className="font-mono text-[9px] uppercase tracking-wider text-[#8a8172] dark:text-zinc-400">ActivityPub outbox · feature 236</p>
                 </div>
               </div>
+
+              <SimulationModeBadge
+                title="Local ActivityPub relay — real federation needs a public domain"
+                detail="Ocean publishes real ActivityPub-shaped actors, webfinger discovery and a signed-outbox contract, but with no public domain + remote Mastodon/PeerTube servers configured, notes stay in the local outbox. A production deployment sets APP_URL to a reachable HTTPS host, registers it in the remote instance's allowed list, and supplies targetInbox URLs for signed HTTP-Signature delivery."
+              />
+
+              {currentUser && (
+                <div className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3">
+                  <div className="font-mono text-[9px] uppercase font-bold tracking-wider text-[#8a8172] dark:text-zinc-400 mb-1">Your federated identity</div>
+                  <div className="font-mono text-[11px] text-indigo-700 dark:text-indigo-300 break-all">{handle}</div>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <span className="font-mono text-[8px] text-[#8a8172] dark:text-zinc-500 flex-1 break-all">{actorUrl}</span>
+                    <button onClick={copyHandle} className={`${btnPrimary} shrink-0`}>
+                      {copied ? <Check size={11} /> : <Inbox size={11} />} {copied ? 'Copied' : 'Copy'}
+                    </button>
+                  </div>
+                  <p className="font-mono text-[8px] text-[#8a8172] dark:text-zinc-500 mt-1.5">
+                    Paste this actor URL into any ActivityPub search to test discovery (webfinger + actor doc are live on this server).
+                  </p>
+                </div>
+              )}
 
               {currentUser && (
                 <div className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3 space-y-2">

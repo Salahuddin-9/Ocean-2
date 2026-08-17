@@ -319,7 +319,7 @@ export default function AnonymousMode({ token, currentUser, onClose }: Anonymous
   };
 
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-xl mx-auto space-y-5">
         <div className="bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-6 md:p-8 space-y-5 shadow-xs">
         {/* Header */}

@@ -137,6 +137,11 @@ export function wireRemoteStream(pc: RTCPeerConnection, onStream: (stream: Media
     if (r.track && !merged.getTracks().some((t) => t.id === r.track!.id)) merged.addTrack(r.track);
   });
   pc.ontrack = (event) => {
+    // Some browsers (e.g. Safari) fire ontrack with an empty `event.streams` —
+    // always capture `event.track` too so the remote stream is never blank.
+    if (event.track && !merged.getTracks().some((t) => t.id === event.track!.id)) {
+      merged.addTrack(event.track);
+    }
     event.streams.forEach((s) => {
       s.getTracks().forEach((t) => {
         if (!merged.getTracks().some((mt) => mt.id === t.id)) merged.addTrack(t);

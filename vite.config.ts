@@ -9,7 +9,6 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
-        // nsfwjs imports `Buffer` from 'buffer' in its ESM build; polyfill it for the browser.
         buffer: 'buffer/',
       },
     },
@@ -17,10 +16,9 @@ export default defineConfig(() => {
       global: 'globalThis',
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      // এটি আপনার Ngrok হোস্টিং ব্লকিং ১০০% দূর করবে কোনো এরর ছাড়াই
+      allowedHosts: true, 
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };

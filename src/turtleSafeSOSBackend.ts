@@ -29,6 +29,7 @@ import express from 'express';
 import { getCtx } from './turtleServerContext';
 import { addBalance, trustPointsForUser } from './turtleCommunityBackend';
 import { isUserRateLimited } from './turtleEmergencyPools';
+import { pushNotification } from './turtleCoinTransfer';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -134,14 +135,40 @@ function ensureSafeSOS(db: any): any {
 /**
  * Lazily elevates active Safe Walks whose deadline has passed to 'overdue'
  * (read-time evaluation — no cron). Returns true if anything changed.
+ *
+ * When a walk first flips to overdue, the initiator's emergency contacts are
+ * notified through the notification bell ("didn't check in by <time> — please
+ * check on them"). The `overdueNotifiedAt` stamp makes the notification
+ * fire-once even though the sweep runs on every read.
  */
-function elevateOverdueWalks(s: any): boolean {
+function elevateOverdueWalks(s: any, db?: any): boolean {
   const t = now();
   let changed = false;
   for (const ev of s.events || []) {
     if (ev && ev.kind === 'walk' && ev.status === 'active' && ev.checkinDue && ev.checkinDue < t) {
       ev.status = 'overdue';
       changed = true;
+      if (db && !ev.overdueNotifiedAt) {
+        ev.overdueNotifiedAt = t;
+        try {
+          const due = new Date(ev.checkinDue);
+          const dueLabel = `${due.getHours().toString().padStart(2, '0')}:${due
+            .getMinutes()
+            .toString()
+            .padStart(2, '0')}`;
+          for (const cid of ev.contactIds || []) {
+            pushNotification(
+              db,
+              cid,
+              'safety',
+              `${ev.initiatorName || 'Your contact'}'s Safe Walk check-in was due at ${dueLabel} and they haven't checked in — please check on them.`,
+              { id: ev.initiatorId, name: ev.initiatorName || 'Contact' }
+            );
+          }
+        } catch (e: any) {
+          console.warn('[safesos] overdue walk notification error:', e?.message || e);
+        }
+      }
     }
   }
   return changed;
@@ -217,7 +244,7 @@ export function registerSafeSOSRoutes(app: express.Express): void {
     const me = (req as any).user;
     const db = loadDatabase();
     const s = ensureSafeSOS(db);
-    const changed = elevateOverdueWalks(s);
+    const changed = elevateOverdueWalks(s, db);
 
     const mine = (s.contacts || []).filter((c: any) => c && c.addedById === me.id);
     const incoming = (s.contacts || []).filter((c: any) => c && c.userId === me.id);
@@ -363,7 +390,7 @@ export function registerSafeSOSRoutes(app: express.Express): void {
     const me = (req as any).user;
     const db = loadDatabase();
     const s = ensureSafeSOS(db);
-    const changed = elevateOverdueWalks(s);
+    const changed = elevateOverdueWalks(s, db);
 
     let events = (s.events || []).filter(
       (ev: any) => ev && (ev.initiatorId === me.id || (ev.contactIds || []).includes(me.id))
@@ -566,6 +593,9 @@ export function registerSafeSOSRoutes(app: express.Express): void {
     const t = now();
     const win = Math.max(Number(event.windowMinutes) || WALK_DEFAULT_MIN, WALK_MIN_MIN);
     event.status = 'active';
+    // A check-in revives the walk — clear the overdue-notified stamp so the
+    // contacts get a fresh alert if the next window is missed too.
+    delete event.overdueNotifiedAt;
     event.lastCheckinAt = t;
     event.checkinCount = (event.checkinCount || 0) + 1;
     event.checkinDue = t + win * 60000;

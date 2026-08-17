@@ -525,7 +525,7 @@ export default function SafetyShieldView({ token, currentUser, onClose }: Safety
 
   if (!token || !currentUser) {
     return (
-      <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+      <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
         <div className="max-w-xl mx-auto">
           <div className={CARD}>
             <div className="flex items-center gap-2">
@@ -541,7 +541,7 @@ export default function SafetyShieldView({ token, currentUser, onClose }: Safety
   }
 
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">

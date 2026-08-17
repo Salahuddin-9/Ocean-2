@@ -88,12 +88,21 @@ export const ActiveCallScreen: React.FC<ActiveCallScreenProps> = ({
     videoInputs: [],
   });
 
+  // The <video> elements only mount once the call is 'connected'. The remote
+  // tracks usually arrive first (pc.ontrack fires while still 'connecting'), so
+  // when remoteStream/localStream change, the refs above are still null and a
+  // bare [stream] effect would no-op — leaving the element without a srcObject
+  // and rendering a blank/black video. Re-running the attach on `showVideo`
+  // (which flips exactly when the elements mount) guarantees the stream lands
+  // on the element regardless of ordering.
+  const showVideo = phase === 'connected' && callType === 'video';
+
   useEffect(() => {
     attachToElement(localVideoRef.current, localStream);
-  }, [localStream]);
+  }, [localStream, showVideo]);
   useEffect(() => {
     attachToElement(remoteVideoRef.current, remoteStream);
-  }, [remoteStream]);
+  }, [remoteStream, showVideo]);
 
   // Auto-dismiss the "ended" overlay shortly after it appears.
   useEffect(() => {
@@ -102,7 +111,6 @@ export const ActiveCallScreen: React.FC<ActiveCallScreenProps> = ({
     return () => clearTimeout(t);
   }, [phase, onClose]);
 
-  const showVideo = phase === 'connected' && callType === 'video';
   const ringing = phase === 'outgoing' || phase === 'ringing';
   const ended = phase === 'ended';
   const avatarName = peerName?.charAt(0)?.toUpperCase() || '?';
@@ -188,6 +196,7 @@ export const ActiveCallScreen: React.FC<ActiveCallScreenProps> = ({
               ref={remoteVideoRef}
               autoPlay
               playsInline
+              muted={false}
               className="absolute inset-0 w-full h-full object-contain bg-black"
             />
             {/* Local PiP */}

@@ -28,6 +28,7 @@
     "server.ts"
   ],
   "exclude": [
-    "src/reference/**"
+    "src/reference/**",
+    "src/archive/**"
   ]
 }

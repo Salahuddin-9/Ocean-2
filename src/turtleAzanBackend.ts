@@ -46,6 +46,35 @@ function ensureCollection(db: any): void {
   if (!db.azanPrefs || typeof db.azanPrefs !== 'object') db.azanPrefs = {};
 }
 
+/**
+ * Pure helper for other modules (chatServer notification suppression): is this
+ * user's notification auto-mute ACTIVE right now (pref enabled AND inside a
+ * prayer window)? Reads db.azanPrefs; never mutates, never throws.
+ */
+export function isAzanMutedForUser(db: any, userId: string, now: Date = new Date()): boolean {
+  try {
+    const prefs = db?.azanPrefs?.[userId];
+    if (!prefs || !prefs.enabled) return false;
+    const offsetMin = Math.max(-60, Math.min(60, Math.floor(Number(prefs.offsetMin) || 0)));
+    return prayerTimes(now, offsetMin).inMute;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Compute the current mute state for every user in a list — used when
+ * broadcasting a chat event so each recipient's payload can carry a
+ * per-user `muted` flag. Returns a Map<userId, boolean>.
+ */
+export function azanMuteMapForUsers(db: any, userIds: string[], now: Date = new Date()): Map<string, boolean> {
+  const map = new Map<string, boolean>();
+  for (const uid of userIds || []) {
+    map.set(uid, isAzanMutedForUser(db, uid, now));
+  }
+  return map;
+}
+
 export function registerAzanRoutes(app: express.Express): void {
   const { requireAuth, loadDatabase, saveDatabase } = getCtx();
 

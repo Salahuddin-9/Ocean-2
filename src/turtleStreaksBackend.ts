@@ -15,8 +15,19 @@
 
 import express from 'express';
 import { getCtx } from './turtleServerContext';
+import { addBalance } from './turtleCommunityBackend';
 
 export type StreakType = 'learning' | 'creator' | 'helper';
+
+/** Coin rewards credited to the user's community balance on streak milestones. */
+export const STREAK_MILESTONE_REWARDS: Record<number, number> = {
+  3: 20,
+  7: 50,
+  14: 120,
+  30: 300,
+  60: 700,
+  100: 1500,
+};
 
 export interface Streak {
   id: string;
@@ -66,7 +77,7 @@ export function checkIn(db: any, userId: string, type: StreakType): { streak: St
 }
 
 export function registerStreakRoutes(app: express.Express): void {
-  const { requireAuth, loadDatabase, saveDatabase } = getCtx();
+  const { requireAuth, loadDatabase, saveDatabase, loadCommunity, saveCommunity } = getCtx();
 
   // POST /api/streaks/checkin
   app.post('/api/streaks/checkin', requireAuth, (req, res) => {
@@ -78,7 +89,32 @@ export function registerStreakRoutes(app: express.Express): void {
     const db = loadDatabase();
     const { streak, advanced } = checkIn(db, user.id, type as StreakType);
     saveDatabase(db);
-    res.json({ streak, advanced, note: advanced ? 'Streak advanced!' : 'Already checked in today — come back tomorrow.' });
+
+    // Feature #68 — coin rewards: hitting a milestone day credits the user's
+    // community balance (community.json, same store the tip/reward features use).
+    let rewardAwarded = 0;
+    const milestoneReward = advanced ? (STREAK_MILESTONE_REWARDS[streak.current] || 0) : 0;
+    if (milestoneReward > 0) {
+      try {
+        const state = loadCommunity();
+        addBalance(state, user.id, milestoneReward);
+        saveCommunity(state);
+        rewardAwarded = milestoneReward;
+      } catch (e) {
+        console.warn('[streaks] milestone reward failed (community store not writable):', e);
+      }
+    }
+
+    res.json({
+      streak,
+      advanced,
+      rewardAwarded,
+      note: advanced
+        ? (rewardAwarded > 0
+            ? `Milestone! +${rewardAwarded} coins added to your balance 🎉`
+            : 'Streak advanced!')
+        : 'Already checked in today — come back tomorrow.',
+    });
   });
 
   // GET /api/streaks — my streaks

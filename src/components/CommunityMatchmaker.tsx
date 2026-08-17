@@ -20,9 +20,15 @@ interface Suggestion {
   status: string; forResponse?: string; withResponse?: string;
 }
 
+interface Suggested {
+  user: { id: string; name: string; username?: string; avatarUrl?: string; city?: string; faith?: string; interests?: string[] };
+  score: number; sharedInterests: string[]; sameCity: boolean; sameFaith: boolean;
+}
+
 export default function CommunityMatchmaker({ token, currentUser, onClose }: CommunityMatchmakerProps) {
   const [visible, setVisible] = useState(true);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [auto, setAuto] = useState<Suggested[]>([]);
   const [forId, setForId] = useState('');
   const [withId, setWithId] = useState('');
   const [note, setNote] = useState('');
@@ -51,6 +57,10 @@ export default function CommunityMatchmaker({ token, currentUser, onClose }: Com
       const d = await api('/api/matchmaker', 'GET');
       setSuggestions(d.suggestions || []);
     } catch { /* ignore */ }
+    try {
+      const a = await api('/api/match/suggest', 'GET');
+      setAuto(a.suggestions || []);
+    } catch { /* ignore */ }
   }, [currentUser]);
 
   useEffect(() => { load(); }, [load]);
@@ -75,7 +85,22 @@ export default function CommunityMatchmaker({ token, currentUser, onClose }: Com
     } catch (e: any) { toast(e.message || 'Failed.', 'destructive'); } finally { setBusy(false); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const autoSuggest = async (s: Suggested) => {
+    if (!currentUser) return;
+    setBusy(true);
+    try {
+      await api('/api/matchmaker', 'POST', {
+        forId: currentUser.id,
+        withId: s.user.id,
+        note: `Auto-suggested (${s.score}% compatibility — shared: ${s.sharedInterests.slice(0, 3).join(', ') || 'interests'}).`,
+      });
+      toast(`Suggested ${s.user.name} for your approval.`);
+      setAuto((prev) => prev.filter((x) => x.user.id !== s.user.id));
+      await load();
+    } catch (e: any) { toast(e.message || 'Failed.', 'destructive'); } finally { setBusy(false); }
+  };
+
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -118,6 +143,30 @@ export default function CommunityMatchmaker({ token, currentUser, onClose }: Com
                       {busy ? <Loader2 size={11} className="animate-spin" /> : <HeartHandshake size={11} />} Suggest
                     </button>
                   </div>
+
+                  {auto.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="font-mono text-[9px] uppercase font-bold tracking-wider text-[#5c5446] dark:text-zinc-300">Suggested for you — based on shared interests, city &amp; faith ({auto.length})</div>
+                      {auto.map(s => (
+                        <div key={s.user.id} className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3 bg-white/60 dark:bg-zinc-950/40">
+                          <div className="flex items-center gap-2">
+                            {s.user.avatarUrl
+                              ? <img src={s.user.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover bg-[#ebdcca] dark:bg-zinc-800" />
+                              : <span className="w-7 h-7 rounded-full bg-amber-800/10 dark:bg-amber-400/10 text-amber-800 dark:text-amber-300 flex items-center justify-center font-mono text-[10px] font-bold">{s.user.name.slice(0, 1).toUpperCase()}</span>}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-bold text-[#3a342a] dark:text-zinc-100 truncate">{s.user.name} <span className="font-mono text-[8px] text-[#8a8172]">{s.user.city ? `· ${s.user.city}` : ''}{s.user.faith ? ` · ${s.user.faith}` : ''}</span></p>
+                              <p className="font-mono text-[8px] uppercase text-[#8a8172] truncate">
+                                {s.sameCity && <span className="text-emerald-700 dark:text-emerald-400 mr-1.5">same city</span>}
+                                {s.sameFaith && <span className="text-emerald-700 dark:text-emerald-400 mr-1.5">same faith</span>}
+                                {s.sharedInterests.length > 0 ? `shared: ${s.sharedInterests.slice(0, 3).join(', ')}` : 'compatible'}
+                              </p>
+                            </div>
+                            <button onClick={() => autoSuggest(s)} disabled={busy} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-800/10 text-amber-700 dark:text-amber-300 text-[10px] font-mono uppercase font-bold hover:bg-amber-800/20"><Plus size={11} /> Suggest</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <div className="font-mono text-[9px] uppercase font-bold tracking-wider text-[#5c5446] dark:text-zinc-300">Suggestions about me ({suggestions.length})</div>

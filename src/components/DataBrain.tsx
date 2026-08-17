@@ -90,7 +90,7 @@ export default function DataBrain({ token, currentUser, onClose }: Props) {
       stats.days.forEach((d) => rows.push(['events', `day_${d.day}`, String(d.count)]));
     }
     if (analytics) {
-      [['posts', analytics.posts], ['likes', analytics.totalLikes], ['comments', analytics.totalComments], ['story_views', analytics.storyViews], ['story_reactions', analytics.storyReactions], ['tips', analytics.tips], ['gifts', analytics.gifts], ['engagement_per_post', analytics.engagementPerPost], ['wallet_balance', analytics.walletBalance]].forEach(([k, v]) => rows.push(['creator', k, String(v)]));
+      [['posts', analytics.posts], ['likes', analytics.totalLikes], ['comments', analytics.totalComments], ['story_views', analytics.storyViews], ['story_reactions', analytics.storyReactions], ['tips', analytics.tips], ['gifts', analytics.gifts], ['engagement_per_post', analytics.engagementPerPost], ['wallet_balance', analytics.walletBalance]].forEach(([k, v]) => rows.push(['creator', String(k), String(v)]));
       analytics.perPost.forEach((p) => rows.push(['post', p.id, `${p.likes}:${p.comments}`]));
     }
     if (rows.length === 1) return toast('⛔ Nothing to export yet');

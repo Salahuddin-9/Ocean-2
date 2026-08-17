@@ -10,11 +10,14 @@
  *   { id, ownerId, title, encrypted: { iv, ciphertext } (base64), kind,
  *     createdAt }
  *
- * Routes:
- *   POST /api/vault/entries      (auth) store an encrypted entry
- *   GET  /api/vault/entries      (auth) MY entries (metadata only — no ciphertext for list)
- *   GET  /api/vault/entries/:id  (auth) MY entry incl. ciphertext
- *   DELETE /api/vault/entries/:id (auth) remove MY entry
+ * Routes (mounted under /api/evidence/* — the secure-vault feature already owns
+ * /api/vault/entries, so the evidence vault uses its own prefix to avoid being
+ * shadowed by the earlier-registered secure vault handlers):
+ *   POST /api/evidence/entries      (auth) store an encrypted entry
+ *   GET  /api/evidence/entries      (auth) MY entries (metadata only — no ciphertext for list)
+ *   GET  /api/evidence/entries/:id  (auth) MY entry incl. ciphertext
+ *   DELETE /api/evidence/entries/:id (auth) remove MY entry
+ *   POST /api/vault/evidence        (auth) alias of POST /api/evidence/entries
  */
 
 import express from 'express';
@@ -45,7 +48,7 @@ function s(v: unknown, max: number): string {
 export function registerEvidenceVaultRoutes(app: express.Express): void {
   const { requireAuth, loadDatabase, saveDatabase } = getCtx();
 
-  app.post('/api/vault/entries', requireAuth, (req, res) => {
+  function handleCreateEntry(req: express.Request, res: express.Response) {
     const user = (req as any).user;
     const b = (req.body || {}) as any;
     const title = s(b.title, 120);
@@ -68,9 +71,9 @@ export function registerEvidenceVaultRoutes(app: express.Express): void {
     (db.evidenceVault as VaultEntry[]).unshift(entry);
     saveDatabase(db);
     res.json({ entry: { id: entry.id, title: entry.title, kind: entry.kind, createdAt: entry.createdAt } });
-  });
+  }
 
-  app.get('/api/vault/entries', requireAuth, (req, res) => {
+  function handleListEntries(req: express.Request, res: express.Response) {
     const user = (req as any).user;
     const db = loadDatabase();
     ensureCollection(db);
@@ -78,9 +81,9 @@ export function registerEvidenceVaultRoutes(app: express.Express): void {
       .filter((e) => e.ownerId === user.id)
       .map((e) => ({ id: e.id, title: e.title, kind: e.kind, createdAt: e.createdAt }));
     res.json({ entries: mine });
-  });
+  }
 
-  app.get('/api/vault/entries/:id', requireAuth, (req, res) => {
+  function handleGetEntry(req: express.Request, res: express.Response) {
     const user = (req as any).user;
     const db = loadDatabase();
     ensureCollection(db);
@@ -88,9 +91,9 @@ export function registerEvidenceVaultRoutes(app: express.Express): void {
     if (!entry) return res.status(404).json({ error: 'Entry not found.' });
     if (entry.ownerId !== user.id) return res.status(403).json({ error: 'This vault is private.' });
     res.json({ entry });
-  });
+  }
 
-  app.delete('/api/vault/entries/:id', requireAuth, (req, res) => {
+  function handleDeleteEntry(req: express.Request, res: express.Response) {
     const user = (req as any).user;
     const db = loadDatabase();
     ensureCollection(db);
@@ -101,5 +104,11 @@ export function registerEvidenceVaultRoutes(app: express.Express): void {
     }
     saveDatabase(db);
     res.json({ success: true });
-  });
+  }
+
+  app.post('/api/evidence/entries', requireAuth, handleCreateEntry);
+  app.post('/api/vault/evidence', requireAuth, handleCreateEntry);
+  app.get('/api/evidence/entries', requireAuth, handleListEntries);
+  app.get('/api/evidence/entries/:id', requireAuth, handleGetEntry);
+  app.delete('/api/evidence/entries/:id', requireAuth, handleDeleteEntry);
 }

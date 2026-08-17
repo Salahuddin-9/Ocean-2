@@ -54,7 +54,7 @@ export default function SavingCircle({ token, currentUser, onClose }: SavingCirc
   const pct = (c: Circle) => Math.min(100, Math.round(((c.pooled || 0) / c.targetAmount) * 100));
 
   return (
-    <div className="fixed inset-0 z-[120] bg-[#f6f1e7]/98 dark:bg-zinc-950/98 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[120] bg-[#141b2b]/65 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <div>

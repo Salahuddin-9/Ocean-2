@@ -1,0 +1,494 @@
+{
+  "summary": {
+    "total": 60,
+    "byStatus": {
+      "200": 8,
+      "400": 10,
+      "401": 42
+    },
+    "serverErrors": [],
+    "timeouts": []
+  },
+  "results": [
+    {
+      "method": "GET",
+      "path": "/api/auth/sessions",
+      "testedPath": "/api/auth/sessions",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/sessions/revoke",
+      "testedPath": "/api/auth/sessions/revoke",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/upload",
+      "testedPath": "/api/upload",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/voice/upload",
+      "testedPath": "/api/voice/upload",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/stream/token",
+      "testedPath": "/api/stream/token",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/stream/upsert-target",
+      "testedPath": "/api/stream/upsert-target",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/signup",
+      "testedPath": "/api/auth/signup",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "public"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/verify-location",
+      "testedPath": "/api/auth/verify-location",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "testedPath": "/api/auth/login",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "public"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login/2fa",
+      "testedPath": "/api/auth/login/2fa",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "public"
+    },
+    {
+      "method": "POST",
+      "path": "/api/2fa/setup",
+      "testedPath": "/api/2fa/setup",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/2fa/verify",
+      "testedPath": "/api/2fa/verify",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/2fa/disable",
+      "testedPath": "/api/2fa/disable",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/2fa/status",
+      "testedPath": "/api/2fa/status",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "testedPath": "/api/auth/logout",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/verify-password",
+      "testedPath": "/api/auth/verify-password",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "testedPath": "/api/auth/me",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-request",
+      "testedPath": "/api/auth/reset-request",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "public"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-confirm",
+      "testedPath": "/api/auth/reset-confirm",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "public"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/view-words",
+      "testedPath": "/api/auth/view-words",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/profile/update",
+      "testedPath": "/api/profile/update",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/posts/update",
+      "testedPath": "/api/posts/update",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/messages/send",
+      "testedPath": "/api/messages/send",
+      "status": 400,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/messages",
+      "testedPath": "/api/messages",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/conversations",
+      "testedPath": "/api/chat/conversations",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/users/:userId/block",
+      "testedPath": "/api/chat/users/user-1786788100458/block",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/users/:userId/unblock",
+      "testedPath": "/api/chat/users/user-1786788100458/unblock",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/archive",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/archive",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/unarchive",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/unarchive",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/delete",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/delete",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/conversations/:conversationId/messages",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/read",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/read",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/edit",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages/:messageId/edit",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/delete",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages/:messageId/delete",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/react",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages/:messageId/react",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations",
+      "testedPath": "/api/chat/conversations",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/pin",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/pin",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/mute",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/mute",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/vote",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages/:messageId/vote",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:targetConversationId/forward",
+      "testedPath": "/api/chat/conversations/:targetConversationId/forward",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/settings",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/settings",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/join-code/:joinCode",
+      "testedPath": "/api/chat/conversations/join-code/:joinCode",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/reports",
+      "testedPath": "/api/chat/reports",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/open-groups",
+      "testedPath": "/api/chat/open-groups",
+      "status": 200,
+      "file": "server.ts",
+      "proto": "public"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/join",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/join",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/presence/:userId",
+      "testedPath": "/api/chat/presence/user-1786788100458",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/join-request",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/join-request",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/conversations/:conversationId/join-requests",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/join-requests",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/join-requests/:requestId/approve",
+      "testedPath": "/api/chat/join-requests/:requestId/approve",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/join-requests/:requestId/reject",
+      "testedPath": "/api/chat/join-requests/:requestId/reject",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/chat/conversations/:conversationId/members/:userId",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/members/user-1786788100458",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/delete-for-me",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages/:messageId/delete-for-me",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/delete-everyone",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/messages/:messageId/delete-everyone",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/messages/:messageId/save",
+      "testedPath": "/api/chat/messages/:messageId/save",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/chat/messages/:messageId/save",
+      "testedPath": "/api/chat/messages/:messageId/save",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/saved",
+      "testedPath": "/api/saved",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/self-notes",
+      "testedPath": "/api/chat/self-notes",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/schedule",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/schedule",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    },
+    {
+      "method": "GET",
+      "path": "/api/chat/conversations/:conversationId/scheduled",
+      "testedPath": "/api/chat/conversations/conv-1783933611104-27/scheduled",
+      "status": 401,
+      "file": "server.ts",
+      "proto": "auth"
+    }
+  ]
+}

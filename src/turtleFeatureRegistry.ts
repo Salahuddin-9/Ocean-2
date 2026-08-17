@@ -154,6 +154,9 @@ import { registerProGraphRoutes } from './turtleProGraphBackend';               
 import { registerSnapMapRoutes } from './turtleSnapMapBackend';                    // 258 Snap Map + private stories
 import { registerOSLayerRoutes } from './turtleOSLayerBackend';                    // 259 Ocean OS Layer
 import { registerDataBrainRoutes } from './turtleDataBrainBackend';                // 260 Data + AI Brain
+import { registerTrendingTopicRoutes } from './turtleTrendingTopicEngine';          // 59 Trending Topics (hashtag engine)
+import { registerSmartSearchRoutes } from './turtleSmartSearchJSONGenerator';       // 58 Smart Search suggestions
+import { registerLongFormVideoRoutes } from './turtleLongFormVideoBackend';         // 61 Long-form video engagement
 
 export function registerOceanFeatures(app: Express) {
   // force-eval ctx so a misconfigured seam fails at startup, not at first request
@@ -355,5 +358,10 @@ export function registerOceanFeatures(app: Express) {
   registerSnapMapRoutes(app);                  // 258 Ocean Map + Snap
   registerOSLayerRoutes(app);                  // 259 Ocean OS Layer
   registerDataBrainRoutes(app);                // 260 Ocean Data + AI Brain
+
+  // === Batch B21 — Wired engines (previously unwired modules) ===
+  registerTrendingTopicRoutes(app);            // 59 Trending Topics — /api/trends/hashtags
+  registerSmartSearchRoutes(app);              // 58 Smart Search — /api/search/smart
+  registerLongFormVideoRoutes(app);            // 61 Long-form video — /api/channels/:id/videos/:videoId/*
 }
 

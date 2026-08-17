@@ -39,7 +39,7 @@ export default function FabricPhotoEditor({ baseData, onImageChange }: Props) {
     let live = true;
     try {
       if (!live || !wrapRef.current) return;
-      const fc = new Canvas(wrapRef.current, { width: CANVAS_W, height: CANVAS_H, backgroundColor: '#0c0c0c' });
+      const fc = new Canvas(wrapRef.current as unknown as HTMLCanvasElement, { width: CANVAS_W, height: CANVAS_H, backgroundColor: '#0c0c0c' });
       canvasRef.current = fc;
       setReady(true);
     } catch (e: any) { toast(`⛔ Fabric init failed: ${e?.message || e}`); }

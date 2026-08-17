@@ -99,7 +99,7 @@ export default function VerifiedLive({ token, currentUser, onClose }: VerifiedLi
 
   if (!token) {
     return (
-      <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+      <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
         <div className="max-w-xl mx-auto">
           <Header onClose={onClose} />
           <div className="bg-[#fcfaf4] border border-[#ebdcca] rounded-3xl p-8 text-center space-y-3">
@@ -184,7 +184,7 @@ export default function VerifiedLive({ token, currentUser, onClose }: VerifiedLi
   };
 
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-3xl mx-auto space-y-5">
         <Header onClose={onClose} />
 

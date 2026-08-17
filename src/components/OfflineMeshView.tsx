@@ -144,6 +144,33 @@ export default function OfflineMeshView({ token, currentUser, onClose }: Offline
   const [tab, setTab] = useState<Tab>('relay');
   const [meta, setMeta] = useState<Meta | null>(null);
 
+  // #119 — online/offline awareness: when the browser reconnects we auto-run
+  // the store-and-forward sync so queued relays reach this device immediately.
+  const [online, setOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  // Bluetooth mesh hardware is unavailable in browsers — the relay runs over the
+  // internet/WebSocket as a simulated mesh (store-and-forward).
+  const meshSimulated = typeof navigator === 'undefined' || !('bluetooth' in navigator);
+
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => {
+      window.removeEventListener('online', on);
+      window.removeEventListener('offline', off);
+    };
+  }, []);
+
+  // Auto-sync as soon as the network comes back (store-and-forward catch-up).
+  useEffect(() => {
+    if (!online) return;
+    if (!token) return;
+    const t = setTimeout(() => doSync(true), 800);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online, token]);
+
   // Relay board
   const [relays, setRelays] = useState<MeshRelay[]>([]);
   const [scope, setScope] = useState<BoardScope>('active');
@@ -357,7 +384,7 @@ export default function OfflineMeshView({ token, currentUser, onClose }: Offline
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+      className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
     >
       <div className="max-w-xl mx-auto space-y-5">
         {/* Header row */}
@@ -367,7 +394,26 @@ export default function OfflineMeshView({ token, currentUser, onClose }: Offline
               <Radio className="text-red-600" size={18} />
             </span>
             <div>
-              <h2 className="font-display text-lg font-bold text-[#3a342a] dark:text-zinc-100">Mesh Relay</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="font-display text-lg font-bold text-[#3a342a] dark:text-zinc-100">Mesh Relay</h2>
+                <span
+                  className={`font-mono text-[8px] uppercase font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 ${
+                    online
+                      ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
+                      : 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
+                  }`}
+                >
+                  <Wifi size={9} /> {online ? 'online' : 'offline'}
+                </span>
+                {meshSimulated && (
+                  <span
+                    className="font-mono text-[8px] uppercase font-bold px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400 flex items-center gap-1"
+                    title="No Bluetooth mesh hardware in browsers — relays ride the internet via store-and-forward (server holds them like a mesh node until devices reconnect)."
+                  >
+                    <Radio size={9} /> Mesh Mode (simulated)
+                  </span>
+                )}
+              </div>
               <p className="font-mono text-[9px] uppercase tracking-wider text-[#8a8172] dark:text-zinc-400">
                 Offline store-and-forward · when the network is down
               </p>

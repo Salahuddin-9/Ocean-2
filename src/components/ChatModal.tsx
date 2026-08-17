@@ -845,21 +845,47 @@ export default function ChatModal({
         }
       };
 
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const audioDataUrl = reader.result as string;
-          if (autoSendRef.current) {
-            await handleSendMessageDirect(audioDataUrl);
-          } else {
-            setAttachedMedia(audioDataUrl);
-            setAttachedMediaName(`voice_recording_${Date.now()}.webm`);
-            setAudioSpeed(1.0);
-            setAudioEffect('normal');
-          }
-        };
-        reader.readAsDataURL(audioBlob);
+        // Upload through /api/voice/upload (auth + multer, magic-byte validated)
+        // so the message stores a real /uploads/... URL — a raw data URL would
+        // bloat database.json and break for the recipient's <audio> player.
+        let audioUrl: string | null = null;
+        try {
+          const fd = new FormData();
+          fd.append('file', audioBlob, `voice_recording_${Date.now()}.webm`);
+          const upRes = await fetch('/api/voice/upload', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: fd,
+          });
+          const upData = await upRes.json();
+          if (upRes.ok && upData.url) audioUrl = upData.url;
+        } catch (e) {
+          console.warn('Voice note upload failed:', e);
+        }
+        if (!audioUrl) {
+          // Fallback: keep the local data URL so the recording is never lost.
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const audioDataUrl = reader.result as string;
+            if (autoSendRef.current) void handleSendMessageDirect(audioDataUrl);
+            else {
+              setAttachedMedia(audioDataUrl);
+              setAttachedMediaName(`voice_recording_${Date.now()}.webm`);
+              setAudioSpeed(1.0);
+              setAudioEffect('normal');
+            }
+          };
+          reader.readAsDataURL(audioBlob);
+        } else if (autoSendRef.current) {
+          await handleSendMessageDirect(audioUrl);
+        } else {
+          setAttachedMedia(audioUrl);
+          setAttachedMediaName(`voice_recording_${Date.now()}.webm`);
+          setAudioSpeed(1.0);
+          setAudioEffect('normal');
+        }
 
         // Stop all tracks on the stream to release the mic
         stream.getTracks().forEach(track => track.stop());
@@ -992,33 +1018,38 @@ export default function ChatModal({
           }
 
           if (type === 'message_received') {
-            const { message } = data;
+            const { message, muted } = data;
             
             if (message.senderId !== currentUser.id) {
-              try {
-                const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.2);
-              } catch (e) {
-                // AudioContext blocked or uninitialized
-              }
+              // Azan auto-mute (feature 223): the server tags this event `muted`
+              // when the recipient's prayer-window auto-mute is active — deliver
+              // the message silently (no chime, no toast).
+              if (!muted) {
+                try {
+                  const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+                  const osc = audioCtx.createOscillator();
+                  const gain = audioCtx.createGain();
+                  osc.type = 'sine';
+                  osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                  osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+                  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                  osc.connect(gain);
+                  gain.connect(audioCtx.destination);
+                  osc.start();
+                  osc.stop(audioCtx.currentTime + 0.2);
+                } catch (e) {
+                  // AudioContext blocked or uninitialized
+                }
 
-              const msgTxt = message.text 
-                ? (message.text.length > 35 ? message.text.substring(0, 35) + '...' : message.text)
-                : (message.mediaUrl ? (message.mediaName?.match(/\.(mp3|wav|ogg|m4a|webm)$/i) ? '🎙️ Voice Note' : '🖼️ Photo') : 'Message');
-              
-              window.dispatchEvent(new CustomEvent('show-toast', {
-                detail: { message: `💬 ${message.senderName || 'Chat'}: ${msgTxt}` }
-              }));
+                const msgTxt = message.text 
+                  ? (message.text.length > 35 ? message.text.substring(0, 35) + '...' : message.text)
+                  : (message.mediaUrl ? (message.mediaName?.match(/\.(mp3|wav|ogg|m4a|webm)$/i) ? '🎙️ Voice Note' : '🖼️ Photo') : 'Message');
+                
+                window.dispatchEvent(new CustomEvent('show-toast', {
+                  detail: { message: `💬 ${message.senderName || 'Chat'}: ${msgTxt}` }
+                }));
+              }
             }
 
             // Add message to active chat if matching

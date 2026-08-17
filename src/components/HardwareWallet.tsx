@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Wallet, Plug, Trash2, Loader2, Check } from 'lucide-react';
+import SimulationModeBadge from './SimulationModeBadge';
 
 /**
  * Ocean — Hardware Wallet Integration (Feature 238)
@@ -28,6 +29,9 @@ export default function HardwareWallet({ token, currentUser, onClose }: Hardware
   const [publicKey, setPublicKey] = useState('');
   const [signature, setSignature] = useState('');
   const [busy, setBusy] = useState(false);
+  // future WebUSB/WebHID pairing settings (persisted; no device is touched yet)
+  const [webusbEnabled, setWebusbEnabled] = useState(() => localStorage.getItem('ocean.hw.webusb') === '1');
+  const [pairing, setPairing] = useState<'idle' | 'unsupported' | 'pending'>('idle');
 
   const toast = (message: string, variant?: string) =>
     window.dispatchEvent(new CustomEvent('show-toast', { detail: { message, variant } }));
@@ -78,7 +82,32 @@ export default function HardwareWallet({ token, currentUser, onClose }: Hardware
     } catch (e: any) { toast(e.message, 'destructive'); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const toggleWebusb = (on: boolean) => {
+    setWebusbEnabled(on);
+    localStorage.setItem('ocean.hw.webusb', on ? '1' : '0');
+    toast(on ? 'Hardware signing enabled — WebUSB/WebHID pairing is a future integration.' : 'Hardware signing disabled.');
+  };
+
+  const pairDevice = async () => {
+    // WebUSB is a future integration (needs HTTPS + user gesture + a real
+    // Ledger/Trezor WebUSB descriptor). Detect support and explain gracefully.
+    const nav = navigator as any;
+    if (typeof nav?.usb?.requestDevice !== 'function') {
+      setPairing('unsupported');
+      return;
+    }
+    setPairing('pending');
+    try {
+      await nav.usb.requestDevice({ filters: [] });
+      toast('USB device selected — pairing pipeline is a future integration; no wallet was read.');
+    } catch (e: any) {
+      toast(e?.name === 'NotFoundError' ? 'No device selected.' : 'WebUSB pairing is not wired to a wallet yet — simulated only.', 'destructive');
+    } finally {
+      setPairing('idle');
+    }
+  };
+
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -106,12 +135,28 @@ export default function HardwareWallet({ token, currentUser, onClose }: Hardware
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-amber-300/70 dark:border-amber-700/50 bg-amber-50/80 dark:bg-amber-950/30 p-3">
-                <p className="font-mono text-[9px] uppercase tracking-wider text-amber-800 dark:text-amber-300 font-bold mb-1">⚠ Simulation in effect</p>
-                <p className="text-[10px] text-[#5c5446] dark:text-zinc-300 leading-relaxed">
-                  No physical wallet is connected — this is a simulated device handshake for demo purposes.
-                  To connect a real Ledger/Trezor-style wallet, use the device's WebUSB/WebHID pairing in Settings (hardware signing must be enabled there first).
-                </p>
+              <SimulationModeBadge
+                title="No physical wallet — simulated device handshake"
+                detail="The handshake is validated server-side by shape only (signature length + challenge marker); no physical Ledger/Trezor is connected and no real Ed25519/secp256k1 signature is verified. The settings below enable the future WebUSB/WebHID pipeline: once a real descriptor is wired in, signing happens on-device and the server verifies signatures against the registered public key."
+              />
+
+              <div className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3 space-y-2">
+                <div className="font-mono text-[9px] uppercase font-bold tracking-wider text-[#5c5446] dark:text-zinc-300"><Plug size={11} className="inline" /> Hardware signing settings (future WebUSB)</div>
+                <label className="flex items-center gap-2 text-[10px] text-[#3a342a] dark:text-zinc-200 font-bold">
+                  <input type="checkbox" checked={webusbEnabled} onChange={e => toggleWebusb(e.target.checked)} className="accent-amber-700" />
+                  Enable hardware signing (WebUSB/WebHID)
+                </label>
+                {webusbEnabled && (
+                  <>
+                    <button onClick={pairDevice} disabled={pairing === 'pending'} className={`${btnPrimary} w-full justify-center`}>
+                      {pairing === 'pending' ? <Loader2 size={11} className="animate-spin" /> : <Plug size={11} />} Pair device via WebUSB
+                    </button>
+                    {pairing === 'unsupported' && (
+                      <p className="font-mono text-[8px] text-amber-700 dark:text-amber-400">WebUSB unavailable in this browser (needs Chromium + HTTPS). No wallet is connected — the pipeline is a future integration.</p>
+                    )}
+                  </>
+                )}
+                <p className="font-mono text-[8px] text-[#8a8172] dark:text-zinc-500">WebUSB requires Chromium over HTTPS (or localhost) and a real device descriptor. Until the signing pipeline is wired, this only stores the preference — device verification stays simulated.</p>
               </div>
 
               {currentUser && (

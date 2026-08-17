@@ -8,19 +8,22 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Loader2, Radio, Settings2 } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Loader2, Radio, Settings2, Users } from 'lucide-react';
 import { toast, authHeaders } from './FeatureShell';
+import MeshVoiceRoom from '../calling/MeshVoiceRoom';
 
 interface Props {
   roomName: string;
   userName: string;
   token: string | null;
+  /** Needed for the WebRTC mesh fallback (signaling identity). */
+  currentUser?: { id: string; name: string } | null;
   onClose: () => void;
 }
 
 type Phase = 'connecting' | 'connected' | 'error' | 'unconfigured';
 
-export default function LiveKitVoiceRoom({ roomName, userName, token, onClose }: Props) {
+export default function LiveKitVoiceRoom({ roomName, userName, token, onClose, currentUser }: Props) {
   const gridRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<any>(null); // livekit-client Room instance
   const [phase, setPhase] = useState<Phase>('connecting');
@@ -28,6 +31,8 @@ export default function LiveKitVoiceRoom({ roomName, userName, token, onClose }:
   const [camOn, setCamOn] = useState(false);
   const [people, setPeople] = useState<{ identity: string; speaking: boolean }[]>([]);
   const [url, setUrl] = useState(localStorage.getItem('ocean.livekit.url') || (import.meta as any).env?.VITE_LIVEKIT_URL || '');
+  // #254 — WebRTC mesh fallback (no LiveKit keys required).
+  const [meshOpen, setMeshOpen] = useState(false);
 
   const refreshPeople = useCallback(() => {
     const room = roomRef.current;
@@ -118,6 +123,14 @@ export default function LiveKitVoiceRoom({ roomName, userName, token, onClose }:
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-[130] bg-zinc-950/98 flex flex-col">
+      {meshOpen && (
+        <MeshVoiceRoom
+          roomId={roomName}
+          currentUser={currentUser || { id: 'guest', name: userName }}
+          token={token}
+          onClose={() => setMeshOpen(false)}
+        />
+      )}
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-800">
         <span className="relative flex h-2 w-2">
           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${phase === 'connected' ? 'bg-emerald-400' : 'bg-zinc-500'}`} />
@@ -139,7 +152,8 @@ export default function LiveKitVoiceRoom({ roomName, userName, token, onClose }:
         {phase === 'error' && (
           <div className="h-full flex flex-col items-center justify-center gap-2 text-zinc-400 text-[11px]">
             <p>⚠️ Could not join the LiveKit room.</p>
-            <button onClick={onClose} className="rounded-lg bg-emerald-600 text-white px-4 py-2 text-[10px] font-bold">Back to P2P layer</button>
+            <button onClick={() => setMeshOpen(true)} className="rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-[10px] font-bold flex items-center gap-1.5"><Users size={12} /> Join as P2P mesh voice instead</button>
+            <button onClick={onClose} className="rounded-lg bg-zinc-800 text-zinc-300 px-4 py-2 text-[10px] font-bold">Close</button>
           </div>
         )}
 
@@ -148,8 +162,14 @@ export default function LiveKitVoiceRoom({ roomName, userName, token, onClose }:
             <Radio size={28} className="text-emerald-400" />
             <p className="text-zinc-200 text-[12px] font-bold text-center">LiveKit isn't configured yet</p>
             <p className="text-zinc-400 text-[10px] text-center leading-relaxed">
-              Set <b className="text-zinc-200">LIVEKIT_API_KEY</b> + <b className="text-zinc-200">LIVEKIT_API_SECRET</b> on the server and enter your LiveKit server URL (e.g. <b className="text-zinc-200">wss://my-livekit.example.com</b>) below. Until then, voice rooms use the app's P2P/Jitsi call layer.
+              Set <b className="text-zinc-200">LIVEKIT_API_KEY</b> + <b className="text-zinc-200">LIVEKIT_API_SECRET</b> on the server and enter your LiveKit server URL (e.g. <b className="text-zinc-200">wss://my-livekit.example.com</b>) below — or join right now over the app's built-in <b className="text-zinc-200">WebRTC mesh voice</b> (no keys needed).
             </p>
+            <button
+              onClick={() => setMeshOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-[10px] font-bold"
+            >
+              <Users size={12} /> Join as P2P mesh voice
+            </button>
             <div className="w-full flex gap-1.5">
               <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="wss://your-livekit-server.com" className="flex-1 rounded-lg bg-zinc-900 border border-zinc-700 px-3 py-2 text-[11px] text-white outline-none focus:border-emerald-400" />
               <button onClick={saveUrl} className="rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-3 text-[10px] font-bold flex items-center gap-1"><Settings2 size={11} /> Save</button>

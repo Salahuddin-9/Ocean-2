@@ -1,0 +1,7498 @@
+{
+  "generatedAt": "2026-08-15T16:09:00.429Z",
+  "counts": {
+    "total": 957,
+    "auth": 850,
+    "admin": 28,
+    "public": 79
+  },
+  "routes": [
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/auth/sessions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/sessions/revoke",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "USE",
+      "path": "/uploads",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "USE",
+      "path": "/uploads",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/upload",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/voice/upload",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/stream/token",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/stream/upsert-target",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/signup",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/verify-location",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/login/2fa",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/2fa/setup",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/2fa/verify",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/2fa/disable",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/2fa/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/verify-password",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/reset-request",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/reset-confirm",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/auth/view-words",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/profile/update",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/update",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/messages/send",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/messages",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/chat/conversations",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/users/:userId/block",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/users/:userId/unblock",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/archive",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/unarchive",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/delete",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/chat/conversations/:conversationId/messages",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/read",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/edit",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/delete",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/react",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/pin",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/mute",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/vote",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:targetConversationId/forward",
+      "proto": "auth",
+      "params": [
+        "targetConversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/settings",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/join-code/:joinCode",
+      "proto": "auth",
+      "params": [
+        "joinCode"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/chat/open-groups",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/join",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/chat/presence/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/join-request",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/chat/conversations/:conversationId/join-requests",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/join-requests/:requestId/approve",
+      "proto": "auth",
+      "params": [
+        "requestId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/join-requests/:requestId/reject",
+      "proto": "auth",
+      "params": [
+        "requestId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "PATCH",
+      "path": "/api/chat/conversations/:conversationId/members/:userId",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "userId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/delete-for-me",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/messages/:messageId/delete-everyone",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/messages/:messageId/save",
+      "proto": "auth",
+      "params": [
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "DELETE",
+      "path": "/api/chat/messages/:messageId/save",
+      "proto": "auth",
+      "params": [
+        "messageId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/saved",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/self-notes",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/conversations/:conversationId/schedule",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/chat/conversations/:conversationId/scheduled",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/calls",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/calls",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/creators",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/creators/:id",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/admin/reset-database",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/posts/feed",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/create",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/reels/upload",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/reels",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/reels/feed",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/reels/:id/like",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/reels/:id/comment",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/reels/:id/view",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "DELETE",
+      "path": "/api/reels/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/posts/:postId",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/edit",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/delete",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/report",
+      "proto": "admin",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/admin/reports",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/admin/posts/:postId/action",
+      "proto": "admin",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/admin/users",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/admin/users/:id/block",
+      "proto": "admin",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/admin/scan",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/share",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/like",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/poll/vote",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/profile/export",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/comment",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/need-text",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/need-status",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/comments/:commentId/react",
+      "proto": "public",
+      "params": [
+        "postId",
+        "commentId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/comments/:commentId/edit",
+      "proto": "public",
+      "params": [
+        "postId",
+        "commentId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/comments/:commentId/delete",
+      "proto": "public",
+      "params": [
+        "postId",
+        "commentId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/notifications",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/notifications/read",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/notifications/:id/read",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/searchQueries",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/searchQueries",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/creators/:id/follow",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/friends/request/send",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/friends/request/accept",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/friends/request/decline",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/friends/unfriend",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/link-preview",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/ai/image",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/discovery/location",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/discovery/nearby",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/admin/stream-keys",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/admin/stream-keys",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "DELETE",
+      "path": "/api/admin/stream-keys/:index",
+      "proto": "admin",
+      "params": [
+        "index"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/admin/stream-keys/:index/toggle",
+      "proto": "admin",
+      "params": [
+        "index"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/admin/stream-usage",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/ai/summary",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/channels",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/channels",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/channels/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/subscribe",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/videos",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/channels/:id/videos",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/videos/:videoId/view",
+      "proto": "auth",
+      "params": [
+        "id",
+        "videoId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/studio/stats",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/chat/random-match",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/meet/match",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/meet/queue-stats",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/community",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/events/create",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/events/:id/rsvp",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/events/:id/rsvp",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/questions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/questions/:id/answers",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/answers/:id/upvote",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/topics/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/tips",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/community/rewards",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/community/rewards/:id/redeem",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/ai/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/ai/transcribe",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/ai/models",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/feed/atlas-rank",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/meet/leave",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/meet/room/:roomId/message",
+      "proto": "auth",
+      "params": [
+        "roomId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/meet/room/:roomId/messages",
+      "proto": "auth",
+      "params": [
+        "roomId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "POST",
+      "path": "/api/meet/room/:roomId/signal",
+      "proto": "auth",
+      "params": [
+        "roomId"
+      ]
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/api/meet/room/:roomId/signals",
+      "proto": "auth",
+      "params": [
+        "roomId"
+      ]
+    },
+    {
+      "file": "src/turtleAchievementsBackend.ts",
+      "method": "POST",
+      "path": "/api/achievements/scan",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAchievementsBackend.ts",
+      "method": "GET",
+      "path": "/api/achievements",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAchievementsBackend.ts",
+      "method": "GET",
+      "path": "/api/achievements/all",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAfforestationBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/plantings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAfforestationBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/plantings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAfforestationBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/plantings/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleAIBengaliModerationEngine.ts",
+      "method": "POST",
+      "path": "/api/moderation/bengali",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAICaptionEngine.ts",
+      "method": "POST",
+      "path": "/api/ai/suggest-captions",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAICaptionEngine.ts",
+      "method": "POST",
+      "path": "/api/ai/caption",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAIModerationAssistant.ts",
+      "method": "POST",
+      "path": "/api/moderation/analyze",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAIModeratorBackend.ts",
+      "method": "GET",
+      "path": "/api/moderation/rules",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAIModeratorBackend.ts",
+      "method": "POST",
+      "path": "/api/moderation/rules",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAIModeratorBackend.ts",
+      "method": "DELETE",
+      "path": "/api/moderation/rules/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleAIModeratorBackend.ts",
+      "method": "POST",
+      "path": "/api/moderation/auto-review",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAIModeratorBackend.ts",
+      "method": "GET",
+      "path": "/api/moderation/actions",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAIVehicleAnalysisEngine.ts",
+      "method": "POST",
+      "path": "/api/vehicle/analyze",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleAlgoPrefsBackend.ts",
+      "method": "GET",
+      "path": "/api/algo/preferences",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAlgoPrefsBackend.ts",
+      "method": "PUT",
+      "path": "/api/algo/preferences",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAlgoPrefsBackend.ts",
+      "method": "GET",
+      "path": "/api/feed/personalized",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAlumniBackend.ts",
+      "method": "GET",
+      "path": "/api/alumni",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAlumniBackend.ts",
+      "method": "POST",
+      "path": "/api/alumni",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAlumniBackend.ts",
+      "method": "GET",
+      "path": "/api/alumni/:institution",
+      "proto": "auth",
+      "params": [
+        "institution"
+      ]
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "POST",
+      "path": "/api/anonymous/pseudonym",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "GET",
+      "path": "/api/anonymous/pseudonym",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "PUT",
+      "path": "/api/anonymous/pseudonym",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "DELETE",
+      "path": "/api/anonymous/pseudonym",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "POST",
+      "path": "/api/anonymous/post",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "GET",
+      "path": "/api/anonymous/feed",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "POST",
+      "path": "/api/anonymous/mode",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAnonymousBackend.ts",
+      "method": "GET",
+      "path": "/api/anonymous/mode",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAssignmentHelpBackend.ts",
+      "method": "GET",
+      "path": "/api/assignment-help",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAssignmentHelpBackend.ts",
+      "method": "POST",
+      "path": "/api/assignment-help",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAssignmentHelpBackend.ts",
+      "method": "POST",
+      "path": "/api/assignment-help/:id/claim",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleAssignmentHelpBackend.ts",
+      "method": "POST",
+      "path": "/api/assignment-help/:id/complete",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleAssignmentHelpBackend.ts",
+      "method": "GET",
+      "path": "/api/assignment-help/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAuditLogBackend.ts",
+      "method": "POST",
+      "path": "/api/algo/audit/log",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAuditLogBackend.ts",
+      "method": "GET",
+      "path": "/api/algo/audit",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAuditLogBackend.ts",
+      "method": "GET",
+      "path": "/api/algo/audit/:postId",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleAzanBackend.ts",
+      "method": "GET",
+      "path": "/api/azan/times",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAzanBackend.ts",
+      "method": "GET",
+      "path": "/api/azan/prefs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleAzanBackend.ts",
+      "method": "POST",
+      "path": "/api/azan/prefs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBarterBackend.ts",
+      "method": "POST",
+      "path": "/api/barter",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBarterBackend.ts",
+      "method": "GET",
+      "path": "/api/barter",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBarterBackend.ts",
+      "method": "POST",
+      "path": "/api/barter/:id/interest",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBarterBackend.ts",
+      "method": "POST",
+      "path": "/api/barter/:id/match",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBioDataBackend.ts",
+      "method": "GET",
+      "path": "/api/profile/biodata/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleBioDataBackend.ts",
+      "method": "POST",
+      "path": "/api/profile/biodata",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "GET",
+      "path": "/api/blood/meta",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "GET",
+      "path": "/api/blood/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/donor",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/donor/optout",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "GET",
+      "path": "/api/blood/donors",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "GET",
+      "path": "/api/blood/requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "GET",
+      "path": "/api/blood/requests/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/requests/:id/offer",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/requests/:id/accept",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/requests/:id/withdraw",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/requests/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBloodDonorBackend.ts",
+      "method": "POST",
+      "path": "/api/blood/requests/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBotBountyBackend.ts",
+      "method": "POST",
+      "path": "/api/botbounty/report",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBotBountyBackend.ts",
+      "method": "GET",
+      "path": "/api/botbounty/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBotBountyBackend.ts",
+      "method": "GET",
+      "path": "/api/botbounty/leaderboard",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleBountyBackend.ts",
+      "method": "GET",
+      "path": "/api/bounty",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBountyBackend.ts",
+      "method": "POST",
+      "path": "/api/bounty",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBountyBackend.ts",
+      "method": "GET",
+      "path": "/api/bounty/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBountyBackend.ts",
+      "method": "POST",
+      "path": "/api/bounty/:id/comment",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBountyBackend.ts",
+      "method": "POST",
+      "path": "/api/bounty/:id/accept-comment",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBountyBackend.ts",
+      "method": "POST",
+      "path": "/api/bounty/:id/expire",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleBuyNothingBackend.ts",
+      "method": "POST",
+      "path": "/api/buynothing",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBuyNothingBackend.ts",
+      "method": "GET",
+      "path": "/api/buynothing",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleBuyNothingBackend.ts",
+      "method": "POST",
+      "path": "/api/buynothing/:id/claim",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCarbonLedgerBackend.ts",
+      "method": "POST",
+      "path": "/api/carbon/log",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCarbonLedgerBackend.ts",
+      "method": "GET",
+      "path": "/api/carbon",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCarpoolBackend.ts",
+      "method": "GET",
+      "path": "/api/carpool",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCarpoolBackend.ts",
+      "method": "POST",
+      "path": "/api/carpool",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCarpoolBackend.ts",
+      "method": "POST",
+      "path": "/api/carpool/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleChaperoneBackend.ts",
+      "method": "GET",
+      "path": "/api/chaperone/:conversationId",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "src/turtleChaperoneBackend.ts",
+      "method": "POST",
+      "path": "/api/chaperone/:conversationId",
+      "proto": "auth",
+      "params": [
+        "conversationId"
+      ]
+    },
+    {
+      "file": "src/turtleChaperoneBackend.ts",
+      "method": "DELETE",
+      "path": "/api/chaperone/:conversationId/:observerId",
+      "proto": "auth",
+      "params": [
+        "conversationId",
+        "observerId"
+      ]
+    },
+    {
+      "file": "src/turtleChatAiHelper.ts",
+      "method": "POST",
+      "path": "/api/ai/chat-copilot",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleChitFundBackend.ts",
+      "method": "POST",
+      "path": "/api/chitfund",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleChitFundBackend.ts",
+      "method": "GET",
+      "path": "/api/chitfund",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleChitFundBackend.ts",
+      "method": "POST",
+      "path": "/api/chitfund/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleChitFundBackend.ts",
+      "method": "POST",
+      "path": "/api/chitfund/:id/pay",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleChitFundBackend.ts",
+      "method": "GET",
+      "path": "/api/chitfund/:id",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "GET",
+      "path": "/api/civic/issues",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "POST",
+      "path": "/api/civic/issues",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "POST",
+      "path": "/api/civic/issues/:id/upvote",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "GET",
+      "path": "/api/tenders",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "POST",
+      "path": "/api/tenders",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "POST",
+      "path": "/api/tenders/:id/bids",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "GET",
+      "path": "/api/tenders/scan-anomalies",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "GET",
+      "path": "/api/clt",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "POST",
+      "path": "/api/clt",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCivicBackend.ts",
+      "method": "POST",
+      "path": "/api/clt/:id/approve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCNGFareBackend.ts",
+      "method": "POST",
+      "path": "/api/cng/fare",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCNGFareBackend.ts",
+      "method": "GET",
+      "path": "/api/cng/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCNGFareBackend.ts",
+      "method": "POST",
+      "path": "/api/cng/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "POST",
+      "path": "/api/reels/collab",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "GET",
+      "path": "/api/reels/collab",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "GET",
+      "path": "/api/reels/collab/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "POST",
+      "path": "/api/reels/collab/:id/element",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "POST",
+      "path": "/api/reels/collab/:id/publish",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "POST",
+      "path": "/api/reels/collab/:id/view",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "POST",
+      "path": "/api/reels/join",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "POST",
+      "path": "/api/reels/invite",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollaborativeReelsBackend.ts",
+      "method": "GET",
+      "path": "/api/reels/feed",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollabPostsBackend.ts",
+      "method": "POST",
+      "path": "/api/collab/create",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollabPostsBackend.ts",
+      "method": "POST",
+      "path": "/api/collab/:id/add-section",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollabPostsBackend.ts",
+      "method": "PATCH",
+      "path": "/api/collab/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollabPostsBackend.ts",
+      "method": "POST",
+      "path": "/api/collab/:id/accept",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCollabPostsBackend.ts",
+      "method": "GET",
+      "path": "/api/collab",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCollabPostsBackend.ts",
+      "method": "GET",
+      "path": "/api/collab/:id",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommentSummaryBackend.ts",
+      "method": "GET",
+      "path": "/api/posts/:postId/comment-summary",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleCommentSummaryBackend.ts",
+      "method": "POST",
+      "path": "/api/posts/:postId/comment-summary/refresh",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/communities/:id/voice",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/voice",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/voice/:vid/join",
+      "proto": "auth",
+      "params": [
+        "id",
+        "vid"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/livekit/token",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/communities/:id/stages",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/stages",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/stages/:sid/join",
+      "proto": "auth",
+      "params": [
+        "id",
+        "sid"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/stages/:sid/speaker",
+      "proto": "auth",
+      "params": [
+        "id",
+        "sid"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/communities/:id/threads",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/threads",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/threads/:tid/reply",
+      "proto": "auth",
+      "params": [
+        "id",
+        "tid"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/communities/:id/templates",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/templates",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/templates/:tid/apply",
+      "proto": "auth",
+      "params": [
+        "id",
+        "tid"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/communities/:id/events",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/events",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "POST",
+      "path": "/api/communities/:id/events/:eid/rsvp",
+      "proto": "auth",
+      "params": [
+        "id",
+        "eid"
+      ]
+    },
+    {
+      "file": "src/turtleCommunitiesProBackend.ts",
+      "method": "GET",
+      "path": "/api/communities/:id/stats",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "GET",
+      "path": "/api/disaster/kitchens",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "GET",
+      "path": "/api/disaster/kitchen-requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "POST",
+      "path": "/api/disaster/kitchens",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "POST",
+      "path": "/api/disaster/kitchens/:id/update",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "POST",
+      "path": "/api/disaster/kitchens/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "POST",
+      "path": "/api/disaster/kitchens/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "POST",
+      "path": "/api/disaster/kitchens/:id/request",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCommunityKitchenBackend.ts",
+      "method": "POST",
+      "path": "/api/disaster/kitchen-requests/:id/fulfill",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCompatibilityBackend.ts",
+      "method": "POST",
+      "path": "/api/match/compatibility",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleContentGateBackend.ts",
+      "method": "POST",
+      "path": "/api/content-rating/:postId",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleContentGateBackend.ts",
+      "method": "GET",
+      "path": "/api/content-rating/:postId",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleContentGateBackend.ts",
+      "method": "GET",
+      "path": "/api/content-rating/gate/:postId",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleContractBackend.ts",
+      "method": "GET",
+      "path": "/api/contracts/templates",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleContractBackend.ts",
+      "method": "GET",
+      "path": "/api/contracts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleContractBackend.ts",
+      "method": "POST",
+      "path": "/api/contracts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleContractBackend.ts",
+      "method": "POST",
+      "path": "/api/contracts/:id/sign",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "POST",
+      "path": "/api/live/session",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "GET",
+      "path": "/api/live/session",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "GET",
+      "path": "/api/live/session/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "POST",
+      "path": "/api/live/session/:id/cohost",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "POST",
+      "path": "/api/live/session/:id/start",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "POST",
+      "path": "/api/live/session/:id/end",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "POST",
+      "path": "/api/live/session/:id/tip",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "POST",
+      "path": "/api/live/session/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCoStreamBackend.ts",
+      "method": "GET",
+      "path": "/api/live/users",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "GET",
+      "path": "/api/creator/dashboard",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/deals",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "GET",
+      "path": "/api/creator/deals",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "GET",
+      "path": "/api/creator/deals/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/deals/:id/apply",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/deals/:id/accept",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/affiliate",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "GET",
+      "path": "/api/creator/affiliate",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/affiliate/:id/click",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/fans",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "GET",
+      "path": "/api/creator/fans",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/tiers",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "GET",
+      "path": "/api/creator/tiers",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCreatorMonetizationBackend.ts",
+      "method": "POST",
+      "path": "/api/creator/tiers/:id/subscribe",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleCropDiagnosisBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/diseases",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleCropDiagnosisBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/diagnose-crop",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "POST",
+      "path": "/api/data/brain/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "GET",
+      "path": "/api/data/brain/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "GET",
+      "path": "/api/data/brain/stats",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "DELETE",
+      "path": "/api/data/brain/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "GET",
+      "path": "/api/analytics/creators",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "GET",
+      "path": "/api/metabase/token",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "POST",
+      "path": "/api/data/export",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataBrainBackend.ts",
+      "method": "GET",
+      "path": "/api/data/warehouse",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataMarketBackend.ts",
+      "method": "POST",
+      "path": "/api/datamarket/optin",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataMarketBackend.ts",
+      "method": "GET",
+      "path": "/api/datamarket/optins",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataMarketBackend.ts",
+      "method": "POST",
+      "path": "/api/datamarket",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataMarketBackend.ts",
+      "method": "GET",
+      "path": "/api/datamarket",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataMarketBackend.ts",
+      "method": "POST",
+      "path": "/api/datamarket/:id/buy",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "GET",
+      "path": "/api/sovereignty/inventory",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "GET",
+      "path": "/api/sovereignty/export",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "GET",
+      "path": "/api/sovereignty/exports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "POST",
+      "path": "/api/sovereignty/delete/request",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "GET",
+      "path": "/api/sovereignty/delete/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "POST",
+      "path": "/api/sovereignty/delete/cancel",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDataSovereigntyBackend.ts",
+      "method": "POST",
+      "path": "/api/sovereignty/delete/confirm",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDebateModeratorBackend.ts",
+      "method": "POST",
+      "path": "/api/debate/session",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDebateModeratorBackend.ts",
+      "method": "GET",
+      "path": "/api/debate/sessions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDebateModeratorBackend.ts",
+      "method": "POST",
+      "path": "/api/debate/session/:id/comment",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleDebateModeratorBackend.ts",
+      "method": "POST",
+      "path": "/api/debate/session/:id/balance",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleDebateModeratorBackend.ts",
+      "method": "GET",
+      "path": "/api/debate/session/:id",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "POST",
+      "path": "/api/did/create",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "GET",
+      "path": "/api/did/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "POST",
+      "path": "/api/did/export",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "POST",
+      "path": "/api/did/import",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "GET",
+      "path": "/api/did/resolve/:did",
+      "proto": "auth",
+      "params": [
+        "did"
+      ]
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "GET",
+      "path": "/api/did/registry",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDecentralizedProfilesBackend.ts",
+      "method": "POST",
+      "path": "/api/did/verify",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDeepDiveBackend.ts",
+      "method": "GET",
+      "path": "/api/hubs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDeepDiveBackend.ts",
+      "method": "POST",
+      "path": "/api/hubs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDeepDiveBackend.ts",
+      "method": "POST",
+      "path": "/api/hubs/:id/attach",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleDeepDiveBackend.ts",
+      "method": "GET",
+      "path": "/api/hubs/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "GET",
+      "path": "/api/account/legacy",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "POST",
+      "path": "/api/account/legacy",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "GET",
+      "path": "/api/account/legacy/requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "POST",
+      "path": "/api/account/legacy/contact/verify",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "POST",
+      "path": "/api/account/legacy/contact/decline",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "POST",
+      "path": "/api/admin/legacy/scan",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalLegacyBackend.ts",
+      "method": "POST",
+      "path": "/api/admin/legacy/memorialize/:userId",
+      "proto": "admin",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleDigitalTwinBackend.ts",
+      "method": "GET",
+      "path": "/api/twin/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalTwinBackend.ts",
+      "method": "POST",
+      "path": "/api/twin/train",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalTwinBackend.ts",
+      "method": "POST",
+      "path": "/api/twin/enable",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleDigitalTwinBackend.ts",
+      "method": "POST",
+      "path": "/api/twin/reply",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "POST",
+      "path": "/api/e2ee/keys",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "GET",
+      "path": "/api/e2ee/keys",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "GET",
+      "path": "/api/e2ee/keys/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "POST",
+      "path": "/api/e2ee/devices/pair-start",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "POST",
+      "path": "/api/e2ee/devices/complete",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "GET",
+      "path": "/api/e2ee/devices",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "DELETE",
+      "path": "/api/e2ee/devices/:deviceId",
+      "proto": "auth",
+      "params": [
+        "deviceId"
+      ]
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "POST",
+      "path": "/api/e2ee/messages",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "GET",
+      "path": "/api/e2ee/messages",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "POST",
+      "path": "/api/e2ee/messages/:id/read",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleE2EEBackend.ts",
+      "method": "GET",
+      "path": "/api/e2ee/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleElderModeBackend.ts",
+      "method": "GET",
+      "path": "/api/prefs/elder-mode",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleElderModeBackend.ts",
+      "method": "POST",
+      "path": "/api/prefs/elder-mode",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "GET",
+      "path": "/api/emergency/pools",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "GET",
+      "path": "/api/emergency/pools/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools/:id/contribute",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools/:id/requests",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools/:id/requests/:requestId/vote",
+      "proto": "auth",
+      "params": [
+        "id",
+        "requestId"
+      ]
+    },
+    {
+      "file": "src/turtleEmergencyPoolsBackend.ts",
+      "method": "POST",
+      "path": "/api/emergency/pools/:id/report",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEscrowBackend.ts",
+      "method": "POST",
+      "path": "/api/escrow",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEscrowBackend.ts",
+      "method": "POST",
+      "path": "/api/escrow/:id/release",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEscrowBackend.ts",
+      "method": "POST",
+      "path": "/api/escrow/:id/refund",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEscrowBackend.ts",
+      "method": "GET",
+      "path": "/api/escrow",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEvacuationBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/evacuate",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEvacuationBackend.ts",
+      "method": "GET",
+      "path": "/api/shelter/evacuate/status",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleEventGroupsBackend.ts",
+      "method": "POST",
+      "path": "/api/chat/event-groups",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEventGroupsBackend.ts",
+      "method": "GET",
+      "path": "/api/chat/event-groups",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEventGroupsBackend.ts",
+      "method": "GET",
+      "path": "/api/chat/event-groups/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEventGroupsBackend.ts",
+      "method": "POST",
+      "path": "/api/chat/event-groups/:id/archive",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEventGroupsBackend.ts",
+      "method": "POST",
+      "path": "/api/chat/event-groups/check",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEvidenceVaultBackend.ts",
+      "method": "POST",
+      "path": "/api/evidence/entries",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEvidenceVaultBackend.ts",
+      "method": "POST",
+      "path": "/api/vault/evidence",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEvidenceVaultBackend.ts",
+      "method": "GET",
+      "path": "/api/evidence/entries",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleEvidenceVaultBackend.ts",
+      "method": "GET",
+      "path": "/api/evidence/entries/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleEvidenceVaultBackend.ts",
+      "method": "DELETE",
+      "path": "/api/evidence/entries/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleExamRoomBackend.ts",
+      "method": "GET",
+      "path": "/api/exam-rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleExamRoomBackend.ts",
+      "method": "POST",
+      "path": "/api/exam-rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleExamRoomBackend.ts",
+      "method": "POST",
+      "path": "/api/exam-rooms/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleExamRoomBackend.ts",
+      "method": "POST",
+      "path": "/api/exam-rooms/:id/papers",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleExamRoomBackend.ts",
+      "method": "POST",
+      "path": "/api/exam-rooms/:id/notes",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFacelessVideoBackend.ts",
+      "method": "POST",
+      "path": "/api/ai/faceless-video",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFacelessVideoBackend.ts",
+      "method": "GET",
+      "path": "/api/ai/faceless-video",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFacelessVideoBackend.ts",
+      "method": "GET",
+      "path": "/api/ai/faceless-video/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFactCheckerBackend.ts",
+      "method": "POST",
+      "path": "/api/factcheck/check",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleFactCheckerBackend.ts",
+      "method": "GET",
+      "path": "/api/factcheck/recent",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleFactCheckerBackend.ts",
+      "method": "GET",
+      "path": "/api/factcheck/:id",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFactCheckerBackend.ts",
+      "method": "GET",
+      "path": "/api/factcheck/post/:postId",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "GET",
+      "path": "/api/family",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/family",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/family/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/family/:id/approve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/family/:id/check-in",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/family/:id/location",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFamilyCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/family/:id/leave",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFarmLiveBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/farm-streams",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFarmLiveBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/farm-streams",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFarmLiveBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/farm-streams/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFarmLiveBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/farm-streams/:id/order",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFarmLiveBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/farm-streams/:id/end",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFarmToolsBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/tools",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFarmToolsBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/tools",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFarmToolsBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/tools/:id/rent",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFarmToolsBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/tools/:id/return",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFederatedLearningBackend.ts",
+      "method": "GET",
+      "path": "/api/fed/model",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFederatedLearningBackend.ts",
+      "method": "POST",
+      "path": "/api/fed/update",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFederatedLearningBackend.ts",
+      "method": "GET",
+      "path": "/api/fed/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFediverseBackend.ts",
+      "method": "GET",
+      "path": "/.well-known/webfinger",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleFediverseBackend.ts",
+      "method": "GET",
+      "path": "/api/fediverse/actor/:username",
+      "proto": "auth",
+      "params": [
+        "username"
+      ]
+    },
+    {
+      "file": "src/turtleFediverseBackend.ts",
+      "method": "GET",
+      "path": "/api/fediverse/outbox",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFediverseBackend.ts",
+      "method": "POST",
+      "path": "/api/fediverse/outbox",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFediverseBackend.ts",
+      "method": "POST",
+      "path": "/api/fediverse/inbox",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFediverseBackend.ts",
+      "method": "GET",
+      "path": "/api/fediverse/remote",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleFeedExplainBackend.ts",
+      "method": "POST",
+      "path": "/api/feed/explain",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFeedExplainBackend.ts",
+      "method": "GET",
+      "path": "/api/feed/explain-history",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFIRBackend.ts",
+      "method": "GET",
+      "path": "/api/fir",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFIRBackend.ts",
+      "method": "POST",
+      "path": "/api/fir",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFIRBackend.ts",
+      "method": "POST",
+      "path": "/api/fir/:id/status",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "GET",
+      "path": "/api/flood/overview",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "GET",
+      "path": "/api/flood/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/reports/:id/confirm",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/reports/:id/ack",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/reports/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "GET",
+      "path": "/api/flood/spots",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/spots",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/spots/:id/confirm",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "POST",
+      "path": "/api/flood/checkin",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleFloodDepthMapperBackend.ts",
+      "method": "GET",
+      "path": "/api/flood/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGarageSaleBackend.ts",
+      "method": "POST",
+      "path": "/api/garagesales",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGarageSaleBackend.ts",
+      "method": "GET",
+      "path": "/api/garagesales",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleGhostViewBackend.ts",
+      "method": "POST",
+      "path": "/api/posts/:id/ghost-view",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGhostViewBackend.ts",
+      "method": "GET",
+      "path": "/api/posts/:id/ghost-status",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGhostViewBackend.ts",
+      "method": "GET",
+      "path": "/api/posts/ghost/my",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGigRadarBackend.ts",
+      "method": "POST",
+      "path": "/api/gigs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGigRadarBackend.ts",
+      "method": "GET",
+      "path": "/api/gigs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGigRadarBackend.ts",
+      "method": "POST",
+      "path": "/api/gigs/:id/apply",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGigRadarBackend.ts",
+      "method": "POST",
+      "path": "/api/gigs/:id/fill",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGroupBuyBackend.ts",
+      "method": "POST",
+      "path": "/api/groupbuy",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGroupBuyBackend.ts",
+      "method": "GET",
+      "path": "/api/groupbuy",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGroupBuyBackend.ts",
+      "method": "POST",
+      "path": "/api/groupbuy/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGroupBuyBackend.ts",
+      "method": "POST",
+      "path": "/api/groupbuy/:id/done",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGuardianBackend.ts",
+      "method": "GET",
+      "path": "/api/guardian",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGuardianBackend.ts",
+      "method": "POST",
+      "path": "/api/guardian/request",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleGuardianBackend.ts",
+      "method": "POST",
+      "path": "/api/guardian/:id/respond",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleGuardianBackend.ts",
+      "method": "POST",
+      "path": "/api/guardian/:id/remove",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleHalalDatingBackend.ts",
+      "method": "GET",
+      "path": "/api/halal",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleHalalDatingBackend.ts",
+      "method": "POST",
+      "path": "/api/halal/start",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleHalalDatingBackend.ts",
+      "method": "POST",
+      "path": "/api/halal/:id/advance",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleHalalDatingBackend.ts",
+      "method": "POST",
+      "path": "/api/halal/:id/confirm",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleHalalDatingBackend.ts",
+      "method": "POST",
+      "path": "/api/halal/:id/end",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleHardwareWalletBackend.ts",
+      "method": "GET",
+      "path": "/api/hardware-wallet",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleHardwareWalletBackend.ts",
+      "method": "POST",
+      "path": "/api/hardware-wallet",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleHardwareWalletBackend.ts",
+      "method": "DELETE",
+      "path": "/api/hardware-wallet/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleHumanityBackend.ts",
+      "method": "POST",
+      "path": "/api/auth/humanity-score",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleHumanityBackend.ts",
+      "method": "GET",
+      "path": "/api/auth/humanity-score",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleHumanityBackend.ts",
+      "method": "GET",
+      "path": "/api/users/:id/humanity",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleHumanityBackend.ts",
+      "method": "POST",
+      "path": "/api/auth/humanity-reset",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleInternshipBackend.ts",
+      "method": "GET",
+      "path": "/api/internships",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleInternshipBackend.ts",
+      "method": "POST",
+      "path": "/api/internships",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleInternshipBackend.ts",
+      "method": "POST",
+      "path": "/api/internships/:id/apply",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleInternshipBackend.ts",
+      "method": "POST",
+      "path": "/api/internships/:id/applications/:appId/respond",
+      "proto": "auth",
+      "params": [
+        "id",
+        "appId"
+      ]
+    },
+    {
+      "file": "src/turtleInternshipBackend.ts",
+      "method": "GET",
+      "path": "/api/internships/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleInterviewBackend.ts",
+      "method": "POST",
+      "path": "/api/interview/start",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleInterviewBackend.ts",
+      "method": "GET",
+      "path": "/api/interview/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleInterviewBackend.ts",
+      "method": "POST",
+      "path": "/api/interview/:id/answer",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleInterviewBackend.ts",
+      "method": "GET",
+      "path": "/api/interview",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleIrrigationBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/irrigation",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleIrrigationBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/irrigation",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleIrrigationBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/irrigation/:id/water",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleIrrigationBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/weather",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleJobAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/jobs/alerts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleJobAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/jobs/alerts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleJobAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/jobs/alerts/:id/save",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleJobAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/jobs/alerts/saved",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLawyerBackend.ts",
+      "method": "GET",
+      "path": "/api/lawyers",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLawyerBackend.ts",
+      "method": "POST",
+      "path": "/api/lawyers",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLawyerBackend.ts",
+      "method": "GET",
+      "path": "/api/cases",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLawyerBackend.ts",
+      "method": "POST",
+      "path": "/api/cases",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLawyerBackend.ts",
+      "method": "POST",
+      "path": "/api/cases/:id/accept",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLegalAidBackend.ts",
+      "method": "POST",
+      "path": "/api/legal/ask",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLegalAidBackend.ts",
+      "method": "GET",
+      "path": "/api/legal/log",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "GET",
+      "path": "/api/live/gifts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/gifts/send",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "GET",
+      "path": "/api/live/gifts/recent",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "GET",
+      "path": "/api/live/goals",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/goals",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/clips",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "GET",
+      "path": "/api/live/clips",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "GET",
+      "path": "/api/live/leaderboard",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "GET",
+      "path": "/api/live/rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/rooms/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/rooms/:id/leave",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/rooms/:id/end",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/rooms/:id/kick",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLiveEcosystemBackend.ts",
+      "method": "POST",
+      "path": "/api/live/rooms/:id/ban",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLiveReporterBackend.ts",
+      "method": "GET",
+      "path": "/api/verified-live",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveReporterBackend.ts",
+      "method": "GET",
+      "path": "/api/posts/:id/proof",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleLiveReporterBackend.ts",
+      "method": "POST",
+      "path": "/api/posts/verify-location",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLiveReporterBackend.ts",
+      "method": "POST",
+      "path": "/api/posts/revoke-verification",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleLongFormVideoBackend.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/videos/:videoId/watch",
+      "proto": "auth",
+      "params": [
+        "id",
+        "videoId"
+      ]
+    },
+    {
+      "file": "src/turtleLongFormVideoBackend.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/videos/:videoId/like",
+      "proto": "auth",
+      "params": [
+        "id",
+        "videoId"
+      ]
+    },
+    {
+      "file": "src/turtleLongFormVideoBackend.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/videos/:videoId/save",
+      "proto": "auth",
+      "params": [
+        "id",
+        "videoId"
+      ]
+    },
+    {
+      "file": "src/turtleLongFormVideoBackend.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/videos/:videoId/report",
+      "proto": "auth",
+      "params": [
+        "id",
+        "videoId"
+      ]
+    },
+    {
+      "file": "src/turtleLongFormVideoBackend.ts",
+      "method": "GET",
+      "path": "/api/channels/:id/videos/:videoId/recommendations",
+      "proto": "public",
+      "params": [
+        "id",
+        "videoId"
+      ]
+    },
+    {
+      "file": "src/turtleMandiBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/mandi",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMandiBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/mandi",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleMandiBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/predict-price",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketNegotiatorBackend.ts",
+      "method": "POST",
+      "path": "/api/market/items",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketNegotiatorBackend.ts",
+      "method": "GET",
+      "path": "/api/market/items",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketNegotiatorBackend.ts",
+      "method": "POST",
+      "path": "/api/market/negotiate",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketNegotiatorBackend.ts",
+      "method": "POST",
+      "path": "/api/market/offer",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketNegotiatorBackend.ts",
+      "method": "GET",
+      "path": "/api/market/offers/:itemId",
+      "proto": "public",
+      "params": [
+        "itemId"
+      ]
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "POST",
+      "path": "/api/marketplace/listings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "GET",
+      "path": "/api/marketplace/listings",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "GET",
+      "path": "/api/marketplace/listings/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "POST",
+      "path": "/api/marketplace/listings/:id/contact",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "POST",
+      "path": "/api/marketplace/listings/:id/sold",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "DELETE",
+      "path": "/api/marketplace/listings/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMarketplaceBackend.ts",
+      "method": "GET",
+      "path": "/api/marketplace/categories",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleMatchmakerBackend.ts",
+      "method": "GET",
+      "path": "/api/matchmaker",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMatchmakerBackend.ts",
+      "method": "POST",
+      "path": "/api/matchmaker",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMatchmakerBackend.ts",
+      "method": "POST",
+      "path": "/api/matchmaker/:id/respond",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMatchmakerBackend.ts",
+      "method": "GET",
+      "path": "/api/match/suggest",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMediaSearchBackend.ts",
+      "method": "POST",
+      "path": "/api/search/media/index",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMediaSearchBackend.ts",
+      "method": "GET",
+      "path": "/api/search/media",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMediaSearchBackend.ts",
+      "method": "POST",
+      "path": "/api/search/media/backfill",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMemoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/memories/recap",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMemoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/memories/recap",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMemoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/memories/recaps",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMemoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/memories/shared/:friendId",
+      "proto": "auth",
+      "params": [
+        "friendId"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "GET",
+      "path": "/api/miniapps",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "POST",
+      "path": "/api/miniapps",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "GET",
+      "path": "/api/miniapps/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "GET",
+      "path": "/api/miniapps/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "POST",
+      "path": "/api/miniapps/:id/install",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "POST",
+      "path": "/api/miniapps/:id/uninstall",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "POST",
+      "path": "/api/miniapps/:id/purchase",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "POST",
+      "path": "/api/miniapps/:id/events",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "GET",
+      "path": "/api/miniapps/:id/events",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "POST",
+      "path": "/api/miniapps/:id/rate",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMiniAppsBackend.ts",
+      "method": "DELETE",
+      "path": "/api/miniapps/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingFaceSearchBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/face-upload",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMissingFaceSearchBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/face-search",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMissingFaceSearchBackend.ts",
+      "method": "GET",
+      "path": "/api/missing/face-index",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMissingFaceSearchBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/face-upload/:id/remove",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "GET",
+      "path": "/api/missing/reports",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "GET",
+      "path": "/api/missing/reports/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/reports",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/reports/:id/sightings",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/reports/:id/sightings/:sightId/helpful",
+      "proto": "auth",
+      "params": [
+        "id",
+        "sightId"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/reports/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/reports/:id/found",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "POST",
+      "path": "/api/missing/reports/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleMissingPersonBackend.ts",
+      "method": "GET",
+      "path": "/api/missing/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMoodFeedBackend.ts",
+      "method": "GET",
+      "path": "/api/mood/feed",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleMoodFeedBackend.ts",
+      "method": "GET",
+      "path": "/api/mood/sentiment",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleNearbyDonorNotifyBackend.ts",
+      "method": "GET",
+      "path": "/api/needs/donor-profile",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleNearbyDonorNotifyBackend.ts",
+      "method": "POST",
+      "path": "/api/needs/donor-profile",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleNearbyDonorNotifyBackend.ts",
+      "method": "POST",
+      "path": "/api/needs/:postId/notify",
+      "proto": "auth",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleNearbyDonorNotifyBackend.ts",
+      "method": "GET",
+      "path": "/api/needs/meta",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleOceanPayBackend.ts",
+      "method": "GET",
+      "path": "/api/wallet/balance",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOceanPayBackend.ts",
+      "method": "POST",
+      "path": "/api/wallet/transfer",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOceanPayBackend.ts",
+      "method": "POST",
+      "path": "/api/wallet/pay",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOceanPayBackend.ts",
+      "method": "GET",
+      "path": "/api/wallet/transactions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "GET",
+      "path": "/api/mesh/meta",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "POST",
+      "path": "/api/mesh/relay",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "GET",
+      "path": "/api/mesh/relay",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "GET",
+      "path": "/api/mesh/sync",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "POST",
+      "path": "/api/mesh/relay/:id/ack",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "POST",
+      "path": "/api/mesh/relay/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "POST",
+      "path": "/api/mesh/relay/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "POST",
+      "path": "/api/mesh/beacon",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "GET",
+      "path": "/api/mesh/beacons",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOfflineMeshBackend.ts",
+      "method": "GET",
+      "path": "/api/mesh/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "POST",
+      "path": "/api/os/experiments",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "GET",
+      "path": "/api/os/experiments",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "POST",
+      "path": "/api/os/experiments/:id/assign",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "GET",
+      "path": "/api/os/my-assignments",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "POST",
+      "path": "/api/os/experiments/:id/metrics",
+      "proto": "admin",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "GET",
+      "path": "/api/os/experiments/:id/stats",
+      "proto": "admin",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "POST",
+      "path": "/api/os/flags",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "GET",
+      "path": "/api/os/flags",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "GET",
+      "path": "/api/os/flags/evaluate",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "POST",
+      "path": "/api/os/flags/:id/override",
+      "proto": "admin",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleOSLayerBackend.ts",
+      "method": "GET",
+      "path": "/api/os/region",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePairCodingBackend.ts",
+      "method": "POST",
+      "path": "/api/pair/rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePairCodingBackend.ts",
+      "method": "GET",
+      "path": "/api/pair/rooms/:code",
+      "proto": "auth",
+      "params": [
+        "code"
+      ]
+    },
+    {
+      "file": "src/turtlePairCodingBackend.ts",
+      "method": "POST",
+      "path": "/api/pair/rooms/:code/buffer",
+      "proto": "auth",
+      "params": [
+        "code"
+      ]
+    },
+    {
+      "file": "src/turtlePairCodingBackend.ts",
+      "method": "POST",
+      "path": "/api/pair/rooms/:code/command",
+      "proto": "auth",
+      "params": [
+        "code"
+      ]
+    },
+    {
+      "file": "src/turtlePairCodingBackend.ts",
+      "method": "POST",
+      "path": "/api/pair/rooms/:code/leave",
+      "proto": "auth",
+      "params": [
+        "code"
+      ]
+    },
+    {
+      "file": "src/turtleParkingBackend.ts",
+      "method": "GET",
+      "path": "/api/parking",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleParkingBackend.ts",
+      "method": "POST",
+      "path": "/api/parking",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleParkingBackend.ts",
+      "method": "POST",
+      "path": "/api/parking/:id/book",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleParkingBackend.ts",
+      "method": "GET",
+      "path": "/api/traffic",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleParkingBackend.ts",
+      "method": "POST",
+      "path": "/api/traffic",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleParkingBackend.ts",
+      "method": "POST",
+      "path": "/api/traffic/:id/confirm",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtlePersonaBackend.ts",
+      "method": "GET",
+      "path": "/api/personas",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePersonaBackend.ts",
+      "method": "POST",
+      "path": "/api/personas",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePersonaBackend.ts",
+      "method": "POST",
+      "path": "/api/personas/:id/activate",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtlePersonaBackend.ts",
+      "method": "DELETE",
+      "path": "/api/personas/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtlePlasticWealthBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/plastic",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePlasticWealthBackend.ts",
+      "method": "GET",
+      "path": "/api/agri/plastic",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePlasticWealthBackend.ts",
+      "method": "POST",
+      "path": "/api/agri/plastic/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtlePodcastBackend.ts",
+      "method": "POST",
+      "path": "/api/podcast/generate",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePodcastBackend.ts",
+      "method": "GET",
+      "path": "/api/podcast/today",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePodcastBackend.ts",
+      "method": "GET",
+      "path": "/api/podcast/history",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePortfolioBackend.ts",
+      "method": "GET",
+      "path": "/api/portfolio",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePortfolioBackend.ts",
+      "method": "GET",
+      "path": "/api/portfolio/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtlePortfolioBackend.ts",
+      "method": "POST",
+      "path": "/api/portfolio",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePortfolioBackend.ts",
+      "method": "POST",
+      "path": "/api/portfolio/items",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePortfolioBackend.ts",
+      "method": "DELETE",
+      "path": "/api/portfolio/items/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "POST",
+      "path": "/api/privacy/log-access",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "GET",
+      "path": "/api/privacy/access-log",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "GET",
+      "path": "/api/privacy/third-party",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "POST",
+      "path": "/api/privacy/third-party/:appId/revoke",
+      "proto": "auth",
+      "params": [
+        "appId"
+      ]
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "GET",
+      "path": "/api/privacy/permissions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "POST",
+      "path": "/api/privacy/permissions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "POST",
+      "path": "/api/privacy/mask-activity",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtlePrivacyDashboardBackend.ts",
+      "method": "GET",
+      "path": "/api/privacy/summary",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProfileSummaryBackend.ts",
+      "method": "GET",
+      "path": "/api/users/:userId/summary",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleProfileSummaryBackend.ts",
+      "method": "POST",
+      "path": "/api/users/:userId/summary/refresh",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/skills",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "GET",
+      "path": "/api/prograph/profile/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/skills/:id/endorse",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "GET",
+      "path": "/api/prograph/skills/:id/quiz",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/skills/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/recommendations",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/recommendations/request",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "GET",
+      "path": "/api/prograph/recommendations/requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/jobs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "GET",
+      "path": "/api/prograph/jobs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "POST",
+      "path": "/api/prograph/jobs/:id/apply",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleProGraphBackend.ts",
+      "method": "GET",
+      "path": "/api/prograph/jobs/matches",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProximityAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/proximity/settings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProximityAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/proximity/settings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProximityAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/proximity/check",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProximityAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/proximity/alerts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleProximityAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/proximity/alerts/:id/ack",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleQuantumCryptoBackend.ts",
+      "method": "GET",
+      "path": "/api/pq/keys",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuantumCryptoBackend.ts",
+      "method": "POST",
+      "path": "/api/pq/keys",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuantumCryptoBackend.ts",
+      "method": "POST",
+      "path": "/api/pq/exchange",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuantumCryptoBackend.ts",
+      "method": "POST",
+      "path": "/api/pq/messages",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuantumCryptoBackend.ts",
+      "method": "GET",
+      "path": "/api/pq/messages",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuranCircleBackend.ts",
+      "method": "GET",
+      "path": "/api/quran-circles",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuranCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/quran-circles",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleQuranCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/quran-circles/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleQuranCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/quran-circles/:id/note",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleQuranCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/quran-circles/:id/mute",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRedTeamBackend.ts",
+      "method": "GET",
+      "path": "/api/redteam/challenges",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRedTeamBackend.ts",
+      "method": "POST",
+      "path": "/api/redteam/challenges",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRedTeamBackend.ts",
+      "method": "POST",
+      "path": "/api/redteam/submit",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRedTeamBackend.ts",
+      "method": "GET",
+      "path": "/api/redteam/submissions",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleRedTeamBackend.ts",
+      "method": "POST",
+      "path": "/api/redteam/score",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleRedTeamBackend.ts",
+      "method": "GET",
+      "path": "/api/redteam/leaderboard",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleRelationshipTimelineBackend.ts",
+      "method": "GET",
+      "path": "/api/users/:userId/timeline",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleRelationshipTimelineBackend.ts",
+      "method": "GET",
+      "path": "/api/me/timeline",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleReligiousEventsBackend.ts",
+      "method": "GET",
+      "path": "/api/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleReligiousEventsBackend.ts",
+      "method": "POST",
+      "path": "/api/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleReligiousEventsBackend.ts",
+      "method": "POST",
+      "path": "/api/events/:id/rsvp",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleReligiousEventsBackend.ts",
+      "method": "POST",
+      "path": "/api/events/:id/update",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRentalBackend.ts",
+      "method": "POST",
+      "path": "/api/rentals",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRentalBackend.ts",
+      "method": "GET",
+      "path": "/api/rentals",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRentalBackend.ts",
+      "method": "POST",
+      "path": "/api/rentals/:id/rent",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRentalBackend.ts",
+      "method": "POST",
+      "path": "/api/rentals/:id/return",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleReputationBackend.ts",
+      "method": "POST",
+      "path": "/api/reputation/refresh",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleReputationBackend.ts",
+      "method": "GET",
+      "path": "/api/reputation",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleReputationBackend.ts",
+      "method": "GET",
+      "path": "/api/reputation/leaderboard",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleReputationBackend.ts",
+      "method": "GET",
+      "path": "/api/reputation/:userId",
+      "proto": "public",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleResumeBackend.ts",
+      "method": "GET",
+      "path": "/api/profile/resume/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleResumeBackend.ts",
+      "method": "POST",
+      "path": "/api/profile/resume",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "GET",
+      "path": "/api/revenue/groups",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "POST",
+      "path": "/api/revenue/groups",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "GET",
+      "path": "/api/revenue/groups/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "POST",
+      "path": "/api/revenue/groups/:id/deposit",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "POST",
+      "path": "/api/revenue/groups/:id/distribute",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "POST",
+      "path": "/api/revenue/groups/:id/admins",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "GET",
+      "path": "/api/channels/:id/revenue",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/revenue/deposit",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRevenueShareBackend.ts",
+      "method": "POST",
+      "path": "/api/channels/:id/revenue/distribute",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleRTIBackend.ts",
+      "method": "GET",
+      "path": "/api/rti",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRTIBackend.ts",
+      "method": "POST",
+      "path": "/api/rti",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleRTIBackend.ts",
+      "method": "POST",
+      "path": "/api/rti/:id/respond",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/meta",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/escort",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/escort/optout",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/escorts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/requests",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/requests/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests/:id/offer",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests/:id/accept",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests/:id/complete",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests/:id/withdraw",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests/:id/cancel",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/requests/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/routes",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/escort/routes",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "GET",
+      "path": "/api/escort/coverage",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeEscortBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/route",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "GET",
+      "path": "/api/safehaven/meta",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "GET",
+      "path": "/api/safehaven/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "GET",
+      "path": "/api/safehaven/havens",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "GET",
+      "path": "/api/safehaven/havens/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/havens",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/havens/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/havens/:id/open",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "DELETE",
+      "path": "/api/safehaven/havens/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/havens/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "GET",
+      "path": "/api/safehaven/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "GET",
+      "path": "/api/safehaven/events/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/events/:id/ack",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/events/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeHavenBackend.ts",
+      "method": "POST",
+      "path": "/api/safehaven/events/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "GET",
+      "path": "/api/shelter/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "GET",
+      "path": "/api/shelter/list",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/:id/verify",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/:id/checkin",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/:id/update",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/:id/help",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/help/:requestId/respond",
+      "proto": "auth",
+      "params": [
+        "requestId"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/help/:requestId/resolve",
+      "proto": "auth",
+      "params": [
+        "requestId"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "GET",
+      "path": "/api/shelter/alerts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/alerts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/alerts/:id/confirm",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/alerts/:id/lift",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeShelterBackend.ts",
+      "method": "POST",
+      "path": "/api/shelter/alerts/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "GET",
+      "path": "/api/safesos/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "GET",
+      "path": "/api/safesos/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "DELETE",
+      "path": "/api/safesos/contacts/:contactId",
+      "proto": "auth",
+      "params": [
+        "contactId"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "DELETE",
+      "path": "/api/safesos/incoming/:contactId",
+      "proto": "auth",
+      "params": [
+        "contactId"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "GET",
+      "path": "/api/safesos/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/events/:id/ack",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/events/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/events/:id/report",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/walk",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/walk/:id/checkin",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeSOSBackend.ts",
+      "method": "POST",
+      "path": "/api/safesos/walk/:id/end",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/events/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/events",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/events/:id/acknowledge",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/events/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "DELETE",
+      "path": "/api/safety/contacts/:userId",
+      "proto": "auth",
+      "params": [
+        "userId"
+      ]
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/search",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShieldBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/profile",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShortsBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/shorts",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShortsBackend.ts",
+      "method": "GET",
+      "path": "/api/safety/tags",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShortsBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/shorts/submit",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafetyShortsBackend.ts",
+      "method": "POST",
+      "path": "/api/safety/shorts/:id/upvote",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "GET",
+      "path": "/api/watch/status",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "GET",
+      "path": "/api/watch/posts",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "GET",
+      "path": "/api/watch/posts/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "POST",
+      "path": "/api/watch/posts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "POST",
+      "path": "/api/watch/posts/:id/confirm",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "POST",
+      "path": "/api/watch/posts/:id/ack",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "POST",
+      "path": "/api/watch/posts/:id/status",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "GET",
+      "path": "/api/watch/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "POST",
+      "path": "/api/watch/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSafeWatchBackend.ts",
+      "method": "POST",
+      "path": "/api/watch/contacts/:contactId/remove",
+      "proto": "auth",
+      "params": [
+        "contactId"
+      ]
+    },
+    {
+      "file": "src/turtleSatelliteBackend.ts",
+      "method": "POST",
+      "path": "/api/sat/relay",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSatelliteBackend.ts",
+      "method": "GET",
+      "path": "/api/sat/relays",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSavingCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/savingcircle",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSavingCircleBackend.ts",
+      "method": "GET",
+      "path": "/api/savingcircle",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSavingCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/savingcircle/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSavingCircleBackend.ts",
+      "method": "POST",
+      "path": "/api/savingcircle/:id/contribute",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleScholarshipBackend.ts",
+      "method": "GET",
+      "path": "/api/scholarships",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleScholarshipBackend.ts",
+      "method": "POST",
+      "path": "/api/scholarships",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleScholarshipBackend.ts",
+      "method": "POST",
+      "path": "/api/scholarships/:id/save",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleScholarshipBackend.ts",
+      "method": "GET",
+      "path": "/api/scholarships/saved",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "GET",
+      "path": "/api/vault/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "POST",
+      "path": "/api/vault/setup",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "POST",
+      "path": "/api/vault/unlock",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "POST",
+      "path": "/api/vault/entries",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "GET",
+      "path": "/api/vault/entries",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "GET",
+      "path": "/api/vault/entries/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "DELETE",
+      "path": "/api/vault/entries/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSecureVaultBackend.ts",
+      "method": "POST",
+      "path": "/api/vault/entries/:id/pin",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSecurityTelegramOTPService.ts",
+      "method": "POST",
+      "path": "/api/auth/telegram-webhook",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecurityTelegramOTPService.ts",
+      "method": "POST",
+      "path": "/api/auth/otp-request",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecurityTelegramOTPService.ts",
+      "method": "POST",
+      "path": "/api/auth/otp-verify",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSecurityTelegramOTPService.ts",
+      "method": "GET",
+      "path": "/api/auth/telegram-users",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleServerContext.ts",
+      "method": "GET",
+      "path": "/api/whiteboard/session",
+      "proto": "admin",
+      "params": []
+    },
+    {
+      "file": "src/turtleSharedSubsBackend.ts",
+      "method": "POST",
+      "path": "/api/sharedsubs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSharedSubsBackend.ts",
+      "method": "GET",
+      "path": "/api/sharedsubs",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSharedSubsBackend.ts",
+      "method": "POST",
+      "path": "/api/sharedsubs/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSharedSubsBackend.ts",
+      "method": "POST",
+      "path": "/api/sharedsubs/:id/pay",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSharedSubsBackend.ts",
+      "method": "POST",
+      "path": "/api/sharedsubs/:id/settle",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSilentDropBackend.ts",
+      "method": "POST",
+      "path": "/api/silentdrop",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSilentDropBackend.ts",
+      "method": "POST",
+      "path": "/api/silentdrop/:id/view",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSilentDropBackend.ts",
+      "method": "GET",
+      "path": "/api/silentdrop/active",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSilentDropBackend.ts",
+      "method": "POST",
+      "path": "/api/silentdrop/cleanup",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSkillExchangeBackend.ts",
+      "method": "GET",
+      "path": "/api/skills",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSkillExchangeBackend.ts",
+      "method": "POST",
+      "path": "/api/skills",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSkillExchangeBackend.ts",
+      "method": "GET",
+      "path": "/api/skills/match",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSkillExchangeBackend.ts",
+      "method": "DELETE",
+      "path": "/api/skills/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "POST",
+      "path": "/api/community/smart/scan",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "GET",
+      "path": "/api/community/smart/report",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "POST",
+      "path": "/api/community/smart/flag",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "POST",
+      "path": "/api/community/smart/clear",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "POST",
+      "path": "/api/community/smart/summarize",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "POST",
+      "path": "/api/community/smart/replies",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartCommunityBackend.ts",
+      "method": "POST",
+      "path": "/api/community/smart/settings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSmartSearchJSONGenerator.ts",
+      "method": "GET",
+      "path": "/api/search/smart",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "POST",
+      "path": "/api/map/me/location",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "GET",
+      "path": "/api/map/me/location",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "GET",
+      "path": "/api/map/stories",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "GET",
+      "path": "/api/map/heat",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "POST",
+      "path": "/api/stories/private",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "GET",
+      "path": "/api/map/best-friends",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSnapMapBackend.ts",
+      "method": "POST",
+      "path": "/api/map/interaction",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/sos/meta",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/sos/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/contacts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/contacts/:contactId/remove",
+      "proto": "auth",
+      "params": [
+        "contactId"
+      ]
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/alert",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/trigger",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/sisterhood",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/sos/alerts",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "GET",
+      "path": "/api/sos/alerts/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/alerts/:id/acknowledge",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSOSAlertBackend.ts",
+      "method": "POST",
+      "path": "/api/sos/alerts/:id/resolve",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSplitBillBackend.ts",
+      "method": "GET",
+      "path": "/api/chats/:chatId/split",
+      "proto": "auth",
+      "params": [
+        "chatId"
+      ]
+    },
+    {
+      "file": "src/turtleSplitBillBackend.ts",
+      "method": "POST",
+      "path": "/api/chats/:chatId/split",
+      "proto": "auth",
+      "params": [
+        "chatId"
+      ]
+    },
+    {
+      "file": "src/turtleSplitBillBackend.ts",
+      "method": "GET",
+      "path": "/api/split/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSplitBillBackend.ts",
+      "method": "POST",
+      "path": "/api/splits/:id/settle",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSplitBillBackend.ts",
+      "method": "POST",
+      "path": "/api/splits/:id/delete",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStealthRecBackend.ts",
+      "method": "POST",
+      "path": "/api/stealthrec",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStealthRecBackend.ts",
+      "method": "GET",
+      "path": "/api/stealthrec/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStealthRecBackend.ts",
+      "method": "GET",
+      "path": "/api/stealthrec/inbox",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStealthRecBackend.ts",
+      "method": "GET",
+      "path": "/api/stealthrec/boost/:postId",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/stories",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/stories/create",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/stories",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/stories/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/stories/music",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/stories/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/stories/:id/view",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/stories/:id/react",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "GET",
+      "path": "/api/stories/:id/viewers",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/stories/:id/poll",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "POST",
+      "path": "/api/stories/:id/question",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoriesBackend.ts",
+      "method": "DELETE",
+      "path": "/api/stories/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoryChainsBackend.ts",
+      "method": "POST",
+      "path": "/api/chains",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoryChainsBackend.ts",
+      "method": "POST",
+      "path": "/api/chains/:id/add",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStoryChainsBackend.ts",
+      "method": "GET",
+      "path": "/api/chains",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleStoryChainsBackend.ts",
+      "method": "GET",
+      "path": "/api/chains/:id",
+      "proto": "public",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStreaksBackend.ts",
+      "method": "POST",
+      "path": "/api/streaks/checkin",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStreaksBackend.ts",
+      "method": "GET",
+      "path": "/api/streaks",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStreaksBackend.ts",
+      "method": "GET",
+      "path": "/api/streaks/leaderboard",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "GET",
+      "path": "/api/rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "POST",
+      "path": "/api/rooms",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "GET",
+      "path": "/api/rooms/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "POST",
+      "path": "/api/rooms/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "POST",
+      "path": "/api/rooms/:id/leave",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "POST",
+      "path": "/api/rooms/:id/presence",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleStudyRoomsBackend.ts",
+      "method": "POST",
+      "path": "/api/rooms/:id/pomodoro",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "GET",
+      "path": "/api/subscriptions/creators",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "GET",
+      "path": "/api/subscriptions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "GET",
+      "path": "/api/subscriptions/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "GET",
+      "path": "/api/subscriptions/status/:creatorId",
+      "proto": "auth",
+      "params": [
+        "creatorId"
+      ]
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "POST",
+      "path": "/api/subscriptions",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "DELETE",
+      "path": "/api/subscriptions/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleSubscriptionsBackend.ts",
+      "method": "POST",
+      "path": "/api/subscriptions/gate",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "GET",
+      "path": "/api/travel/plans",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/travel/plans",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/travel/plans/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "GET",
+      "path": "/api/travel/plans/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "GET",
+      "path": "/api/gems",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/gems",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/gems/:id/upvote",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "GET",
+      "path": "/api/trips",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/trips",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/trips/:id/join",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleTravelBackend.ts",
+      "method": "POST",
+      "path": "/api/trips/:id/budget",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleTrendingSoundBackend.ts",
+      "method": "POST",
+      "path": "/api/sounds/track",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTrendingSoundBackend.ts",
+      "method": "GET",
+      "path": "/api/sounds/trending",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleTrendingSoundBackend.ts",
+      "method": "GET",
+      "path": "/api/sounds",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleTrendingTopicEngine.ts",
+      "method": "GET",
+      "path": "/api/trends/hashtags",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleTriggerWarningBackend.ts",
+      "method": "POST",
+      "path": "/api/posts/trigger-scan",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTriggerWarningBackend.ts",
+      "method": "GET",
+      "path": "/api/posts/trigger-scan/:postId",
+      "proto": "public",
+      "params": [
+        "postId"
+      ]
+    },
+    {
+      "file": "src/turtleTriggerWarningBackend.ts",
+      "method": "POST",
+      "path": "/api/posts/trigger-scan-text",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleTutorBackend.ts",
+      "method": "GET",
+      "path": "/api/tutor",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTutorBackend.ts",
+      "method": "POST",
+      "path": "/api/tutor",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleTutorBackend.ts",
+      "method": "POST",
+      "path": "/api/tutor/:id/offer",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleTutorBackend.ts",
+      "method": "GET",
+      "path": "/api/tutor/mine",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleUpliftFeedBackend.ts",
+      "method": "GET",
+      "path": "/api/feed/uplift",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleUpliftFeedBackend.ts",
+      "method": "GET",
+      "path": "/api/feed/mood",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleVenueBackend.ts",
+      "method": "GET",
+      "path": "/api/venues",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVenueBackend.ts",
+      "method": "POST",
+      "path": "/api/venues",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVideoEditorBackend.ts",
+      "method": "POST",
+      "path": "/api/ai/subtitle-bengali",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVideoEditorBackend.ts",
+      "method": "POST",
+      "path": "/api/ai/enhance-image",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVideoEditorBackend.ts",
+      "method": "GET",
+      "path": "/api/editor/templates",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVideoEditorBackend.ts",
+      "method": "POST",
+      "path": "/api/editor/templates",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVideoEditorBackend.ts",
+      "method": "DELETE",
+      "path": "/api/editor/templates/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleVoiceSummaryBackend.ts",
+      "method": "GET",
+      "path": "/api/ai/voice-summary",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleVoiceSummaryBackend.ts",
+      "method": "POST",
+      "path": "/api/ai/voice-summary",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWardBackend.ts",
+      "method": "GET",
+      "path": "/api/ward/projects",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWardBackend.ts",
+      "method": "POST",
+      "path": "/api/ward/projects",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWardBackend.ts",
+      "method": "POST",
+      "path": "/api/ward/projects/:id/vote",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleWardBackend.ts",
+      "method": "GET",
+      "path": "/api/ward/meetings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWardBackend.ts",
+      "method": "POST",
+      "path": "/api/ward/meetings",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWatermarkBackend.ts",
+      "method": "POST",
+      "path": "/api/watermark/register",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWatermarkBackend.ts",
+      "method": "GET",
+      "path": "/api/watermark/:assetId",
+      "proto": "auth",
+      "params": [
+        "assetId"
+      ]
+    },
+    {
+      "file": "src/turtleWatermarkBackend.ts",
+      "method": "POST",
+      "path": "/api/watermark/verify",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWhiteboardBackend.ts",
+      "method": "GET",
+      "path": "/api/whiteboard/session",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWhiteboardBackend.ts",
+      "method": "GET",
+      "path": "/api/whiteboard/session/:id",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleWhiteboardBackend.ts",
+      "method": "POST",
+      "path": "/api/whiteboard/session",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleWhiteboardBackend.ts",
+      "method": "POST",
+      "path": "/api/whiteboard/session/:id/elements",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleWhiteboardBackend.ts",
+      "method": "POST",
+      "path": "/api/whiteboard/session/:id/close",
+      "proto": "auth",
+      "params": [
+        "id"
+      ]
+    },
+    {
+      "file": "src/turtleZakatBackend.ts",
+      "method": "POST",
+      "path": "/api/zakat/calculate",
+      "proto": "public",
+      "params": []
+    },
+    {
+      "file": "src/turtleZKKYCBackend.ts",
+      "method": "GET",
+      "path": "/api/zkkyc/challenge",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleZKKYCBackend.ts",
+      "method": "POST",
+      "path": "/api/zkkyc/submit",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "src/turtleZKKYCBackend.ts",
+      "method": "GET",
+      "path": "/api/zkkyc/status",
+      "proto": "auth",
+      "params": []
+    },
+    {
+      "file": "turtleNSFWServerEngine.ts",
+      "method": "POST",
+      "path": "/api/nsfw/check",
+      "proto": "public",
+      "params": []
+    }
+  ]
+}

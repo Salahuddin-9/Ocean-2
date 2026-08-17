@@ -16,6 +16,9 @@
  * -----------------------------------------------------------------------------------------
  */
 
+import express from 'express';
+import { getCtx } from './turtleServerContext';
+
 // ============================================================================
 // 1. DATA MODELS & ENUMS
 // ============================================================================
@@ -316,6 +319,120 @@ export const SAMPLE_ERROR_RESPONSES = {
 // ============================================================================
 // 6. DETAILED SPECIFICATION DATA DICTIONARY (FIELD-BY-FIELD)
 // ============================================================================
+
+/**
+ * Express wiring (feature #58): serves the smart-search suggestion payload from
+ * REAL data — users (People), channels, posts and hashtags — ranked with the
+ * adapter's volume + velocity formula.
+ *
+ *   GET /api/search/smart?q=<query>  -> SmartSearchSuggestionsSuccessResponse
+ *   GET /api/search/smart            -> top suggestions (no query = trending)
+ */
+export function registerSmartSearchRoutes(app: express.Express): void {
+  const { loadDatabase } = getCtx();
+
+  app.get('/api/search/smart', (req, res) => {
+    const start = Date.now();
+    const q = String(req.query.q || '').trim().toLowerCase();
+    if (q.length > 100) {
+      return res.status(400).json(SmartSearchSuggestionsAdapter.buildErrorResponse(
+        'QUERY_TOO_LONG', 'Query exceeds the 100 character limit.', 'query', '2 to 100 characters'));
+    }
+
+    try {
+      const db = loadDatabase();
+      const suggestions: SmartSearchSuggestionItem[] = [];
+      const matches = (fields: string[]): boolean => {
+        if (!q) return true;
+        return fields.some((f) => String(f || '').toLowerCase().includes(q));
+      };
+
+      // People (users)
+      (db.users || []).slice(0, 200).forEach((u: any) => {
+        if (!matches([u.name, u.username, u.profile?.badgeNumber, u.profile?.location])) return;
+        const posts = (u.profile?.posts || []).length;
+        const count = Math.max(10, posts * 12 + (u.profile?.followersCount || 0) * 3);
+        suggestions.push(SmartSearchSuggestionsAdapter.createSuggestionItem({
+          id: `sug-people-${u.id}`,
+          query: u.name || u.username || 'User',
+          category: 'People',
+          rawSearchCount: count,
+          trendingScore: Math.min(99, Math.round((count / 500) * 60 + (posts > 0 ? 20 : 0))),
+          velocityRatio24h: posts > 0 ? 1.2 : 0.6,
+          relatedEntities: [{ id: u.id, name: u.name || u.username || 'User', type: 'profile', avatarUrl: u.profile?.avatarUrl || null }],
+          safetyFiltered: false,
+        }));
+      });
+
+      // Channels
+      (db.channels || []).slice(0, 100).forEach((c: any) => {
+        if (!matches([c.name, c.handle, c.category, c.description])) return;
+        const subs = (c.subscriberIds || []).length;
+        suggestions.push(SmartSearchSuggestionsAdapter.createSuggestionItem({
+          id: `sug-channel-${c.id}`,
+          query: c.name,
+          category: 'Channels',
+          rawSearchCount: Math.max(10, subs * 20 + 10),
+          trendingScore: Math.min(99, Math.round(subs * 2 + 10)),
+          velocityRatio24h: subs > 0 ? 1.1 : 0.5,
+          relatedEntities: [{ id: c.id, name: c.name, type: 'channel', avatarUrl: c.avatarUrl || null }],
+          safetyFiltered: false,
+        }));
+      });
+
+      // Posts
+      (db.posts || []).slice(0, 300).forEach((p: any) => {
+        if (!matches([p.title, p.content, p.creator?.name])) return;
+        const likes = Number(p.likes || 0);
+        const comments = (p.comments || []).length;
+        suggestions.push(SmartSearchSuggestionsAdapter.createSuggestionItem({
+          id: `sug-post-${p.id}`,
+          query: String(p.title || p.content || '').slice(0, 60),
+          category: 'Posts',
+          rawSearchCount: Math.max(10, likes * 5 + comments * 8 + 10),
+          trendingScore: Math.min(99, Math.round(likes + comments * 2)),
+          velocityRatio24h: likes > 0 ? 1.0 : 0.4,
+          relatedEntities: [{ id: p.id, name: p.title || 'Post', type: 'post' }],
+          safetyFiltered: !!p.isNsfw,
+        }));
+      });
+
+      // Hashtags (scan post text/tags)
+      const tagCounts = new Map<string, number>();
+      const collectTags = (post: any) => {
+        const text = `${post.title || ''} ${post.content || ''} ${Array.isArray(post.tags) ? post.tags.join(' ') : ''}`;
+        (text.match(/#[a-z0-9_]+/gi) || []).forEach((m: string) => {
+          const tag = m.toLowerCase();
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+        });
+      };
+      (db.posts || []).forEach(collectTags);
+      (db.users || []).forEach((u: any) => (u.profile?.posts || []).forEach(collectTags));
+      Array.from(tagCounts.entries())
+        .filter(([tag]) => !q || tag.includes(q))
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 15)
+        .forEach(([tag, count]) => {
+          suggestions.push(SmartSearchSuggestionsAdapter.createSuggestionItem({
+            id: `sug-hashtag-${tag}`,
+            query: tag,
+            category: 'Hashtags',
+            rawSearchCount: Math.max(10, count * 40),
+            trendingScore: Math.min(99, Math.round(count * 8)),
+            velocityRatio24h: count > 2 ? 1.3 : 0.5,
+            relatedEntities: [],
+            safetyFiltered: false,
+          }));
+        });
+
+      const ranked = rankSuggestions(suggestions).slice(0, 25);
+      res.json(SmartSearchSuggestionsAdapter.buildSuccessResponse(q || 'trending', ranked, start));
+    } catch (err: any) {
+      console.error('[search/smart] error:', err);
+      res.status(500).json(SmartSearchSuggestionsAdapter.buildErrorResponse('INTERNAL_UNEXPECTED', err?.message || 'Smart search failed.'));
+    }
+  });
+}
 
 export const FIELD_EXPLANATIONS_DICTIONARY = [
   {

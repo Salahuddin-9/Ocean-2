@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
+import QRCode from 'qrcode';
 import {
   Lock, KeyRound, Send, X, ShieldCheck, Users, MessageSquareLock, Fingerprint,
   RefreshCw, AlertTriangle, CheckCircle2, Copy, Unlock, Server,
+  Smartphone, Link2, ScanLine, Trash2, Loader2,
 } from 'lucide-react';
 
 /**
@@ -47,6 +49,8 @@ interface E2EEMessage {
   fromPublicKeyFingerprint: string;
   createdAt: number;
   read: boolean;
+  /** Feature 134: per linked-device wrapped copies of the AES session key. */
+  deviceWrappedKeys?: Record<string, string> | null;
 }
 
 interface MessageRow {
@@ -99,6 +103,58 @@ function arrayBufferToPem(buf: ArrayBuffer): string {
 async function sha256Hex(str: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ---------------------------------------------------------------------------
+// Feature 134 — multi-device sync: QR pairing + WebCrypto ECDH (P-256)
+// ---------------------------------------------------------------------------
+// Pairing code format:  ocean-e2ee-pair:v1:<token>:<ecdhPublicKeyB64>
+// The two devices derive a shared secret via ECDH and derive an AES-256-GCM
+// wrapping key from it (SHA-256 of the raw shared secret). Outgoing messages
+// additionally wrap their per-message AES session key with each linked device's
+// wrapping key, so a paired device can decrypt the same ciphertext the server
+// stores. All secrets (ECDH private keys, shared secrets) stay in memory.
+
+const PAIR_CODE_PREFIX = 'ocean-e2ee-pair:v1:';
+
+interface LinkedDevice {
+  deviceId: string;
+  name: string;
+  ecdhPublicKey?: string;
+  createdAt: number;
+  lastSeenAt: number;
+}
+
+/** Generate an ECDH P-256 keypair; public key exported raw (uncompressed). */
+async function genEcdhKeys(): Promise<{ priv: CryptoKey; pubB64: string }> {
+  const kp = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveBits']);
+  const raw = await crypto.subtle.exportKey('raw', kp.publicKey);
+  return { priv: kp.privateKey, pubB64: bufToB64(raw) };
+}
+
+async function importEcdhPub(b64: string): Promise<CryptoKey> {
+  const raw = b64ToBuf(b64);
+  return crypto.subtle.importKey('raw', raw as BufferSource, { name: 'ECDH', namedCurve: 'P-256' }, false, []);
+}
+
+/** ECDH shared secret → SHA-256 → AES-256-GCM wrapping key. */
+async function deriveDeviceWrappingKey(priv: CryptoKey, peerPubB64: string): Promise<CryptoKey> {
+  const peer = await importEcdhPub(peerPubB64);
+  const shared = await crypto.subtle.deriveBits({ name: 'ECDH', public: peer }, priv, 256);
+  const digest = await crypto.subtle.digest('SHA-256', shared);
+  return crypto.subtle.importKey('raw', digest, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+}
+
+async function hexFromBytes(data: ArrayBuffer | Uint8Array): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array {
+  const out = new Uint8Array(a.length + b.length);
+  out.set(a);
+  out.set(b);
+  return out;
 }
 
 async function generateRsaKeys(): Promise<{ publicPem: string; privateKey: CryptoKey; publicKey: CryptoKey }> {
@@ -244,6 +300,19 @@ export default function E2EEMessenger({ token, currentUser, onClose }: E2EEMesse
   // Per-message AES session keys held in memory for THIS session (never persisted).
   const sessionKeys = useRef<Map<string, CryptoKey>>(new Map());
 
+  // ---- Feature 134: linked devices (QR + ECDH pairing) ----------------------
+  const [devices, setDevices] = useState<LinkedDevice[]>([]);
+  const [pairMode, setPairMode] = useState<'idle' | 'show' | 'scan'>('idle');
+  const [pairCode, setPairCode] = useState('');
+  const [pairQr, setPairQr] = useState('');
+  const [deviceName, setDeviceName] = useState('');
+  const [pairBusy, setPairBusy] = useState(false);
+  // My ECDH keypair while a "show" pairing is active (memory only).
+  const myEcdhRef = useRef<{ priv: CryptoKey; pubB64: string } | null>(null);
+  // deviceId -> derived AES wrapping key (memory only). Lets this tab wrap
+  // outgoing session keys for every linked device and unwrap incoming ones.
+  const deviceWrapKeys = useRef<Map<string, CryptoKey>>(new Map());
+
   const toast = (msg: string, variant?: string) => {
     window.dispatchEvent(new CustomEvent('show-toast', { detail: { message: msg, variant } }));
   };
@@ -344,6 +413,19 @@ export default function E2EEMessenger({ token, currentUser, onClose }: E2EEMesse
             const wrapped = self ? m.wrappedKeyForSender || m.wrappedKey : m.wrappedKey;
             if (wrapped) aesKey = await unwrapAesKey(wrapped, myPrivKey);
           }
+          // Feature 134: if this is MY message wrapped for a linked device I
+          // still hold the secret for, unwrap via the ECDH-derived device key.
+          if (!aesKey && m.deviceWrappedKeys) {
+            for (const [devId, wrapKey] of deviceWrapKeys.current) {
+              const w = m.deviceWrappedKeys[devId];
+              if (!w) continue;
+              try {
+                const raw = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBuf(m.iv) }, wrapKey, b64ToBuf(w));
+                aesKey = await crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, ['decrypt', 'encrypt']);
+                break;
+              } catch { /* wrong device key — try next */ }
+            }
+          }
           if (aesKey) {
             text = await decryptAes(aesKey, m.iv, m.ciphertext);
             sessionKeys.current.set(m.id, aesKey);
@@ -401,6 +483,15 @@ export default function E2EEMessenger({ token, currentUser, onClose }: E2EEMesse
       const rawAes = await crypto.subtle.exportKey('raw', aesKey);
       const wrappedForPeer = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, peerPubKey, rawAes as BufferSource);
       const wrappedForSender = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, myPubKey, rawAes as BufferSource);
+      // 3b. Feature 134: wrap the session key for every linked device so a
+      //     paired device can decrypt the same ciphertext from the server.
+      const deviceWrappedKeys: Record<string, string> = {};
+      for (const [devId, wrapKey] of deviceWrapKeys.current) {
+        try {
+          const wrappedForDev = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv as BufferSource }, wrapKey, rawAes as BufferSource);
+          deviceWrappedKeys[devId] = bufToB64(wrappedForDev);
+        } catch { /* skip unwrappable device */ }
+      }
       // 4. Only ciphertext + iv + wrapped keys leave the device.
       const data = await api('/api/e2ee/messages', 'POST', {
         toUserId: peerId,
@@ -409,6 +500,7 @@ export default function E2EEMessenger({ token, currentUser, onClose }: E2EEMesse
         wrappedKey: bufToB64(wrappedForPeer),
         wrappedKeyForSender: bufToB64(wrappedForSender),
         fromPublicKeyFingerprint: myFingerprint,
+        deviceWrappedKeys: Object.keys(deviceWrappedKeys).length > 0 ? deviceWrappedKeys : undefined,
       });
       sessionKeys.current.set(data.message.id, aesKey);
       setCompose('');
@@ -430,8 +522,107 @@ export default function E2EEMessenger({ token, currentUser, onClose }: E2EEMesse
     genKeys();
   };
 
+  // ---- Feature 134 handlers -------------------------------------------------
+
+  const loadDevices = useCallback(async () => {
+    if (!token) return;
+    try {
+      const data = await api('/api/e2ee/devices', 'GET');
+      setDevices(data.devices || []);
+      // Re-derive wrapping keys for devices this session can still reach (its
+      // ECDH private key + the device's public key). Memory-only.
+      if (myEcdhRef.current) {
+        for (const d of data.devices || []) {
+          if (d.ecdhPublicKey && !deviceWrapKeys.current.has(d.deviceId)) {
+            try {
+              const k = await deriveDeviceWrappingKey(myEcdhRef.current.priv, d.ecdhPublicKey);
+              deviceWrapKeys.current.set(d.deviceId, k);
+            } catch { /* key unusable — skip */ }
+          }
+        }
+      }
+    } catch { /* ignore */ }
+  }, [token]);
+
+  useEffect(() => { loadDevices(); }, [loadDevices]);
+
+  /** This device is the EXISTING one: mint a pairing token + QR code. */
+  const startPairing = async () => {
+    if (!subtleOk) return toast('Web Crypto is unavailable in this browser.', 'destructive');
+    setPairBusy(true);
+    try {
+      const d = await api('/api/e2ee/devices/pair-start', 'POST', {});
+      const kp = await genEcdhKeys();
+      myEcdhRef.current = kp;
+      const code = `${PAIR_CODE_PREFIX}${d.token}:${kp.pubB64}`;
+      setPairCode(code);
+      setPairQr('');
+      try {
+        const dataUrl = await QRCode.toDataURL(code, { width: 220, margin: 1, errorCorrectionLevel: 'M' });
+        setPairQr(dataUrl);
+      } catch { /* QR render is best-effort — the copyable code still works */ }
+      setPairMode('show');
+    } catch (e: any) {
+      toast(e.message || 'Could not start pairing.', 'destructive');
+    } finally {
+      setPairBusy(false);
+    }
+  };
+
+  /** This device is the NEW one: accept a pairing code from the existing device. */
+  const acceptPairing = async () => {
+    const code = pairCode.trim();
+    if (!code.startsWith(PAIR_CODE_PREFIX)) {
+      return toast('That does not look like an Ocean E2EE pairing code.', 'destructive');
+    }
+    const parts = code.slice(PAIR_CODE_PREFIX.length).split(':');
+    if (parts.length !== 2 || !parts[0] || !parts[1]) {
+      return toast('Malformed pairing code — expected ocean-e2ee-pair:v1:<token>:<key>.', 'destructive');
+    }
+    const [token, peerPubB64] = parts;
+    if (!subtleOk) return toast('Web Crypto is unavailable in this browser.', 'destructive');
+    setPairBusy(true);
+    try {
+      // Generate my own ECDH keypair and derive the shared wrapping secret with
+      // the existing device's public key.
+      const kp = await genEcdhKeys();
+      const wrapKey = await deriveDeviceWrappingKey(kp.priv, peerPubB64);
+      const shared = await crypto.subtle.deriveBits({ name: 'ECDH', public: await importEcdhPub(peerPubB64) }, kp.priv, 256);
+      const pairProofHash = await hexFromBytes(concatBytes(new Uint8Array(shared), new TextEncoder().encode(token)));
+      const d = await api('/api/e2ee/devices/complete', 'POST', {
+        token,
+        deviceName: (deviceName || 'Linked device').trim(),
+        ecdhPublicKey: kp.pubB64,
+        pairProofHash,
+      });
+      // Cache my derived wrapping key under the new deviceId so incoming
+      // messages wrapped for this device can be unwrapped in this session.
+      deviceWrapKeys.current.set(d.deviceId, wrapKey);
+      setPairMode('idle');
+      setPairCode('');
+      setDeviceName('');
+      toast('Device paired — this device can now decrypt your encrypted messages.');
+      loadDevices();
+    } catch (e: any) {
+      toast(e.message || 'Pairing failed.', 'destructive');
+    } finally {
+      setPairBusy(false);
+    }
+  };
+
+  const unlinkDevice = async (deviceId: string) => {
+    try {
+      await api(`/api/e2ee/devices/${deviceId}`, 'DELETE');
+      deviceWrapKeys.current.delete(deviceId);
+      toast('Device unlinked.');
+      loadDevices();
+    } catch (e: any) {
+      toast(e.message || 'Could not unlink device.', 'destructive');
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-xl mx-auto space-y-5">
         {!subtleOk && (
           <div className="flex items-start gap-2 rounded-2xl border border-amber-200 dark:border-amber-800/60 bg-amber-50/80 dark:bg-amber-950/40 px-4 py-3 text-xs text-amber-800 dark:text-amber-300">
@@ -522,6 +713,164 @@ export default function E2EEMessenger({ token, currentUser, onClose }: E2EEMesse
             </div>
             <p className="font-mono text-[8px] uppercase tracking-wider text-[#8a8172]">
               Private key is memory-only — closing this view regenerates it next time.
+            </p>
+          </div>
+
+          {/* Linked devices panel — Feature 134 (multi-device sync) */}
+          <div className="border border-[#ebdcca]/70 dark:border-zinc-800 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center gap-1.5">
+              <Smartphone size={12} className="text-[#5c5446]" />
+              <span className="font-mono text-[9px] uppercase font-bold tracking-wider text-[#5c5446] dark:text-zinc-300">
+                Linked devices
+              </span>
+              <span className="font-mono text-[8px] uppercase text-[#8a8172]">({devices.length})</span>
+              <span className="ml-auto flex gap-1">
+                <button
+                  onClick={() => setPairMode(pairMode === 'show' ? 'idle' : 'show')}
+                  disabled={pairBusy}
+                  className="font-mono text-[8px] uppercase px-1.5 py-0.5 rounded-full bg-[#3a342a]/10 text-[#3a342a] dark:text-zinc-300 hover:bg-[#3a342a]/20 flex items-center gap-1 disabled:opacity-50"
+                >
+                  <Link2 size={9} /> Pair a new device
+                </button>
+                <button
+                  onClick={() => setPairMode(pairMode === 'scan' ? 'idle' : 'scan')}
+                  disabled={pairBusy}
+                  className="font-mono text-[8px] uppercase px-1.5 py-0.5 rounded-full bg-[#3a342a]/10 text-[#3a342a] dark:text-zinc-300 hover:bg-[#3a342a]/20 flex items-center gap-1 disabled:opacity-50"
+                >
+                  <ScanLine size={9} /> Pair this device
+                </button>
+              </span>
+            </div>
+
+            {/* Pairing flows */}
+            {pairMode === 'show' && (
+              <div className="rounded-xl border border-[#ebdcca]/70 dark:border-zinc-700 p-3 space-y-2">
+                <p className="text-[10px] text-[#5c5446] dark:text-zinc-300 leading-relaxed">
+                  Open this panel on your <b>other device</b> (same account), tap <b>Pair this device</b>,
+                  and paste the code below (or scan the QR). The two devices exchange public ECDH keys;
+                  the shared secret never leaves them.
+                </p>
+                {pairBusy ? (
+                  <div className="flex items-center gap-2 font-mono text-[9px] uppercase text-[#8a8172]">
+                    <Loader2 size={11} className="animate-spin" /> Generating pairing code…
+                  </div>
+                ) : pairCode ? (
+                  <>
+                    {pairQr && (
+                      <div className="flex justify-center bg-white rounded-lg p-2">
+                        <img src={pairQr} alt="Pairing QR code" className="w-44 h-44" />
+                      </div>
+                    )}
+                    <div className="flex gap-1.5">
+                      <input
+                        readOnly
+                        value={pairCode}
+                        className="flex-1 font-mono text-[8px] bg-white/60 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-lg px-2 py-1.5 text-[#3a342a] dark:text-zinc-200 outline-none"
+                      />
+                      <button
+                        onClick={() => copyText(pairCode)}
+                        className="font-mono text-[8px] uppercase px-2 py-1 rounded-lg bg-[#3a342a]/10 hover:bg-[#3a342a]/20 flex items-center gap-1"
+                      >
+                        <Copy size={9} /> Copy
+                      </button>
+                    </div>
+                    <p className="font-mono text-[8px] uppercase text-amber-600">
+                      Code expires in 10 minutes. Keep this tab open while pairing.
+                    </p>
+                  </>
+                ) : (
+                  <button
+                    onClick={startPairing}
+                    disabled={pairBusy}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50"
+                  >
+                    {pairBusy ? <Loader2 size={11} className="animate-spin" /> : <Link2 size={11} />}
+                    Generate pairing code
+                  </button>
+                )}
+              </div>
+            )}
+
+            {pairMode === 'scan' && (
+              <div className="rounded-xl border border-[#ebdcca]/70 dark:border-zinc-700 p-3 space-y-2">
+                <p className="text-[10px] text-[#5c5446] dark:text-zinc-300 leading-relaxed">
+                  Paste the pairing code shown on your <b>other device</b>. A fresh ECDH keypair is
+                  created here and the shared secret is derived locally — only your public key is sent to
+                  the server.
+                </p>
+                <input
+                  value={pairCode}
+                  onChange={(e) => setPairCode(e.target.value)}
+                  placeholder="ocean-e2ee-pair:v1:…"
+                  className="w-full bg-white/60 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-lg px-2 py-1.5 text-[10px] font-mono text-[#3a342a] dark:text-zinc-200 outline-none focus:border-amber-400"
+                />
+                <div className="flex gap-1.5 items-center">
+                  <input
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                    placeholder="Device name (e.g. My Laptop)"
+                    className="flex-1 bg-white/60 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-lg px-2 py-1.5 text-[10px] text-[#3a342a] dark:text-zinc-200 outline-none focus:border-amber-400"
+                  />
+                  <button
+                    onClick={acceptPairing}
+                    disabled={pairBusy || !pairCode.trim()}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50"
+                  >
+                    {pairBusy ? <Loader2 size={11} className="animate-spin" /> : <Link2 size={11} />}
+                    Pair
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {devices.length === 0 ? (
+              <p className="text-xs text-[#8a8172] dark:text-zinc-500">
+                No linked devices. Pair a second device (same account) to decrypt the same messages on it.
+                Pairing keys are memory-only — re-pair after refreshing to keep a device decrypting.
+              </p>
+            ) : (
+              <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                {devices.map((d) => (
+                  <div
+                    key={d.deviceId}
+                    className="flex items-center gap-2 rounded-xl border border-[#ebdcca]/70 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 px-3 py-2"
+                  >
+                    <span className="w-7 h-7 rounded-full bg-[#3a342a]/10 flex items-center justify-center shrink-0">
+                      <Smartphone size={12} className="text-[#3a342a] dark:text-zinc-300" />
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-xs font-bold text-[#3a342a] dark:text-zinc-100 truncate">{d.name}</span>
+                      <span className="block font-mono text-[8px] uppercase tracking-wider text-[#8a8172]">
+                        {d.deviceId.slice(0, 14)}… · {timeAgo(d.lastSeenAt)}
+                      </span>
+                    </span>
+                    <span
+                      className={`font-mono text-[8px] uppercase px-1.5 py-0.5 rounded-full ${
+                        deviceWrapKeys.current.has(d.deviceId)
+                          ? 'bg-emerald-50 text-emerald-600'
+                          : 'bg-zinc-100 text-zinc-500'
+                      }`}
+                      title={
+                        deviceWrapKeys.current.has(d.deviceId)
+                          ? 'Shared secret available this session — this device can decrypt messages'
+                          : 'No shared secret in this session (pair again after refreshing)'
+                      }
+                    >
+                      {deviceWrapKeys.current.has(d.deviceId) ? 'synced' : 'pending'}
+                    </span>
+                    <button
+                      onClick={() => unlinkDevice(d.deviceId)}
+                      className="text-[#8a8172] hover:text-rose-600 transition-colors"
+                      title="Unlink device"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="font-mono text-[8px] uppercase tracking-wider text-[#8a8172]">
+              Server stores public ECDH keys + pairing proofs only — shared secrets never leave your devices.
             </p>
           </div>
 

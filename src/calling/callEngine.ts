@@ -168,6 +168,19 @@ export class CallEngine {
     this.token = token;
   }
 
+  /**
+   * Bind (or unbind) the ring socket used for OUTGOING ring events (chat 1:1:
+   * call_offer / call_ringing / call_answer / call_cancel / call_end).
+   *
+   * The provider opens the socket in an effect AFTER the engine is
+   * constructed, so this cannot be a constructor arg — without this wiring,
+   * `sendWs()` (which is `this.ws?.send(...)`) silently no-ops and the callee
+   * never rings, so chat calls can never establish.
+   */
+  setRingSocket(ws: RingSocketHandle | null): void {
+    this.ws = ws;
+  }
+
   getState(): EngineState {
     return { ...this.state };
   }
@@ -485,6 +498,29 @@ export class CallEngine {
     if (stream && stream.getTracks().length > 0) {
       stream.getTracks().forEach((t) => pc.addTrack(t, stream));
     }
+
+    // Belt-and-suspenders for the caller's INITIAL offer: post it directly
+    // (old useP2PCall pattern) instead of relying solely on the
+    // onnegotiationneeded handler above. If that event were ever missed or
+    // swallowed by the guard, the callee would ring fine but find no offer in
+    // the signal room and the call would never establish. negotiatingRef is
+    // the shared negotiation lock: the queued negotiationneeded task bails
+    // while it is set, and it stays free for ICE-restart re-offers later.
+    if (this.isInitiatorRef && this.roomIdRef && !pc.localDescription) {
+      this.negotiatingRef = true;
+      void (async () => {
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          await this.postSignal(this.roomIdRef!, 'offer', offer);
+        } catch (e) {
+          console.warn('initial offer failed:', e);
+        } finally {
+          this.negotiatingRef = false;
+        }
+      })();
+    }
+
     this.localStreamRef = stream;
     this.state.localStream = stream;
     this.state.isCameraOff = false;
@@ -691,8 +727,13 @@ export class CallEngine {
       this.toast('⚠️ Camera unavailable — continuing with audio only');
     }
 
-    // The initial offer is sent by the onnegotiationneeded handler after
-    // addTrack (single negotiation path for initial + ICE-restart re-offers).
+    // CRITICAL: create the peer connection and attach the local tracks BEFORE
+    // starting the ring. addTrack() fires onnegotiationneeded, and the initial
+    // offer is posted to the signal relay by that handler (single negotiation
+    // path for initial + ICE-restart re-offers). Without this call the caller
+    // never publishes an SDP offer, so the callee — who rings fine via the WS
+    // relay — finds no offer in the signal room and the call never connects.
+    this.initPeerConnection(acq.stream);
     this.lastSignalTimeRef = 0;
     this.signalTimerRef = setInterval(() => this.pollSignals(rId), POLL_INTERVAL_MS);
     this.startRingTimer();
@@ -828,6 +869,13 @@ export class CallEngine {
     if (this.endedRef) return;
     this.toast('User is busy in another call');
     this.finish('busy');
+  };
+
+  /** The chat server reported the target has no live socket (offline). */
+  onUnreachable = (): void => {
+    if (this.endedRef) return;
+    this.toast('User is offline — call not delivered');
+    this.finish('failed');
   };
 
   toggleMute = (): void => {
@@ -1023,8 +1071,25 @@ export class CallEngine {
           console.warn('recvonly transceiver note:', e);
         }
       }
-      // The initiator's initial offer is sent by the onnegotiationneeded
-      // handler after addTrack/addTransceiver (single negotiation path).
+      // The initiator's initial offer is posted DIRECTLY here (old
+      // useRandomVideoCall pattern) rather than relying solely on
+      // onnegotiationneeded — if that event were ever missed or swallowed by
+      // the guard, the callee would never receive an offer and no media would
+      // ever flow even though the room matched and ICE connected. negotiatingRef
+      // (the shared negotiation lock) makes the queued negotiationneeded task
+      // bail while we're posting, and it stays free for ICE-restart re-offers.
+      if (this.isInitiatorRef && this.roomIdRef && !pc.localDescription) {
+        this.negotiatingRef = true;
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          await this.postSignal(this.roomIdRef, 'offer', offer);
+        } catch (e) {
+          console.warn('meet initial offer failed:', e);
+        } finally {
+          this.negotiatingRef = false;
+        }
+      }
     } catch (e) {
       console.error('meet WebRTC init error:', e);
       this.finish('failed', false);

@@ -2,33 +2,36 @@
 
 ## What this is
 "Ocean" is a full social media platform: Facebook/Instagram-style feed (posts, reels,
-comments, reactions), chat + audio/video calls (Stream Video SDK), random video chat
-"Meet" (Omegle-style), friends, notifications, trending, NSFW content moderation
-(NSFWJS client + open_nsfw server), and Gemini AI features.
+stories, reactions), chat + audio/video calls (zero-key P2P WebRTC + Jitsi), random
+video chat "Meet" (Omegle-style), friends, notifications, trending, NSFW moderation
+(NSFWJS client + server text filter), Gemini AI features — **plus a ~200-feature
+Explore hub** (safety/civic, privacy/sovereignty, AI, hyperlocal economy, agriculture,
+education, civic, religious, travel, frontier tech). See `FEATURES.md`.
 Stack: React 18 + Vite + TypeScript frontend; single Express backend (`server.ts`) +
-`ws` chat (`chatServer.ts`). Data lives in `database.json` and syncs to Firestore.
+`ws` chat (`chatServer.ts`). Data lives in JSON files (`database.json`,
+`community.json`, `sessions.json`) with best-effort Firestore sync.
 
 ## ⚠️ CRITICAL — read before editing anything
 - **The LIVE app is `src/App.tsx`** (plus `src/components/*`, `src/hooks/*`).
-- The root-level non-compiling leftovers (`App.tsx`, `AppContext.tsx`, `WorldMeet.tsx`,
-  `ChatModal.tsx`, `PostsSection.tsx`, `PostCard.jsx`, `PostComposer.jsx`,
-  `CommentSection.jsx`, `MediaView.jsx`, `ReelCard.jsx`) and backup duplicates
-  (`server-1.ts`, `App-1.tsx`, `App-2.tsx`, `App-3.tsx`, `turtleRankingEngine-1.ts`,
-  `package-1.json`, `mathkit-1.ts`, `vite,config-1.ts`, `CommentsModal-1.tsx`,
-  `CommentsModal-2.tsx`, root `matchmaking.ts`/`auth.ts` variants) were proven
-  unreachable (0 imports, not in tsconfig/vite entry) and REMOVED. If a task mentions
-  these names, the real file is under `src/components/`.
-- **Two copies of the app exist**: `Ocean-V0.1/` (source of truth) and
-  `G:\Ocean-V0.1-runnable\` (runnable copy WITH node_modules + dist, created from
-  Ocean-V0.1). Keep changes synced to both.
-  ⚠️ `G:\Ocean\` is a DIFFERENT legacy project (tRPC + Drizzle + SQLite, old layout)
-  — NOT a copy of Ocean-V0.1. Do NOT sync into it or "fix" it.
+- Root-level leftovers and backup duplicates (`App.tsx`, `AppContext.tsx`,
+  `server-1.ts`, `App-1.tsx`, root `matchmaking.ts`/`auth.ts`, etc.) were proven
+  unreachable and REMOVED. If a task mentions one of these names, the real file is
+  under `src/components/`.
+- **This working directory is the live repo.** `G:\Ocean-V1` and
+  `G:\Ocean-V1 - Copy` are STALE pre-cleanup snapshots (they still contain the
+  removed root-level leftovers) — do NOT treat them as copies to sync into.
+- `src/archive/dead-turtle/` holds archived superseded backends; it is excluded from
+  `tsc` via `exclude: ["src/archive/**"]`. Never import from it.
+- All hub features (109–260) are wired in `src/turtleFeatureRegistry.ts` → 148
+  `register*Routes(app)` calls + direct server.ts registration. Verified: 0 dead
+  turtle modules, 154/154 hub features resolve to registered routes.
 
 ## Commands
 - `npm run dev` — start the Express server (`tsx server.ts`) on port 3000
 - `npm run build` — production build (vite + esbuild → `dist/server.cjs`)
 - `npm start` — run the built server
 - `npm run lint` — TypeScript typecheck (`tsc --noEmit`)
+- `npm test` / `npm run test:watch` — Vitest suite (38 tests, isolated temp dirs)
 - Browse http://localhost:3000 (server also serves the Vite dev client)
 
 ## Architecture map
@@ -42,14 +45,19 @@ Stack: React 18 + Vite + TypeScript frontend; single Express backend (`server.ts
   `/api/chat/messages/:id/save`, `/api/chat/self-notes`, `/api/chat/random-match`,
   `/api/channels|/api/studio/stats`, `/api/discovery/nearby`, `/api/ai/image`,
   `/api/ai/summary`, `/api/auth/sessions`, `/api/admin/stream-keys|stream-usage`
-- `chatServer.ts` — Socket.IO chat
+- `chatServer.ts` — realtime chat over the raw `ws` package (`WebSocketServer`,
+  path `/ws/chat` — NOT Socket.IO), plus mesh WebRTC signaling and watch-together sync
 - `turtleRankingEngine.ts` — feed ranking engine (wired into `/api/posts/feed`)
 - `turtleNSFWFilter.ts` — client NSFW screening (fail-open; model at
   `public/models/mobilenet_v2/`)
 - `SafeImage.tsx` — NSFW-safe `<img>` wrapper (fail-open, blur/block verdicts)
 - `turtleNSFWServerEngine.ts` — server-side NSFW routes
 - `src/components/MeetView.tsx` + `OmegleRandomVideoCall.tsx` +
-  `src/hooks/useRandomVideoCall.ts` — the LIVE Meet flow
+  `src/calling/meetRoomMesh.ts` + `useMeetRoomMesh.ts` — the LIVE Meet flow
+  (standalone mesh WebRTC: `join-room`/`all-users`/`user-connected`/
+  `sending-signal`/`returning-signal` relayed over `/ws/chat` in chatServer.ts;
+  random pairing via `/api/meet/match`, shared room-code group join;
+  `openrelay.metered.ca` STUN/TURN/TURNS ladder)
 - `src/components/ChatModal.tsx` + `src/components/call/StreamCallLayer.tsx` —
   chat + calling UI
 - **`src/engine/`** — the full hybrid-engine ranking pipeline (ported verbatim
@@ -82,8 +90,30 @@ Stack: React 18 + Vite + TypeScript frontend; single Express backend (`server.ts
 - `src/lib/{haptics,utils,trust,moderation,base44Utils}.ts/.js` +
   `imageCompressor.ts` + `ringtoneSynth.ts` + `countries.ts` — utility ports.
 - `docs/specs/*.md` — ATLAS-RANK design specs (from architecture(1)/public/spec).
-- `src/turtle*.ts` — feature engines/specs (messaging, random chat, emergency pools,
-  notification, smart search, time capsule, channels, etc.)
+- **`src/turtle*.ts` + `src/turtleFeatureRegistry.ts`** — the feature backend layer:
+  **163 turtle modules**, of which **148 are registered in `registerOceanFeatures(app)`**
+  (features 109–260) and 15 are shared engines/helpers (coins, JSON store, ranking,
+  emergency rate-limit pools, server-context, etc.) wired directly in `server.ts`/
+  `chatServer.ts`. Each module exports `registerXxxRoutes(app)` and owns its routes +
+  data model. Verified: 0 dead modules, 0 registry imports never invoked.
+  Analyzer: `scripts/analyze-turtle-imports.mjs` (report in `scripts/turtle-import-graph-report.md`).
+- **`src/test/`** — Vitest suite (38 tests, 6 files): auth (incl. login 429 rate-limit),
+  feed + NSFW text filter, chat, upload validation, NSFW pure functions, emergency-pools
+  auth regression. Runs in isolated temp dirs (`NODE_ENV=test`, `startServer()` skipped,
+  Firestore disabled) — never touches real `database.json`.
+- **`scripts/`** — verification tooling: `extract-routes.mjs` (955-route inventory),
+  `verify-feature-wiring.mjs` (hub→component→route cross-check), `analyze-turtle-imports.mjs`.
+
+## JSON DB & Firestore sync
+- Data lives in JSON files: `database.json` (users/posts/messages/etc.),
+  `community.json` (events/Q&A/topics/rewards), `sessions.json` (login sessions),
+  `stories.json`/`databrain.json`/`miniapps.json`/`liveeco.json`/`snapmap.json`.
+- `loadDatabase()`/`saveDatabase()` (via `src/turtleServerContext.ts`) read/write these
+  files synchronously. Paths are overridable via `DB_FILE`/`SESSIONS_FILE` env (tests
+  use this).
+- Firestore sync is a **best-effort mirror** (Admin SDK): periodic save + load-on-boot,
+  graceful fallback to local files when credentials are missing. It is NOT the source
+  of truth. `firestore.rules` requires auth (server-only writes).
 
 ## Recent fixes — DO NOT REGRESS
 1. **NSFW**: model files added to `public/models/mobilenet_v2/`; thresholds
@@ -95,10 +125,17 @@ Stack: React 18 + Vite + TypeScript frontend; single Express backend (`server.ts
    and the always-positive noise term is now symmetric ±0.02.
 3. **Stream tokens**: multi-key pool; graceful `configured:false` when keys missing.
 4. **Meet**: real `/api/meet/match` polling (no fake setTimeout); interest-priority matching.
+   **Meet video rooms** run on a standalone mesh engine (`src/calling/meetRoomMesh.ts`)
+   — native `<video autoPlay playsInline>` boxes, real `getUserMedia` camera/mic
+   toggles, and SimpleWebRTC-style mesh signaling (`join-room`/`all-users`/
+   `user-connected`/`sending-signal`/`returning-signal`) in chatServer.ts (no
+   REST signal polling, no glare: existing member initiates, newcomer answers).
+   Regression test: `scripts/test-meet-mesh.mjs`.
 5. **Calling — zero getstream.io keys required**: chat 1:1 audio/video falls back to
    built-in P2P WebRTC (signaling via the chat WebSocket); group meetings + Meet use
    Jitsi Meet via the iframe API (`src/components/call/JitsiMeeting.tsx`, host from
-   `VITE_JITSI_HOST`, default `meet.jit.si` — self-hostable from `jitsi-meet-master`).
+   `VITE_JITSI_HOST`, default `8x8.vc` with automatic `meet.jit.si` fallback —
+   self-hostable from `jitsi-meet-master`).
    Stream keys are only an optional enhancement. Stream singleton fix (reconnect
    after remount); `/api/stream/upsert-target` honors the multi-key manager.
 6. **Videos**: missing `/uploads/*` now return 404 (not index.html); unplayable
@@ -114,12 +151,45 @@ Stack: React 18 + Vite + TypeScript frontend; single Express backend (`server.ts
 `APP_URL`.
 
 ## Known publish blockers (fix before production)
-- `server.ts` (~line 23) falls back to a hardcoded mock JWT secret when `JWT_SECRET`
-  is missing → should fail closed instead (security hole).
-- `firestore.rules` is `allow read, write: if true` (wide open) → require auth.
-- Server-side open_nsfw model folder (`server_models/`) is missing.
-- Real API keys are not set (`.env` doesn't exist yet).
-- Video calls require HTTPS in production.
+Updated 2026-08-15 — the production-demo hardening pass (dotenv wiring, `.env`,
+helmet/CORS allow-list, untracking the Firebase config) is DONE; see
+`FINAL_READINESS_REPORT.md` for the full audit. Remaining:
+- **P1** Real API keys are still unset: `.env` exists (gitignored) with a secure
+  random `JWT_SECRET` + `CORS_ORIGIN`, but `STREAM_*`, `GEMINI_API_KEY`,
+  `MASTER_KEY`, `SERVICE_ROLE_KEY`, `TELEGRAM_BOT_TOKEN` are empty ⇒ AI/Stream/
+  Firestore features degrade gracefully. Production **fails closed** (refuses to
+  start) when `JWT_SECRET` is missing; boot with `NODE_ENV=production` (env vars
+  override `.env`) for fail-closed validation + the HTTPS warning.
+- **P1** `firebase-applet-config.json` is now **untracked** (`git rm --cached`, still
+  gitignored + on disk) — rotate the web API key for hygiene since it lives in git
+  history.
+- **P2** Server-side open_nsfw model folder (`server_models/`) is missing — the client
+  TF.js path is the active screen (fail-open) and works; a loud startup warning is
+  printed and the server falls back to the client mobilenet_v2 model automatically.
+- **P2** Login rate limiter is in-memory (per-email 30s lockout, tested) — swap to
+  Redis-backed `express-rate-limit` for launch.
+- **P2** Video calls require HTTPS in production (getUserMedia).
+- **P2** `MASTER_KEY` unset uses a legacy dev fallback with a loud warning.
+- **P2** For a real deployment set `CORS_ORIGIN` to the deployed origin (allow-list is
+  `http://localhost:5173,http://localhost:3000` by default); the CSP is intentionally
+  permissive (CDN scripts/wasm, ws:, data:/blob:, Jitsi frame) — tighten `script-src`
+  to exact CDN hosts before a public launch.
+
+## Fixed (do NOT re-introduce)
+- JWT fallback: **no hardcoded mock secret** — dev generates an ephemeral random
+  secret; `validateStartupEnvironment()` exits in production when secrets are missing.
+  (`.env` now supplies a real one; keep it gitignored.)
+- `firestore.rules`: **no wide-open `allow read, write: if true`** — auth required,
+  server-only writes, users may edit only their own profile.
+- Emergency pools auth: all `/api/emergency/pools*` mutating routes mount `requireAuth`
+  (regression test in `src/test/emergency.test.ts`).
+- CORS: **no `Access-Control-Allow-Origin: *`** — server.ts uses `helmet()` (custom
+  CSP) + `cors({ origin: CORS_ORIGIN allow-list, credentials: true })`. Keep the
+  allow-list; never re-add the wildcard middleware.
+- `.env` loading: `import 'dotenv/config'` is the **first import in server.ts** —
+  removing it silently disables `.env` (dotenv is NOT auto-loaded).
+- `firebase-applet-config.json`: untracked via `git rm --cached` and matched by
+  `.gitignore` — keep it out of git (do not `git add -f` it back).
 
 ## Reference features in sibling folders (port only if asked)
 - `../architecture-y/src/lib/reco/` — ATLAS-RANK production feed algorithm
@@ -182,3 +252,16 @@ Community / discovery (Explore Feature Hub):
 - **Ranking demo wiring** — `InteractiveDemo.tsx` + `ArchitectureDiagram.tsx`
   now reachable from the Explore Feature Hub (hybrid-engine).
 - **RTL toggle** — `isRtl` state flips `document.dir`, persisted to localStorage.
+
+## Final verification (2026-08-15) — current state
+- `npx tsc --noEmit` → clean · `npm run build` → succeeds · `npm test` → 38/38 pass.
+- **955 routes**: 833 require auth (87%), 20 admin-gated, 102 intentionally public
+  (auth endpoints, guest-capable content with explicit `guestId` contract, stateless
+  AI tools, health/static). Inventory: `scripts/route-inventory.json`.
+- **154/154 hub features** (109–260) wired: component exists + rendered in hub + every
+  API call resolves to a registered route. Table: `scripts/feature-wiring.json`.
+- **0 dead turtle modules**; all 148 registry `register*` calls are invoked.
+- Feature statuses (✅/⚠️/🧪/🔧) are documented honestly in `FEATURES.md` — simulated
+  sub-parts (Bluetooth mesh, hardware wallet, satellite, weather APIs, police filing,
+  govt-job/scolarship ingestion, biometric unlock, ad revenue) are labeled in-UI and in
+  the doc; no over-promising.

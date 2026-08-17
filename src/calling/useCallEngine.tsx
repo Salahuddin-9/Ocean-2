@@ -133,13 +133,24 @@ export function CallEngineProvider({ user, token, onToast, children }: CallEngin
             case 'call_busy':
               if (st.callId === data.callId) engine.onBusy();
               break;
+            case 'call_unreachable':
+              if (st.callId === data.callId) engine.onUnreachable();
+              break;
           }
         } catch (e) {
           console.warn('ring event handler error:', e);
         }
       },
     });
-    return () => handle.close();
+    // CRITICAL: give the engine the socket so its OUTGOING ring events
+    // (call_offer / call_ringing / call_answer / ...) actually leave the tab.
+    // Without this, sendWs() no-ops and the callee never rings — chat calls
+    // could never establish even though the socket itself was open.
+    engine.setRingSocket(handle);
+    return () => {
+      engine.setRingSocket(null);
+      handle.close();
+    };
   }, [user, token]);
 
   const value = useMemo<CallEngineContextValue>(() => {
@@ -249,12 +260,17 @@ export function useCallEngine({
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  // Meet's <video> elements only mount when the phase becomes 'connected', but
+  // the remote tracks can arrive while still 'connecting' (ontrack fires on
+  // answer). Keying on [stream] alone would no-op against a null ref and never
+  // re-run after the element mounts → blank remote video. Including `phase`
+  // makes the attach re-run exactly when the elements appear.
   useEffect(() => {
     attachToElement(localVideoRef.current, state.localStream);
-  }, [state.localStream]);
+  }, [state.localStream, state.phase]);
   useEffect(() => {
     attachToElement(remoteVideoRef.current, state.remoteStream);
-  }, [state.remoteStream]);
+  }, [state.remoteStream, state.phase]);
 
   const startSearch = useCallback(() => {
     void engine.startSearch(interestsRef.current);

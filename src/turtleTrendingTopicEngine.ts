@@ -19,6 +19,9 @@
  * -----------------------------------------------------------------------------------------
  */
 
+import express from 'express';
+import { getCtx } from './turtleServerContext';
+
 // ==========================================
 // 1. DATA MODELS & TYPE DEFINITIONS
 // ==========================================
@@ -390,6 +393,98 @@ export const TRENDING_ANTI_MANIPULATION_RULES = {
 // ============================================================================
 // 8. UPDATE FREQUENCY & STRATEGY SPECIFICATION
 // ============================================================================
+
+/**
+ * Express wiring (feature #59): computes live trending hashtags from the
+ * database.json posts/reels and scores them with `calculateTrendingScore`.
+ *
+ *   GET /api/trends/hashtags?limit=30  -> { hashtags: [{ tag, count, postsCount, trendingScore, tier }] }
+ */
+export function registerTrendingTopicRoutes(app: express.Express): void {
+  const { loadDatabase } = getCtx();
+
+  app.get('/api/trends/hashtags', (req, res) => {
+    try {
+      const db = loadDatabase();
+      const now = Date.now();
+      const hourMs = 60 * 60 * 1000;
+
+      interface TagAcc {
+        posts: any[];
+        reactions: number;
+        comments: number;
+        users: Set<string>;
+        recent: number;
+      }
+      const tagStats = new Map<string, TagAcc>();
+
+      const collect = (post: any) => {
+        if (!post) return;
+        const text = `${post.title || ''} ${post.content || ''}`.toLowerCase();
+        const tags = new Set<string>();
+        (Array.isArray(post.tags) ? post.tags : []).forEach((t: string) => tags.add(String(t).replace(/^#/, '').toLowerCase()));
+        (text.match(/#[a-z0-9_]+/gi) || []).forEach((m: string) => tags.add(m.slice(1).toLowerCase()));
+        const author = post.authorId || post.userId || post.creator?.id;
+        const t = Number(post.createdTime ?? post.timestamp ?? 0) || now;
+        tags.forEach((tag) => {
+          if (!tag || tag.length > 40) return;
+          let s = tagStats.get(tag);
+          if (!s) { s = { posts: [], reactions: 0, comments: 0, users: new Set(), recent: 0 }; tagStats.set(tag, s); }
+          s.posts.push(post);
+          s.reactions += Number(post.likes ?? 0) + (Array.isArray(post.reactions) ? post.reactions.length : 0);
+          s.comments += Array.isArray(post.comments) ? post.comments.length : 0;
+          if (author) s.users.add(author);
+          if (now - t < hourMs) s.recent += 1;
+        });
+      };
+
+      (db.posts || []).forEach(collect);
+      (db.users || []).forEach((u: any) => (u.profile?.posts || []).forEach(collect));
+      // Reels carry captions that may include hashtags too.
+      (db.reels || []).forEach((r: any) => {
+        const text = `${r.caption || ''} ${r.title || ''}`.toLowerCase();
+        (text.match(/#[a-z0-9_]+/gi) || []).forEach((m: string) => {
+          const tag = m.slice(1).toLowerCase();
+          if (!tag || tag.length > 40) return;
+          let s = tagStats.get(tag);
+          if (!s) { s = { posts: [], reactions: 0, comments: 0, users: new Set(), recent: 0 }; tagStats.set(tag, s); }
+          s.posts.push(r);
+          s.reactions += Number(r.likes ?? 0);
+          s.comments += Array.isArray(r.comments) ? r.comments.length : 0;
+          if (r.userId) s.users.add(r.userId);
+          const t = Number(r.createdTime ?? r.timestamp ?? 0) || now;
+          if (now - t < hourMs) s.recent += 1;
+        });
+      });
+
+      const rows = Array.from(tagStats.entries())
+        .map(([tag, s]) => {
+          const result = calculateTrendingScore({
+            topicId: `hashtag-${tag}`,
+            topicName: tag,
+            search_count_last_1h: s.recent,
+            search_count_last_24h: s.posts.length,
+            post_count_last_24h: s.posts.length,
+            reaction_count_last_24h: s.reactions,
+            comment_count_last_24h: s.comments,
+            share_count_last_24h: 0,
+            unique_users_count: Math.max(1, s.users.size),
+            growth_rate: s.recent > 0 ? Math.min(1.5, s.recent / Math.max(1, s.posts.length)) : 0,
+            safety_penalty: 0,
+            spam_penalty: 0,
+          });
+          return { tag, count: s.posts.length, postsCount: s.posts.length, trendingScore: result.finalTrendingScore, tier: result.tier };
+        })
+        .sort((a, b) => b.trendingScore - a.trendingScore || b.count - a.count)
+        .slice(0, Math.min(Math.max(Number(req.query.limit) || 30, 1), 100));
+
+      res.json({ hashtags: rows, generatedAt: now });
+    } catch (err: any) {
+      console.error('[trends/hashtags] error:', err);
+      res.status(500).json({ error: err?.message || 'Trend computation failed.' });
+    }
+  });
+}
 
 export const TRENDING_UPDATE_STRATEGY = {
   executionIntervals: {

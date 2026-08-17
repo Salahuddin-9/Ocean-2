@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import {
   Sparkles, X, ScanSearch, Flag, MessageSquareText, Reply, History, Check,
   Loader2, ShieldAlert, TrendingUp, AlertTriangle, Settings, RefreshCw,
-  FileText, Users, Copy, Send, Trash2,
+  FileText, Users, Copy, Send, Trash2, Activity,
 } from 'lucide-react';
 
 /**
@@ -72,11 +72,22 @@ interface SmartSettings {
   autoFlagMode: 'off' | 'notify' | 'auto';
 }
 
+interface InactiveGroup {
+  id: string;
+  name: string;
+  emoji: string;
+  memberCount: number;
+  lastActivityAt: number | null;
+  idleDays: number | null;
+  reactivationPrompt: string;
+}
+
 interface ReportData {
   detections: Detection[];
   countByTag: Record<Tag, number>;
   flaggedPosts: Detection[];
   flags: FlagItem[];
+  inactiveGroups?: InactiveGroup[];
   lastScanAt: number | null;
   settings: SmartSettings;
   viewerId?: string | null;
@@ -192,7 +203,7 @@ export default function SmartCommunity({ token, currentUser, onClose }: SmartCom
   // ---- auth gate (after all hooks so render order stays stable) ----------
   if (!token) {
     return (
-      <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+      <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
         <div className="max-w-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg font-bold text-[#3a342a] dark:text-zinc-100 flex items-center gap-2">
@@ -338,7 +349,7 @@ export default function SmartCommunity({ token, currentUser, onClose }: SmartCom
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+      className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
     >
       <div className="max-w-3xl mx-auto space-y-5">
         {/* Header */}
@@ -456,6 +467,33 @@ export default function SmartCommunity({ token, currentUser, onClose }: SmartCom
                     {report.settings.autoFlagMode === 'auto' ? ' (auto-flag ON — promoted to flags)' : ' (threshold only)'}.
                   </p>
                 )}
+              </div>
+            )}
+
+            {/* Inactive community groups (group inactivity detection) */}
+            {report && report.inactiveGroups && report.inactiveGroups.length > 0 && (
+              <div className="bg-[#fcfaf4] border border-[#ebdcca] rounded-3xl p-5 space-y-3">
+                <h3 className="font-display text-sm font-bold text-[#3a342a] dark:text-zinc-100 flex items-center gap-2">
+                  <Activity size={15} className="text-violet-600" /> Inactive groups ({report.inactiveGroups.length})
+                </h3>
+                <div className="space-y-3">
+                  {report.inactiveGroups.map((g) => (
+                    <div key={g.id} className="rounded-2xl border border-[#ebdcca]/70 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 p-3 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{g.emoji || '👥'}</span>
+                        <span className="font-display text-xs font-bold text-[#3a342a] dark:text-zinc-100 flex-1 truncate">{g.name}</span>
+                        <span className="font-mono text-[8px] uppercase font-bold px-1.5 py-0.5 rounded-full bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+                          {g.idleDays === null ? 'idle' : `${g.idleDays}d idle`}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-[#5c5446] dark:text-zinc-400">
+                        {g.memberCount} member{g.memberCount === 1 ? '' : 's'}
+                        {g.lastActivityAt ? ` · last activity ${timeAgo(g.lastActivityAt)}` : ' · no posts yet'}
+                      </p>
+                      <p className="text-[10px] italic text-[#8a8172] dark:text-zinc-500 leading-relaxed">💡 {g.reactivationPrompt}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

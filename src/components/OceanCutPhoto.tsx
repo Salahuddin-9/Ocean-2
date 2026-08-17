@@ -164,7 +164,7 @@ export default function OceanCutPhoto({ token, currentUser, onClose }: Props) {
     if (!base) return;
     setRemoving(true); setRmPct(0);
     try {
-      const blob = await new Promise<Blob>((res) => base.toBlob((b) => res(b!), 'image/png'));
+      const blob = await new Promise<Blob>((res) => (base as unknown as HTMLCanvasElement).toBlob((b) => res(b!), 'image/png'));
       const out = await removeBackgroundAI(blob, setRmPct);
       if (out) {
         const dataUrl = await blobToDataUrl(out);

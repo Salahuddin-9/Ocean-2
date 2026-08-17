@@ -127,7 +127,7 @@ export default function CollabPosts({ token, currentUser, onClose }: CollabPosts
     !!currentUser && (p.authorName === currentUser.name || p.collaborators.some((c) => c.id === currentUser.id && c.accepted));
 
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/97 dark:bg-zinc-950/97 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/60 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">

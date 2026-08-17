@@ -48,7 +48,7 @@ export default function MetabaseEmbed({ dashboardId, token, title, fallback }: P
     setSdk('on');
     try {
       const { MetabaseProvider, InteractiveDashboard } = await import('@metabase/embedding-sdk-react');
-      const authConfig = {
+      const authConfig: any = {
         authType: 'signedUrl' as const,
         getSignedUrl: async ({ resource }: any) => {
           const id = resource?.dashboard || dashboardId;

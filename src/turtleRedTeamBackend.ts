@@ -5,9 +5,14 @@
  * to find edge cases (prompt-injection, ranking manipulation, NSFW bypass),
  * submissions are scored by reviewers, and top reporters earn a bounty + badge.
  *
+ * Scoring: submissions are auto-scored on submit with a transparent heuristic
+ * (severity base + evidence keywords) so the arena is fully usable end-to-end;
+ * an admin/reviewer can override any score via POST /api/redteam/score
+ * (requireAdmin — MASTER_KEY gate), which also flips the status.
+ *
  * Model (global db):
  *   db.redChallenges   — { id, title, description, system, reward, status, at }
- *   db.redSubmissions  — { id, challengeId, userId, report, severity, status, score, at }
+ *   db.redSubmissions  — { id, challengeId, userId, report, severity, status, score, reviewedAt, at }
  *
  * Routes:
  *   GET  /api/redteam/challenges      (public) challenge list
@@ -39,6 +44,7 @@ export interface RedSubmission {
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'pending' | 'accepted' | 'rejected';
   score: number;
+  reviewedAt?: number;
   at: number;
 }
 
@@ -110,6 +116,19 @@ export function registerRedTeamRoutes(app: express.Express): void {
     res.json({ challenge });
   });
 
+  /**
+   * Transparent auto-review heuristic: severity base + evidence keywords in the
+   * report. Marks accepted (score >= 5) so the arena is usable end-to-end; a
+   * human reviewer can override via POST /api/redteam/score.
+   */
+  function autoScore(report: string, severity: RedSubmission['severity']): { score: number; status: RedSubmission['status'] } {
+    const base = { critical: 9, high: 7, medium: 5, low: 3 }[severity];
+    const lower = report.toLowerCase();
+    const evidence = ['reproduce', 'reproduction', 'steps', 'proof of concept', 'poc', 'payload', 'curl', 'request', 'response', 'bypass', 'exploit', 'screenshot', 'trace', 'stack'].filter((k) => lower.includes(k)).length;
+    const score = Math.max(0, Math.min(10, base + Math.min(2, evidence)));
+    return { score, status: score >= 5 ? 'accepted' : 'rejected' };
+  }
+
   app.post('/api/redteam/submit', requireAuth, (req, res) => {
     const user = (req as any).user;
     const b = (req.body || {}) as any;
@@ -122,19 +141,21 @@ export function registerRedTeamRoutes(app: express.Express): void {
     const challenge = (db.redChallenges as RedChallenge[]).find((c) => c.id === challengeId);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found.' });
     if (challenge.status !== 'open') return res.status(409).json({ error: 'Challenge is closed.' });
+    const reviewed = autoScore(report, severity);
     const submission: RedSubmission = {
       id: uid('reds'),
       challengeId,
       userId: user.id,
       report,
       severity,
-      status: 'pending',
-      score: 0,
+      status: reviewed.status,
+      score: reviewed.score,
+      reviewedAt: Date.now(),
       at: Date.now(),
     };
     (db.redSubmissions as RedSubmission[]).push(submission);
     saveDatabase(db);
-    res.json({ submission });
+    res.json({ submission, note: `Auto-scored ${reviewed.score}/10 (${reviewed.status}) — a reviewer can override via the admin score route.` });
   });
 
   app.get('/api/redteam/submissions', requireAuth, (req, res) => {
@@ -155,8 +176,9 @@ export function registerRedTeamRoutes(app: express.Express): void {
     if (!submission) return res.status(404).json({ error: 'Submission not found.' });
     submission.score = score;
     submission.status = score >= 5 ? 'accepted' : 'rejected';
+    submission.reviewedAt = Date.now();
     saveDatabase(db);
-    res.json({ submission });
+    res.json({ submission, note: 'Reviewer score applied — overrides the auto-score.' });
   });
 
   app.get('/api/redteam/leaderboard', (req, res) => {

@@ -529,7 +529,7 @@ export default function CallWhiteboard({ token, currentUser, onClose, boardId, t
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+      className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
     >
       <div className="max-w-5xl mx-auto space-y-4">
         {/* Header + toolbar */}

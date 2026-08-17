@@ -68,7 +68,7 @@ export default function CommunitiesPro({ token, currentUser, onClose }: Props) {
   return (
     <FeatureShell title="Communities Pro" badge="254 · discord-level" icon={<MessagesSquare size={18} className="text-blue-700 dark:text-blue-400" />} onClose={onClose}>
       {livekitRoom && (
-        <LiveKitVoiceRoom roomName={livekitRoom} userName={currentUser?.name || 'User'} token={token} onClose={() => setLivekitRoom(null)} />
+        <LiveKitVoiceRoom roomName={livekitRoom} userName={currentUser?.name || 'User'} token={token} currentUser={currentUser} onClose={() => setLivekitRoom(null)} />
       )}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <span className="text-[10px] font-bold text-[#8a8172]">Community:</span>

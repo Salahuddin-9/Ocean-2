@@ -1,0 +1,2406 @@
+[
+  {
+    "file": "src/turtleAchievementsBackend.ts",
+    "exports": [
+      "AchievementDef",
+      "computeMetrics",
+      "registerAchievementRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAfforestationBackend.ts",
+    "exports": [
+      "TreePlanting",
+      "registerAfforestationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAIBengaliModerationEngine.ts",
+    "exports": [
+      "BengaliModerationLanguage",
+      "BengaliModerationRiskLevel",
+      "BengaliModerationAction",
+      "BengaliModerationCategory",
+      "BengaliModerationInput",
+      "BengaliModerationResult",
+      "BENGALI_MODERATION_RESPONSE_SCHEMA",
+      "BENGALI_MODERATION_SYSTEM_INSTRUCTION",
+      "serverSideAnalyzeBengaliContent",
+      "clientAnalyzeBengaliContent",
+      "runMockBengaliModeration",
+      "registerAIBengaliModerationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAICaptionEngine.ts",
+    "exports": [
+      "MediaCategory",
+      "AICaptionRequest",
+      "CaptionStyleSuggestion",
+      "AICaptionResponse",
+      "GEMINI_RESPONSE_SCHEMA",
+      "GEMINI_SYSTEM_INSTRUCTION",
+      "getGeminiClient",
+      "suggestAICaptions",
+      "registerAICaptionRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAIModerationAssistant.ts",
+    "exports": [
+      "SafetyRiskLevel",
+      "SafetyCategory",
+      "RecommendedAction",
+      "ModerationInput",
+      "ModerationResult",
+      "MODERATION_RESPONSE_SCHEMA",
+      "MODERATION_SYSTEM_INSTRUCTION",
+      "serverSideAnalyzeSafety",
+      "clientAnalyzeSafety",
+      "runMockModerationAnalysis",
+      "registerAIModerationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAIModeratorBackend.ts",
+    "exports": [
+      "ModAction",
+      "ModerationRule",
+      "ModerationAction",
+      "AutoReviewResult",
+      "reviewText",
+      "registerAIModeratorRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAIVehicleAnalysisEngine.ts",
+    "exports": [
+      "VehicleAnalysisInput",
+      "VehicleAnalysisResult",
+      "VEHICLE_ANALYSIS_RESPONSE_SCHEMA",
+      "VEHICLE_ANALYSIS_SYSTEM_INSTRUCTION",
+      "serverSideAnalyzeVehicleMedia",
+      "clientAnalyzeVehicleMedia",
+      "runMockVehicleAnalysis",
+      "registerAIVehicleAnalysisRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAlgoPrefsBackend.ts",
+    "exports": [
+      "AlgoWeights",
+      "personalScore",
+      "registerAlgoPrefsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAlumniBackend.ts",
+    "exports": [
+      "Alumni",
+      "registerAlumniRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAnonymousBackend.ts",
+    "exports": [
+      "registerAnonymousRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAssignmentHelpBackend.ts",
+    "exports": [
+      "AssignmentHelp",
+      "registerAssignmentHelpRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleBarterBackend.ts",
+    "exports": [
+      "BarterInterest",
+      "Barter",
+      "registerBarterRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleBioDataBackend.ts",
+    "exports": [
+      "BioData",
+      "registerBioDataRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleBloodDonorBackend.ts",
+    "exports": [
+      "BloodGroup",
+      "DonorAvailability",
+      "BloodRequestStatus",
+      "Urgency",
+      "DonorProfile",
+      "BloodOffer",
+      "BloodRequest",
+      "registerBloodDonorRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleBotBountyBackend.ts",
+    "exports": [
+      "BotVerdict",
+      "BotReport",
+      "BotBountyStats",
+      "registerBotBountyRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleBountyBackend.ts",
+    "exports": [
+      "BountyStatus",
+      "Bounty",
+      "registerBountyRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleBuyNothingBackend.ts",
+    "exports": [
+      "BuyNothingItem",
+      "registerBuyNothingRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCarbonLedgerBackend.ts",
+    "exports": [
+      "CarbonLog",
+      "CARBON_FACTORS",
+      "registerCarbonRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCarpoolBackend.ts",
+    "exports": [
+      "PoolRide",
+      "registerCarpoolRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleChaperoneBackend.ts",
+    "exports": [
+      "ChatObserver",
+      "registerChaperoneRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleChitFundBackend.ts",
+    "exports": [
+      "ChitMember",
+      "ChitFund",
+      "registerChitFundRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCivicBackend.ts",
+    "exports": [
+      "CivicIssue",
+      "Tender",
+      "CltParcel",
+      "registerCivicRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCNGFareBackend.ts",
+    "exports": [
+      "CngFareReport",
+      "CNG_FLAG",
+      "CNG_PER_KM",
+      "calculateFare",
+      "registerCNGFareRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCollaborativeReelsBackend.ts",
+    "exports": [
+      "CollabElementKind",
+      "CollabElement",
+      "CollabInviteToken",
+      "CollabReel",
+      "CreatorRef",
+      "registerCollaborativeReelsRoutes",
+      "sanitizeElementData"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCollabPostsBackend.ts",
+    "exports": [
+      "CollabSection",
+      "CollabPost",
+      "registerCollabPostsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCommentSummaryBackend.ts",
+    "exports": [
+      "Sentiment",
+      "CommentSummary",
+      "registerCommentSummaryRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCommunitiesProBackend.ts",
+    "exports": [
+      "VoiceRoom",
+      "StageChannel",
+      "ThreadReply",
+      "ThreadChannel",
+      "CommunityTemplate",
+      "ScheduledEvent",
+      "TEMPLATE_LIBRARY",
+      "registerCommunitiesProRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCommunityKitchenBackend.ts",
+    "exports": [
+      "KitchenStatus",
+      "RequestStatus",
+      "KitchenFoodRequest",
+      "CommunityKitchen",
+      "CommunityKitchenState",
+      "registerCommunityKitchenRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCompatibilityBackend.ts",
+    "exports": [
+      "CompatibilityPrefs",
+      "compatibilityScore",
+      "registerCompatibilityRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleContentGateBackend.ts",
+    "exports": [
+      "ContentRating",
+      "registerContentGateRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleContractBackend.ts",
+    "exports": [
+      "ContractParty",
+      "Contract",
+      "CONTRACT_TEMPLATES",
+      "registerContractRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCoStreamBackend.ts",
+    "exports": [
+      "LiveTip",
+      "LiveSession",
+      "registerCoStreamRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCreatorMonetizationBackend.ts",
+    "exports": [
+      "Deal",
+      "AffiliateLink",
+      "FanRecord",
+      "SponsorTier",
+      "IncomeLedger",
+      "registerCreatorMonetizationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCropDiagnosisBackend.ts",
+    "exports": [
+      "CropDisease",
+      "DISEASE_KB",
+      "diagnose",
+      "registerCropDiagnosisRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDataBrainBackend.ts",
+    "exports": [
+      "BrainEvent",
+      "registerDataBrainRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDataMarketBackend.ts",
+    "exports": [
+      "DataOptIn",
+      "DataListing",
+      "registerDataMarketRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDataSovereigntyBackend.ts",
+    "exports": [
+      "ExportLogItem",
+      "DeletionStatus",
+      "DeletionRequest",
+      "DataSovereigntyState",
+      "registerDataSovereigntyRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDebateModeratorBackend.ts",
+    "exports": [
+      "DebateSession",
+      "DebateComment",
+      "DebateBalance",
+      "registerDebateModeratorRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDecentralizedProfilesBackend.ts",
+    "exports": [
+      "DIDIdentity",
+      "ImportedBundle",
+      "PortableProfileBundle",
+      "registerDecentralizedProfilesRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDeepDiveBackend.ts",
+    "exports": [
+      "TopicHub",
+      "registerDeepDiveRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDigitalLegacyBackend.ts",
+    "exports": [
+      "registerDigitalLegacyRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleDigitalTwinBackend.ts",
+    "exports": [
+      "TwinTone",
+      "TwinStyle",
+      "DigitalTwin",
+      "buildStyle",
+      "twinReply",
+      "registerDigitalTwinRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleE2EEBackend.ts",
+    "exports": [
+      "E2EEKeyRecord",
+      "E2EEMessage",
+      "E2EEDevice",
+      "E2EEPairToken",
+      "registerE2EERoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleElderModeBackend.ts",
+    "exports": [
+      "registerElderModeRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleEmergencyPoolsBackend.ts",
+    "exports": [
+      "UrgencyLevel",
+      "PoolCategory",
+      "PoolStatus",
+      "EmergencyPool",
+      "EmergencyRequest",
+      "PoolVote",
+      "registerEmergencyPoolsRoutes",
+      "CATEGORY_OPTIONS",
+      "CATEGORY_LABELS"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleEscrowBackend.ts",
+    "exports": [
+      "EscrowStatus",
+      "Escrow",
+      "registerEscrowRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleEvacuationBackend.ts",
+    "exports": [
+      "EvacOption",
+      "FloodZone",
+      "registerEvacuationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleEventGroupsBackend.ts",
+    "exports": [
+      "EventGroupIndex",
+      "archiveEventGroup",
+      "registerEventGroupsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleEvidenceVaultBackend.ts",
+    "exports": [
+      "VaultEntry",
+      "registerEvidenceVaultRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleExamRoomBackend.ts",
+    "exports": [
+      "ExamRoom",
+      "registerExamRoomRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFacelessVideoBackend.ts",
+    "exports": [
+      "FacelessScene",
+      "FacelessVideoPlan",
+      "generateFacelessPlan",
+      "registerFacelessVideoRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFactCheckerBackend.ts",
+    "exports": [
+      "ClaimVerdict",
+      "FactClaim",
+      "FactCheck",
+      "registerFactCheckerRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFamilyCircleBackend.ts",
+    "exports": [
+      "FamilyMember",
+      "FamilyCircle",
+      "registerFamilyCircleRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFarmLiveBackend.ts",
+    "exports": [
+      "FarmStream",
+      "FarmOrder",
+      "registerFarmLiveRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFarmToolsBackend.ts",
+    "exports": [
+      "FarmTool",
+      "registerFarmToolsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFeatureRegistry.ts",
+    "exports": [
+      "registerOceanFeatures"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFederatedLearningBackend.ts",
+    "exports": [
+      "FedModel",
+      "FedUpdate",
+      "registerFederatedLearningRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFediverseBackend.ts",
+    "exports": [
+      "FedActivity",
+      "FedRemotePost",
+      "registerFediverseRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFIRBackend.ts",
+    "exports": [
+      "FirRecord",
+      "registerFIRRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFloodDepthMapperBackend.ts",
+    "exports": [
+      "FloodKind",
+      "FloodStatus",
+      "RiskLevel",
+      "AckType",
+      "FloodAck",
+      "FloodReport",
+      "FloodSpot",
+      "FloodRiskZone",
+      "registerFloodDepthMapperRoutes",
+      "KIND_LABELS",
+      "RISK_LABELS",
+      "DISCLAIMER"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleGarageSaleBackend.ts",
+    "exports": [
+      "GarageSale",
+      "registerGarageSaleRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleGhostViewBackend.ts",
+    "exports": [
+      "GhostView",
+      "registerGhostViewRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleGigRadarBackend.ts",
+    "exports": [
+      "GigApplicant",
+      "Gig",
+      "registerGigRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleGroupBuyBackend.ts",
+    "exports": [
+      "GroupBuyParticipant",
+      "GroupBuy",
+      "registerGroupBuyRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleGuardianBackend.ts",
+    "exports": [
+      "GuardianApproval",
+      "registerGuardianRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleHalalDatingBackend.ts",
+    "exports": [
+      "HalalRelationship",
+      "HALAL_STAGES",
+      "registerHalalDatingRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleHardwareWalletBackend.ts",
+    "exports": [
+      "HardwareWallet",
+      "registerHardwareWalletRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleHumanityBackend.ts",
+    "exports": [
+      "HumanityTier",
+      "HumanitySampleSet",
+      "HumanityBreakdown",
+      "HumanityRecord",
+      "HumanitySampleRecord",
+      "scoreHumanity",
+      "registerHumanityRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleInternshipBackend.ts",
+    "exports": [
+      "InternshipApp",
+      "Internship",
+      "registerInternshipRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleInterviewBackend.ts",
+    "exports": [
+      "InterviewAnswer",
+      "InterviewSession",
+      "scoreAnswer",
+      "keywordFeedback",
+      "scoreAnswerWithLLM",
+      "registerInterviewRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleIrrigationBackend.ts",
+    "exports": [
+      "IrrigationField",
+      "simulatedForecast",
+      "registerIrrigationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleJobAlertBackend.ts",
+    "exports": [
+      "JobAlert",
+      "registerJobAlertRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleLawyerBackend.ts",
+    "exports": [
+      "Lawyer",
+      "LegalCase",
+      "registerLawyerRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleLegalAidBackend.ts",
+    "exports": [
+      "LegalTopic",
+      "registerLegalAidRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleLiveEcosystemBackend.ts",
+    "exports": [
+      "GiftDef",
+      "GiftRecord",
+      "StreamGoal",
+      "Clip",
+      "LiveRoom",
+      "GIFT_CATALOG",
+      "registerLiveEcosystemRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleLiveReporterBackend.ts",
+    "exports": [
+      "LiveProof",
+      "registerLiveReporterRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleLongFormVideoBackend.ts",
+    "exports": [
+      "VideoProcessingState",
+      "VideoMetadata",
+      "LongFormVideo",
+      "LongFormLike",
+      "LongFormSave",
+      "LongFormShare",
+      "LongFormReport",
+      "WatchHistoryEntry",
+      "VIDEO_LIMITS",
+      "LONG_FORM_STORAGE_PLAN",
+      "LONG_FORM_PROCESSING_PIPELINE",
+      "LongFormMetadataEngine",
+      "SupabaseLongFormVideoService",
+      "registerLongFormVideoRoutes",
+      "SQL_LONG_FORM_MIGRATION",
+      "LONG_FORM_SCALING_SPECIFICATION"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMandiBackend.ts",
+    "exports": [
+      "MandiPrice",
+      "PriceForecast",
+      "predictPrice",
+      "registerMandiRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMarketNegotiatorBackend.ts",
+    "exports": [
+      "Condition",
+      "MarketItem",
+      "MarketOffer",
+      "NegotiationSuggestion",
+      "negotiatePrice",
+      "registerMarketNegotiatorRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMarketplaceBackend.ts",
+    "exports": [
+      "ListingKind",
+      "MarketplaceListing",
+      "registerMarketplaceRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMatchmakerBackend.ts",
+    "exports": [
+      "MatchSuggestion",
+      "registerMatchmakerRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMediaSearchBackend.ts",
+    "exports": [
+      "MediaIndexEntry",
+      "tokenize",
+      "embedText",
+      "cosine",
+      "describeImage",
+      "registerMediaSearchRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMemoriesBackend.ts",
+    "exports": [
+      "MemoryEntry",
+      "DailyMemory",
+      "SharedMemoryEntry",
+      "buildRecap",
+      "buildSharedMemories",
+      "registerMemoriesRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMiniAppsBackend.ts",
+    "exports": [
+      "MiniApp",
+      "MiniAppEvent",
+      "registerMiniAppsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMissingFaceSearchBackend.ts",
+    "exports": [
+      "registerMissingFaceSearchRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMissingPersonBackend.ts",
+    "exports": [
+      "MissingStatus",
+      "SightingKind",
+      "MissingSighting",
+      "MissingReport",
+      "registerMissingPersonRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleMoodFeedBackend.ts",
+    "exports": [
+      "Sentiment",
+      "classifySentiment",
+      "registerMoodFeedRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleNearbyDonorNotifyBackend.ts",
+    "exports": [
+      "BloodDonorProfile",
+      "registerNearbyDonorNotifyRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleOceanPayBackend.ts",
+    "exports": [
+      "registerOceanPayRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleOfflineMeshBackend.ts",
+    "exports": [
+      "MeshUrgency",
+      "MeshKind",
+      "MeshStatus",
+      "MeshAckNote",
+      "MeshRelay",
+      "MeshBeacon",
+      "registerOfflineMeshRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleOSLayerBackend.ts",
+    "exports": [
+      "Experiment",
+      "FeatureFlag",
+      "registerOSLayerRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtlePairCodingBackend.ts",
+    "exports": [
+      "PairLogEntry",
+      "PairRoom",
+      "runShell",
+      "registerPairCodingRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleParkingBackend.ts",
+    "exports": [
+      "ParkingSpot",
+      "TrafficReport",
+      "registerParkingRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtlePersonaBackend.ts",
+    "exports": [
+      "Persona",
+      "registerPersonaRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtlePlasticWealthBackend.ts",
+    "exports": [
+      "PlasticPoint",
+      "PlasticCollection",
+      "registerPlasticWealthRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtlePodcastBackend.ts",
+    "exports": [
+      "PodcastItem",
+      "PodcastLine",
+      "DailyPodcast",
+      "buildDailyPodcast",
+      "registerPodcastRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtlePortfolioBackend.ts",
+    "exports": [
+      "PortfolioItem",
+      "Portfolio",
+      "isVerified",
+      "registerPortfolioRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtlePrivacyDashboardBackend.ts",
+    "exports": [
+      "PrivacyAccessEvent",
+      "ThirdPartyAppStatus",
+      "ThirdPartyApp",
+      "PrivacyDashboardState",
+      "MaskPreferences",
+      "registerPrivacyDashboardRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleProfileSummaryBackend.ts",
+    "exports": [
+      "ProfileSummary",
+      "buildProfileSummary",
+      "registerProfileSummaryRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleProGraphBackend.ts",
+    "exports": [
+      "Skill",
+      "Recommendation",
+      "RecRequest",
+      "JobPosting",
+      "registerProGraphRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleProximityAlertBackend.ts",
+    "exports": [
+      "registerProximityAlertRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleQuantumCryptoBackend.ts",
+    "exports": [
+      "PQKey",
+      "PQMessage",
+      "registerQuantumCryptoRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleQuranCircleBackend.ts",
+    "exports": [
+      "QuranCircle",
+      "registerQuranCircleRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleRedTeamBackend.ts",
+    "exports": [
+      "RedChallenge",
+      "RedSubmission",
+      "registerRedTeamRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleRelationshipTimelineBackend.ts",
+    "exports": [
+      "registerRelationshipTimelineRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleReligiousEventsBackend.ts",
+    "exports": [
+      "ReligiousEvent",
+      "registerReligiousEventsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleRentalBackend.ts",
+    "exports": [
+      "Rental",
+      "registerRentalRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleReputationBackend.ts",
+    "exports": [
+      "Reputation",
+      "ReputationHistory",
+      "computeReputation",
+      "registerReputationRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleResumeBackend.ts",
+    "exports": [
+      "ResumeDoc",
+      "buildResume",
+      "resumeToHtml",
+      "registerResumeRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleRevenueShareBackend.ts",
+    "exports": [
+      "RevenueShareHistoryEntry",
+      "RevenueShareGroup",
+      "PendingEstimate",
+      "pendingEstimate",
+      "registerRevenueShareRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleRTIBackend.ts",
+    "exports": [
+      "RtiRequest",
+      "registerRTIRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafeEscortBackend.ts",
+    "exports": [
+      "EscortKind",
+      "EscortAvailability",
+      "EscortRequestStatus",
+      "EscortProfile",
+      "EscortOffer",
+      "EscortRequest",
+      "RouteRating",
+      "registerSafeEscortRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafeHavenBackend.ts",
+    "exports": [
+      "HavenType",
+      "RefugeStatus",
+      "AckType",
+      "SafeHaven",
+      "HavenAck",
+      "RefugeEvent",
+      "registerSafeHavenRoutes",
+      "HAVEN_TYPES",
+      "HAVEN_TYPE_LABELS"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafeShelterBackend.ts",
+    "exports": [
+      "ShelterType",
+      "AlertType",
+      "AlertSeverity",
+      "HelpStatus",
+      "ShelterCheckin",
+      "ShelterHelpRequest",
+      "SafeShelter",
+      "DisasterAlert",
+      "SafeShelterState",
+      "SHELTER_TYPES",
+      "ALERT_TYPES",
+      "SEVERITIES",
+      "AMENITY_OPTIONS",
+      "registerSafeShelterRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafeSOSBackend.ts",
+    "exports": [
+      "SOSKind",
+      "SOSStatus",
+      "AckType",
+      "SafeContact",
+      "SOSAck",
+      "SOSEvent",
+      "registerSafeSOSRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafetyShieldBackend.ts",
+    "exports": [
+      "SafetyEventKind",
+      "SafetyEventStatus",
+      "SafetyContact",
+      "SafetyAcknowledger",
+      "SafetyEvent",
+      "SafetyProfile",
+      "SafetyShieldState",
+      "registerSafetyShieldRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafetyShortsBackend.ts",
+    "exports": [
+      "ShortLevel",
+      "SafetyShort",
+      "SafetyShortsState",
+      "registerSafetyShortsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSafeWatchBackend.ts",
+    "exports": [
+      "WatchKind",
+      "WatchCategory",
+      "WatchStatus",
+      "WatchContact",
+      "WatchAcknowledgement",
+      "WatchPost",
+      "WatchAreaRating",
+      "registerSafeWatchRoutes",
+      "CATEGORY_OPTIONS",
+      "CATEGORY_LABEL",
+      "DISCLAIMER"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSatelliteBackend.ts",
+    "exports": [
+      "SatRelay",
+      "registerSatelliteRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSavingCircleBackend.ts",
+    "exports": [
+      "SavingMember",
+      "SavingCircle",
+      "registerSavingCircleRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleScholarshipBackend.ts",
+    "exports": [
+      "Scholarship",
+      "registerScholarshipRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSecureVaultBackend.ts",
+    "exports": [
+      "registerSecureVaultRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSecurityTelegramOTPService.ts",
+    "exports": [
+      "TelegramUser",
+      "validateStartupEnvironment",
+      "normalizePhoneNumber",
+      "getSecurePhoneIdentifier",
+      "prisma",
+      "redis",
+      "TelegramOTPAuthGateway",
+      "registerTelegramOTPGatewayRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSharedSubsBackend.ts",
+    "exports": [
+      "SharedSubMember",
+      "SharedSub",
+      "registerSharedSubsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSilentDropBackend.ts",
+    "exports": [
+      "SilentDrop",
+      "cleanupDrops",
+      "registerSilentDropRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSkillExchangeBackend.ts",
+    "exports": [
+      "SkillOffer",
+      "registerSkillExchangeRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSmartSearchJSONGenerator.ts",
+    "exports": [
+      "TrendDirection",
+      "RelatedEntity",
+      "SmartSearchSuggestionItem",
+      "SmartSearchSuggestionsSuccessResponse",
+      "SmartSearchErrorResponse",
+      "SmartSearchSuggestionsAdapter",
+      "RANKING_FORMULA_DETAILS",
+      "rankSuggestions",
+      "SAMPLE_MD_NAFIS_SUGGESTIONS_JSON",
+      "SAMPLE_ERROR_RESPONSES",
+      "registerSmartSearchRoutes",
+      "FIELD_EXPLANATIONS_DICTIONARY"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSnapMapBackend.ts",
+    "exports": [
+      "registerSnapMapRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSOSAlertBackend.ts",
+    "exports": [
+      "SOSUrgency",
+      "SOSStatus",
+      "SOSContact",
+      "SOSAcknowledgement",
+      "SOSAlert",
+      "registerSOSAlertRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSplitBillBackend.ts",
+    "exports": [
+      "SplitPayment",
+      "SplitBill",
+      "computeBalances",
+      "registerSplitBillRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleStealthRecBackend.ts",
+    "exports": [
+      "StealthRec",
+      "registerStealthRecRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleStoryChainsBackend.ts",
+    "exports": [
+      "ChainEntry",
+      "StoryChain",
+      "registerStoryChainRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleStreaksBackend.ts",
+    "exports": [
+      "StreakType",
+      "STREAK_MILESTONE_REWARDS",
+      "Streak",
+      "checkIn",
+      "registerStreakRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleStudyRoomsBackend.ts",
+    "exports": [
+      "StudyRoom",
+      "registerStudyRoomsRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSubscriptionsBackend.ts",
+    "exports": [
+      "SubscriptionStatus",
+      "Subscription",
+      "registerSubscriptionsRoutes",
+      "DEFAULT_AMOUNT",
+      "BILLING_PERIOD_MS"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleTravelBackend.ts",
+    "exports": [
+      "TravelPlan",
+      "HiddenGem",
+      "GroupTrip",
+      "registerTravelRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleTrendingSoundBackend.ts",
+    "exports": [
+      "SoundTrend",
+      "extractSoundFromPost",
+      "scanPostsForSounds",
+      "registerTrendingSoundRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleTrendingTopicEngine.ts",
+    "exports": [
+      "TrendingInputSignals",
+      "TrendingResult",
+      "calculateTrendingScore",
+      "TRENDING_ALGORITHM_PSEUDOCODE",
+      "runTrendingSimulationTests",
+      "SQL_TRENDING_CALCULATION_MIGRATION",
+      "TRENDING_ANTI_MANIPULATION_RULES",
+      "registerTrendingTopicRoutes",
+      "TRENDING_UPDATE_STRATEGY"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleTriggerWarningBackend.ts",
+    "exports": [
+      "TriggerCategory",
+      "TriggerSeverity",
+      "TriggerWarning",
+      "TriggerScan",
+      "scanTextForTriggers",
+      "registerTriggerWarningRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleTutorBackend.ts",
+    "exports": [
+      "TutorRequest",
+      "tutorCompatibilityScore",
+      "registerTutorRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleUpliftFeedBackend.ts",
+    "exports": [
+      "upliftScore",
+      "registerUpliftFeedRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleVenueBackend.ts",
+    "exports": [
+      "VenueStatus",
+      "registerVenueRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleVideoEditorBackend.ts",
+    "exports": [
+      "SubtitleSegment",
+      "EditorTemplate",
+      "registerVideoEditorRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleVoiceSummaryBackend.ts",
+    "exports": [
+      "VoiceSummaryResult",
+      "registerVoiceSummaryRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleWardBackend.ts",
+    "exports": [
+      "WardProject",
+      "WardMeeting",
+      "registerWardRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleWatermarkBackend.ts",
+    "exports": [
+      "WatermarkManifest",
+      "registerWatermarkRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleWhiteboardBackend.ts",
+    "exports": [
+      "WBElement",
+      "WhiteboardSession",
+      "registerWhiteboardRoutes",
+      "sanitizeElements"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleZakatBackend.ts",
+    "exports": [
+      "DEFAULT_NISAB_BDT",
+      "ZakatInput",
+      "ZakatResult",
+      "calculateZakat",
+      "registerZakatRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleZKKYCBackend.ts",
+    "exports": [
+      "ZkycRecord",
+      "ZkycChallenge",
+      "registerZKKYCRoutes"
+    ],
+    "count": 1,
+    "importers": [
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAuditLogBackend.ts",
+    "exports": [
+      "writeAuditEntry",
+      "registerAuditLogRoutes"
+    ],
+    "count": 2,
+    "importers": [
+      "src/turtleAlgoPrefsBackend.ts",
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleAzanBackend.ts",
+    "exports": [
+      "isAzanMutedForUser",
+      "azanMuteMapForUsers",
+      "registerAzanRoutes"
+    ],
+    "count": 2,
+    "importers": [
+      "chatServer.ts",
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleChatAiHelper.ts",
+    "exports": [
+      "ChatMessage",
+      "SocialContextMode",
+      "CopilotRequest",
+      "CopilotResponse",
+      "SOCIAL_CONTEXT_CONFIG",
+      "draftCopilotResponse",
+      "registerChatAiHelperRoutes"
+    ],
+    "count": 2,
+    "importers": [
+      "chatServer.ts",
+      "server.ts"
+    ]
+  },
+  {
+    "file": "src/turtleFeedExplainBackend.ts",
+    "exports": [
+      "ExplainReason",
+      "FeedExplanation",
+      "explainPost",
+      "registerFeedExplainRoutes"
+    ],
+    "count": 2,
+    "importers": [
+      "src/turtleAuditLogBackend.ts",
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleOfflineP2P.ts",
+    "exports": [
+      "TransportVia",
+      "MsgStatus",
+      "PeerInfo",
+      "ChatMessage",
+      "PeerState",
+      "EngineStatus",
+      "SimDevice",
+      "Packet",
+      "uid",
+      "OfflineP2PEngine",
+      "decodeP2PCode",
+      "p2p"
+    ],
+    "count": 2,
+    "importers": [
+      "src/components/OfflineChatView.tsx",
+      "src/components/OfflineMeshFab.tsx"
+    ]
+  },
+  {
+    "file": "src/turtleReelsBackend.ts",
+    "exports": [
+      "ReelProcessingStatus",
+      "ReelVideo",
+      "ReelLike",
+      "ReelComment",
+      "ReelShare",
+      "ReelSave",
+      "ReelReport",
+      "ReelWatchEvent",
+      "REEL_LIMITS",
+      "REELS_UPLOAD_PIPELINE",
+      "AICaptionRecommendation",
+      "ReelAICaptionGenerator",
+      "UserInterestProfile",
+      "RankingCandidate",
+      "ReelsRecommendationEngine",
+      "ReelsAnalyticsManager",
+      "SupabaseReelsService",
+      "REELS_EDGE_FUNCTIONS_PSEUDOCODE",
+      "SQL_REELS_MIGRATION",
+      "REELS_SAFETY_RULES_MANIFEST"
+    ],
+    "count": 2,
+    "importers": [
+      "server.ts",
+      "src/App.tsx"
+    ]
+  },
+  {
+    "file": "src/turtleRankingEngine.ts",
+    "exports": [],
+    "count": 3,
+    "importers": [
+      "src/App.tsx",
+      "src/lib/hybridRanker.ts",
+      "src/turtleRankingEngine.ts"
+    ]
+  },
+  {
+    "file": "src/turtleSmartCommunityBackend.ts",
+    "exports": [
+      "Tag",
+      "FiredSignal",
+      "SmartDetection",
+      "SmartFlag",
+      "ThreadSummary",
+      "ReplySuggestion",
+      "SmartSettings",
+      "analyzeText",
+      "scanCommunity",
+      "registerSmartCommunityRoutes"
+    ],
+    "count": 3,
+    "importers": [
+      "src/turtleAIModeratorBackend.ts",
+      "src/turtleDebateModeratorBackend.ts",
+      "src/turtleFeatureRegistry.ts"
+    ]
+  },
+  {
+    "file": "src/turtleStoriesBackend.ts",
+    "exports": [
+      "StoryKind",
+      "StoryPoll",
+      "StoryQA",
+      "Story",
+      "STORY_TTL",
+      "REACTION_TYPES",
+      "MUSIC_LIBRARY",
+      "getStoriesStore",
+      "registerStoriesRoutes"
+    ],
+    "count": 3,
+    "importers": [
+      "src/turtleDataBrainBackend.ts",
+      "src/turtleFeatureRegistry.ts",
+      "src/turtleSnapMapBackend.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCoinTransfer.ts",
+    "exports": [
+      "CoinTransaction",
+      "CoinTransferResult",
+      "transferCoins",
+      "walletBalance",
+      "pushNotification",
+      "haversineKm"
+    ],
+    "count": 6,
+    "importers": [
+      "src/turtleMarketplaceBackend.ts",
+      "src/turtleNearbyDonorNotifyBackend.ts",
+      "src/turtleOceanPayBackend.ts",
+      "src/turtleSOSAlertBackend.ts",
+      "src/turtleSafeSOSBackend.ts",
+      "src/turtleSplitBillBackend.ts"
+    ]
+  },
+  {
+    "file": "src/turtleJsonStore.ts",
+    "exports": [
+      "makeJsonStore"
+    ],
+    "count": 10,
+    "importers": [
+      "src/turtleCommunitiesProBackend.ts",
+      "src/turtleCreatorMonetizationBackend.ts",
+      "src/turtleDataBrainBackend.ts",
+      "src/turtleLiveEcosystemBackend.ts",
+      "src/turtleMiniAppsBackend.ts",
+      "src/turtleOSLayerBackend.ts",
+      "src/turtleProGraphBackend.ts",
+      "src/turtleSnapMapBackend.ts",
+      "src/turtleStoriesBackend.ts",
+      "src/turtleVideoEditorBackend.ts"
+    ]
+  },
+  {
+    "file": "src/turtleEmergencyPools.ts",
+    "exports": [
+      "SYSTEM_POOLS",
+      "UrgencyLevel",
+      "SAFETY_DISCLAIMERS",
+      "UserPoolPreference",
+      "UserLocation",
+      "EmergencyAlert",
+      "FakeAlertReport",
+      "RateLimitTracker",
+      "isUserRateLimited",
+      "CreateAlertRequest",
+      "validateAndFormatAlert",
+      "calculateHaversineDistance",
+      "RecipientCandidate",
+      "dispatchEmergencyNotifications",
+      "SQL_POOL_MIGRATION"
+    ],
+    "count": 13,
+    "importers": [
+      "src/components/SOSEmergencyButton.tsx",
+      "src/turtleBloodDonorBackend.ts",
+      "src/turtleCommunityKitchenBackend.ts",
+      "src/turtleEmergencyPoolsBackend.ts",
+      "src/turtleFloodDepthMapperBackend.ts",
+      "src/turtleMissingPersonBackend.ts",
+      "src/turtleOfflineMeshBackend.ts",
+      "src/turtleSOSAlertBackend.ts",
+      "src/turtleSafeEscortBackend.ts",
+      "src/turtleSafeHavenBackend.ts",
+      "src/turtleSafeSOSBackend.ts",
+      "src/turtleSafeShelterBackend.ts",
+      "src/turtleSafeWatchBackend.ts"
+    ]
+  },
+  {
+    "file": "src/turtleCommunityBackend.ts",
+    "exports": [
+      "CommunityEvent",
+      "CommunityQuestion",
+      "CommunityTopic",
+      "CommunityTip",
+      "RewardDefinition",
+      "CommunityState",
+      "EMPTY_COMMUNITY",
+      "DEFAULT_REWARDS",
+      "defaultCommunity",
+      "communityFrom",
+      "createEvent",
+      "rsvpEvent",
+      "askQuestion",
+      "answerQuestion",
+      "upvoteAnswer",
+      "ensureDefaultTopics",
+      "joinTopic",
+      "addBalance",
+      "spendBalance",
+      "tipCreator",
+      "trustPointsForUser"
+    ],
+    "count": 35,
+    "importers": [
+      "server.ts",
+      "src/turtleAfforestationBackend.ts",
+      "src/turtleAssignmentHelpBackend.ts",
+      "src/turtleBloodDonorBackend.ts",
+      "src/turtleBotBountyBackend.ts",
+      "src/turtleBountyBackend.ts",
+      "src/turtleCoStreamBackend.ts",
+      "src/turtleCoinTransfer.ts",
+      "src/turtleCollaborativeReelsBackend.ts",
+      "src/turtleCommunityKitchenBackend.ts",
+      "src/turtleCreatorMonetizationBackend.ts",
+      "src/turtleDataMarketBackend.ts",
+      "src/turtleEscrowBackend.ts",
+      "src/turtleFarmToolsBackend.ts",
+      "src/turtleFloodDepthMapperBackend.ts",
+      "src/turtleGroupBuyBackend.ts",
+      "src/turtleLiveEcosystemBackend.ts",
+      "src/turtleLiveReporterBackend.ts",
+      "src/turtleMiniAppsBackend.ts",
+      "src/turtleMissingPersonBackend.ts",
+      "src/turtleOfflineMeshBackend.ts",
+      "src/turtlePlasticWealthBackend.ts",
+      "src/turtleRentalBackend.ts",
+      "src/turtleRevenueShareBackend.ts",
+      "src/turtleSOSAlertBackend.ts",
+      "src/turtleSafeEscortBackend.ts",
+      "src/turtleSafeHavenBackend.ts",
+      "src/turtleSafeSOSBackend.ts",
+      "src/turtleSafeShelterBackend.ts",
+      "src/turtleSafeWatchBackend.ts",
+      "src/turtleSafetyShieldBackend.ts",
+      "src/turtleSavingCircleBackend.ts",
+      "src/turtleSharedSubsBackend.ts",
+      "src/turtleStreaksBackend.ts",
+      "src/turtleSubscriptionsBackend.ts"
+    ]
+  },
+  {
+    "file": "src/turtleServerContext.ts",
+    "exports": [
+      "ServerContext",
+      "setServerContext",
+      "getCtx"
+    ],
+    "count": 152,
+    "importers": [
+      "server.ts",
+      "src/turtleAIModeratorBackend.ts",
+      "src/turtleAchievementsBackend.ts",
+      "src/turtleAfforestationBackend.ts",
+      "src/turtleAlgoPrefsBackend.ts",
+      "src/turtleAlumniBackend.ts",
+      "src/turtleAnonymousBackend.ts",
+      "src/turtleAssignmentHelpBackend.ts",
+      "src/turtleAuditLogBackend.ts",
+      "src/turtleAzanBackend.ts",
+      "src/turtleBarterBackend.ts",
+      "src/turtleBioDataBackend.ts",
+      "src/turtleBloodDonorBackend.ts",
+      "src/turtleBotBountyBackend.ts",
+      "src/turtleBountyBackend.ts",
+      "src/turtleBuyNothingBackend.ts",
+      "src/turtleCNGFareBackend.ts",
+      "src/turtleCarbonLedgerBackend.ts",
+      "src/turtleCarpoolBackend.ts",
+      "src/turtleChaperoneBackend.ts",
+      "src/turtleChitFundBackend.ts",
+      "src/turtleCivicBackend.ts",
+      "src/turtleCoStreamBackend.ts",
+      "src/turtleCoinTransfer.ts",
+      "src/turtleCollabPostsBackend.ts",
+      "src/turtleCollaborativeReelsBackend.ts",
+      "src/turtleCommentSummaryBackend.ts",
+      "src/turtleCommunitiesProBackend.ts",
+      "src/turtleCommunityKitchenBackend.ts",
+      "src/turtleCompatibilityBackend.ts",
+      "src/turtleContentGateBackend.ts",
+      "src/turtleContractBackend.ts",
+      "src/turtleCreatorMonetizationBackend.ts",
+      "src/turtleCropDiagnosisBackend.ts",
+      "src/turtleDataBrainBackend.ts",
+      "src/turtleDataMarketBackend.ts",
+      "src/turtleDataSovereigntyBackend.ts",
+      "src/turtleDebateModeratorBackend.ts",
+      "src/turtleDecentralizedProfilesBackend.ts",
+      "src/turtleDeepDiveBackend.ts",
+      "src/turtleDigitalLegacyBackend.ts",
+      "src/turtleDigitalTwinBackend.ts",
+      "src/turtleE2EEBackend.ts",
+      "src/turtleElderModeBackend.ts",
+      "src/turtleEmergencyPoolsBackend.ts",
+      "src/turtleEscrowBackend.ts",
+      "src/turtleEvacuationBackend.ts",
+      "src/turtleEventGroupsBackend.ts",
+      "src/turtleEvidenceVaultBackend.ts",
+      "src/turtleExamRoomBackend.ts",
+      "src/turtleFIRBackend.ts",
+      "src/turtleFacelessVideoBackend.ts",
+      "src/turtleFactCheckerBackend.ts",
+      "src/turtleFamilyCircleBackend.ts",
+      "src/turtleFarmLiveBackend.ts",
+      "src/turtleFarmToolsBackend.ts",
+      "src/turtleFeatureRegistry.ts",
+      "src/turtleFederatedLearningBackend.ts",
+      "src/turtleFediverseBackend.ts",
+      "src/turtleFeedExplainBackend.ts",
+      "src/turtleFloodDepthMapperBackend.ts",
+      "src/turtleGarageSaleBackend.ts",
+      "src/turtleGhostViewBackend.ts",
+      "src/turtleGigRadarBackend.ts",
+      "src/turtleGroupBuyBackend.ts",
+      "src/turtleGuardianBackend.ts",
+      "src/turtleHalalDatingBackend.ts",
+      "src/turtleHardwareWalletBackend.ts",
+      "src/turtleHumanityBackend.ts",
+      "src/turtleInternshipBackend.ts",
+      "src/turtleInterviewBackend.ts",
+      "src/turtleIrrigationBackend.ts",
+      "src/turtleJobAlertBackend.ts",
+      "src/turtleLawyerBackend.ts",
+      "src/turtleLegalAidBackend.ts",
+      "src/turtleLiveEcosystemBackend.ts",
+      "src/turtleLiveReporterBackend.ts",
+      "src/turtleLongFormVideoBackend.ts",
+      "src/turtleMandiBackend.ts",
+      "src/turtleMarketNegotiatorBackend.ts",
+      "src/turtleMarketplaceBackend.ts",
+      "src/turtleMatchmakerBackend.ts",
+      "src/turtleMediaSearchBackend.ts",
+      "src/turtleMemoriesBackend.ts",
+      "src/turtleMiniAppsBackend.ts",
+      "src/turtleMissingFaceSearchBackend.ts",
+      "src/turtleMissingPersonBackend.ts",
+      "src/turtleMoodFeedBackend.ts",
+      "src/turtleNearbyDonorNotifyBackend.ts",
+      "src/turtleOSLayerBackend.ts",
+      "src/turtleOceanPayBackend.ts",
+      "src/turtleOfflineMeshBackend.ts",
+      "src/turtlePairCodingBackend.ts",
+      "src/turtleParkingBackend.ts",
+      "src/turtlePersonaBackend.ts",
+      "src/turtlePlasticWealthBackend.ts",
+      "src/turtlePodcastBackend.ts",
+      "src/turtlePortfolioBackend.ts",
+      "src/turtlePrivacyDashboardBackend.ts",
+      "src/turtleProGraphBackend.ts",
+      "src/turtleProfileSummaryBackend.ts",
+      "src/turtleProximityAlertBackend.ts",
+      "src/turtleQuantumCryptoBackend.ts",
+      "src/turtleQuranCircleBackend.ts",
+      "src/turtleRTIBackend.ts",
+      "src/turtleRedTeamBackend.ts",
+      "src/turtleRelationshipTimelineBackend.ts",
+      "src/turtleReligiousEventsBackend.ts",
+      "src/turtleRentalBackend.ts",
+      "src/turtleReputationBackend.ts",
+      "src/turtleResumeBackend.ts",
+      "src/turtleRevenueShareBackend.ts",
+      "src/turtleSOSAlertBackend.ts",
+      "src/turtleSafeEscortBackend.ts",
+      "src/turtleSafeHavenBackend.ts",
+      "src/turtleSafeSOSBackend.ts",
+      "src/turtleSafeShelterBackend.ts",
+      "src/turtleSafeWatchBackend.ts",
+      "src/turtleSafetyShieldBackend.ts",
+      "src/turtleSafetyShortsBackend.ts",
+      "src/turtleSatelliteBackend.ts",
+      "src/turtleSavingCircleBackend.ts",
+      "src/turtleScholarshipBackend.ts",
+      "src/turtleSecureVaultBackend.ts",
+      "src/turtleServerContext.ts",
+      "src/turtleSharedSubsBackend.ts",
+      "src/turtleSilentDropBackend.ts",
+      "src/turtleSkillExchangeBackend.ts",
+      "src/turtleSmartCommunityBackend.ts",
+      "src/turtleSmartSearchJSONGenerator.ts",
+      "src/turtleSnapMapBackend.ts",
+      "src/turtleSplitBillBackend.ts",
+      "src/turtleStealthRecBackend.ts",
+      "src/turtleStoriesBackend.ts",
+      "src/turtleStoryChainsBackend.ts",
+      "src/turtleStreaksBackend.ts",
+      "src/turtleStudyRoomsBackend.ts",
+      "src/turtleSubscriptionsBackend.ts",
+      "src/turtleTravelBackend.ts",
+      "src/turtleTrendingSoundBackend.ts",
+      "src/turtleTrendingTopicEngine.ts",
+      "src/turtleTriggerWarningBackend.ts",
+      "src/turtleTutorBackend.ts",
+      "src/turtleUpliftFeedBackend.ts",
+      "src/turtleVenueBackend.ts",
+      "src/turtleVideoEditorBackend.ts",
+      "src/turtleVoiceSummaryBackend.ts",
+      "src/turtleWardBackend.ts",
+      "src/turtleWatermarkBackend.ts",
+      "src/turtleWhiteboardBackend.ts",
+      "src/turtleZKKYCBackend.ts",
+      "src/turtleZakatBackend.ts"
+    ]
+  }
+]

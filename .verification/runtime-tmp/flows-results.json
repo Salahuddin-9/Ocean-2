@@ -1,0 +1,137 @@
+[
+  {
+    "name": "register+login two users",
+    "pass": true,
+    "detail": "alice-1786809753629-586627@test.dev / bob-1786809753747-968867@test.dev"
+  },
+  {
+    "name": "create direct conversation",
+    "pass": true,
+    "detail": "{\"conversation\":{\"id\":\"conv-1786809753832-288\",\"isGroup\":false,\"isChannel\":false,\"isOpenGroup\":false,\"isPrivat"
+  },
+  {
+    "name": "WS A auth_ok",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "WS B auth_ok",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "name": "B receives A message via WS",
+    "pass": true,
+    "detail": "types=[\"typing_state\",\"message_received\"]"
+  },
+  {
+    "name": "message persisted (REST)",
+    "pass": true,
+    "detail": "status=200"
+  },
+  {
+    "name": "typing event received by peer",
+    "pass": true,
+    "detail": "types=[\"typing_state\",\"message_received\",\"typing_state\"]"
+  },
+  {
+    "name": "create post",
+    "pass": true,
+    "detail": "status=200 id=post-audit-1786809756313"
+  },
+  {
+    "name": "like post",
+    "pass": true,
+    "detail": "status=200 {\"success\":true,\"likes\":1,\"likedBy\":[\"user-1786809753764\"],\"reactions\":{\"like\":["
+  },
+  {
+    "name": "comment on post",
+    "pass": true,
+    "detail": "status=200"
+  },
+  {
+    "name": "feed contains post",
+    "pass": true,
+    "detail": "status=200 rankingScore=true"
+  },
+  {
+    "name": "upload PNG image",
+    "pass": true,
+    "detail": "status=200 {\"success\":true,\"url\":\"/uploads/media-1786809756471-3533.png\",\"kind\":\"image\"}"
+  },
+  {
+    "name": "create story",
+    "pass": true,
+    "detail": "status=200 {\"story\":{\"id\":\"story-1786809756488-4761\",\"userId\":\"user-1786809753693\",\"userName\":\"Alice\",\"mediaUrl"
+  },
+  {
+    "name": "list my stories",
+    "pass": true,
+    "detail": "status=200"
+  },
+  {
+    "name": "create event (religious)",
+    "pass": true,
+    "detail": "status=200 {\"event\":{\"id\":\"ev-1786809756510-63917\",\"title\":\"Audit community event\",\"category\":\"Other\",\"venue\":\""
+  },
+  {
+    "name": "RSVP to event",
+    "pass": true,
+    "detail": "status=200 {\"rsvps\":2,\"rsvped\":true}"
+  },
+  {
+    "name": "SOS alert dispatch",
+    "pass": true,
+    "detail": "status=200 {\"alert\":{\"id\":\"sos-1786809756547-1206\",\"creatorId\":\"user-1786809753693\",\"creatorName\":\"Alice\",\"urge"
+  },
+  {
+    "name": "wallet balance read",
+    "pass": true,
+    "detail": "status=200 balance=100"
+  },
+  {
+    "name": "wallet transfer 5 coins",
+    "pass": true,
+    "detail": "status=200 {\"success\":true,\"transaction\":{\"id\":\"tx-1786809756590-21583\",\"fromId\":\"user-1786809753693\",\"toId\":\"u"
+  },
+  {
+    "name": "meet match enqueue",
+    "pass": true,
+    "detail": "status=200 {\"status\":\"searching\",\"queueLength\":1}"
+  },
+  {
+    "name": "2FA setup",
+    "pass": true,
+    "detail": "status=200"
+  },
+  {
+    "name": "2FA verify with valid code",
+    "pass": true,
+    "detail": "status=200"
+  },
+  {
+    "name": "login now requires 2FA",
+    "pass": true,
+    "detail": "status=200 twoFactorRequired=true"
+  },
+  {
+    "name": "login completes with TOTP code",
+    "pass": true,
+    "detail": "status=200"
+  },
+  {
+    "name": "stream token (no keys → configured:false)",
+    "pass": true,
+    "detail": "status=200 configured=false"
+  },
+  {
+    "name": "AI image (no key → placeholder)",
+    "pass": true,
+    "detail": "status=200 hasSvg=true"
+  },
+  {
+    "name": "guest feed works (no auth)",
+    "pass": true,
+    "detail": "status=200"
+  }
+]

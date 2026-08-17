@@ -383,35 +383,45 @@ function runMockAnalysis(req: AICaptionRequest): AICaptionResponse {
  * Creates standard Express API routing handlers to process client requests.
  * Keeps your API keys absolutely hidden server-side.
  */
-export function registerAICaptionRoutes(app: any) {
-  app.post("/api/ai/suggest-captions", aiRateLimit, async (req: any, res: any) => {
-    try {
-      const { mediaCategory, mediaMimeType, mediaBase64, userHint } = req.body;
+/**
+ * Shared caption-suggestion handler. `mediaBase64` is optional: when omitted
+ * (no attached image) the engine still returns keyword/template-based captions
+ * from `runMockAnalysis` — so the endpoint always works, key or no key.
+ */
+async function handleCaptionRequest(req: any, res: any) {
+  try {
+    const { mediaCategory, mediaMimeType, mediaBase64, userHint } = req.body;
 
-      if (!mediaCategory || !mediaMimeType) {
-        return res.status(400).json({
-          success: false,
-          error: "Missing required payload parameters: mediaCategory and mediaMimeType are mandatory."
-        });
-      }
-
-      const suggestions = await suggestAICaptions({
-        mediaCategory,
-        mediaMimeType,
-        mediaBase64,
-        userHint
-      });
-
-      return res.status(200).json({
-        success: true,
-        data: suggestions
-      });
-    } catch (err: any) {
-      console.error("Express route caption engine error:", err);
-      return res.status(500).json({
+    if (!mediaCategory || !mediaMimeType) {
+      return res.status(400).json({
         success: false,
-        error: err?.message || "Internal server caption generator error."
+        error: "Missing required payload parameters: mediaCategory and mediaMimeType are mandatory."
       });
     }
-  });
+
+    const suggestions = await suggestAICaptions({
+      mediaCategory,
+      mediaMimeType,
+      mediaBase64,
+      userHint
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: suggestions
+    });
+  } catch (err: any) {
+    console.error("Express route caption engine error:", err);
+    return res.status(500).json({
+      success: false,
+      error: err?.message || "Internal server caption generator error."
+    });
+  }
+}
+
+export function registerAICaptionRoutes(app: any) {
+  app.post("/api/ai/suggest-captions", aiRateLimit, handleCaptionRequest);
+  // Short alias the post composer calls (feature #87): same engine, so caption
+  // suggestions + hashtags work even with no GEMINI_API_KEY (local fallback).
+  app.post("/api/ai/caption", aiRateLimit, handleCaptionRequest);
 }

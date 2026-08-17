@@ -91,7 +91,7 @@ export default function TakeABreath({ onClose }: TakeABreathProps) {
   const phaseLabel = phase === 'inhale' ? 'Inhale deeply…' : phase === 'hold' ? 'Hold…' : 'Exhale slowly…';
 
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/97 dark:bg-zinc-950/97 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/60 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -135,7 +135,7 @@ export default function TakeABreath({ onClose }: TakeABreathProps) {
         </div>
 
         {active && (
-          <div className="fixed inset-0 z-[130] bg-[#f6f1e7]/98 dark:bg-zinc-950/98 flex flex-col items-center justify-center p-6">
+          <div className="fixed inset-0 z-[130] bg-[#141b2b]/65 dark:bg-[#05060c]/85 flex flex-col items-center justify-center p-6">
             <p className="font-mono text-[9px] uppercase tracking-widest text-[#8a8172] dark:text-zinc-400 mb-4">Scroll-check</p>
             <div
               className="w-40 h-40 rounded-full border-4 border-teal-300 dark:border-teal-700 bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center transition-transform duration-[4000ms]"

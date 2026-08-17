@@ -31,6 +31,9 @@ export interface TelegramUser {
 
 export function validateStartupEnvironment() {
   const requiredVars = ["TELEGRAM_BOT_TOKEN", "JWT_SECRET", "REDIS_URL"];
+  // MASTER_KEY protects encrypted DEK backups / password recovery. Required in
+  // production (dev falls back to an ephemeral per-process key in server.ts).
+  if (process.env.NODE_ENV === "production") requiredVars.push("MASTER_KEY");
   const missing = requiredVars.filter(v => !process.env[v]);
 
   if (missing.length > 0) {

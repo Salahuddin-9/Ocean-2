@@ -1,4 +1,10 @@
+// Load .env FIRST so every other module sees JWT_SECRET / CORS_ORIGIN / etc.
+// (dotenv never overrides already-set env vars, so NODE_ENV=production npm start
+// still boots the server in production mode.)
+import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -36,6 +42,9 @@ import { transcribeAudio } from './src/server/voiceTranscription';
 import { invokeLLM, listLLMModels } from './src/server/llm';
 import { ENV as MANUS_ENV } from './src/server/env';
 import { aiRateLimit } from './src/lib/aiRateLimit';
+import { createIpRateLimiter } from './src/lib/rateLimit';
+
+process.env.DISABLE_HMR = 'true'; 
 
 // Mock default credentials are ONLY seeded outside production so the sandboxed
 // dev environment can boot without secrets. In production (NODE_ENV=production)
@@ -63,9 +72,64 @@ if (!IS_PRODUCTION) {
 // in production when JWT_SECRET / TELEGRAM_BOT_TOKEN / REDIS_URL are missing.
 validateStartupEnvironment();
 
+// Process-level safety net: an uncaught exception or unhandled rejection from
+// a dropped WebRTC peer (Ngrok tunnel teardown, dead socket between the
+// readyState check and ws.send(), a malformed ICE candidate payload, etc.)
+// must not take the whole server down mid-call. Log it loudly and keep the
+// server online — the failed call is already gone, but every other user keeps
+// working. Individual handlers still get their own try-catch; this is the
+// last line of defense, not the first.
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL][uncaughtException] recovered — keeping server alive:', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL][unhandledRejection] recovered — keeping server alive:', reason);
+});
+
 const app = express();
+
+// ── Security headers + CORS ─────────────────────────────────────────────────
+// helmet(): hardened defaults (X-Content-Type-Options, X-Frame-Options, etc.).
+// CSP is customised to match the app's real needs: CDN scripts/wasm (ffmpeg,
+// mediapipe, tfjs), WebSockets, data:/blob: media, and the Jitsi iframe all
+// stay allowed. 'unsafe-inline' scripts are allowed only in dev (Vite React
+// Refresh preamble); styled-components always needs 'unsafe-inline' styles.
+// crossOriginEmbedderPolicy is off because cross-origin CDN assets would be
+// blocked without CORP headers. upgrade-insecure-requests is off so plain-http
+// dev assets (http://localhost:3000) keep loading.
+const CORS_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3000')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      'upgrade-insecure-requests': null,
+      'script-src': ["'self'", "'unsafe-eval'", 'https:', 'data:', 'blob:', ...(IS_PRODUCTION ? [] : ["'unsafe-inline'"])],
+      'style-src': ["'self'", "'unsafe-inline'", 'https:', 'data:'],
+      'img-src': ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+      'media-src': ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+      'connect-src': ["'self'", 'ws:', 'wss:', 'https:', 'http:'],
+      'worker-src': ["'self'", 'blob:', 'https:'],
+      'frame-src': ["'self'", 'https:', 'http:'],
+    },
+  },
+}));
+app.use(cors({ origin: CORS_ORIGINS, credentials: true }));
+
+// Behind a reverse proxy (staging/production) honor X-Forwarded-For so req.ip
+// (used by the signup rate limiter) and X-Forwarded-Proto see the real client.
+// Local dev connects directly, so this stays off outside production.
+if (IS_PRODUCTION) {
+  app.set('trust proxy', 1);
+}
+
 const PORT = 3000;
-const DB_FILE = path.join(process.cwd(), 'database.json');
+// DB_FILE / SESSIONS_FILE are overridable via env so tests can run against a
+// temp copy instead of the repo's real data files.
+const DB_FILE = process.env.DB_FILE || path.join(process.cwd(), 'database.json');
 
 // Ensure database file exists
 const SEED_USERS: any[] = [];
@@ -822,13 +886,20 @@ async function bootSync() {
 bootSync();
 
 // Master Server Key for secure backend recovery (protecting the DEK decryptable state on server).
-// Override with the MASTER_KEY env var in production. The legacy static passphrase is kept as the
-// derivation seed ONLY when MASTER_KEY is unset so previously encrypted backups (encryptedDekMaster)
-// remain decryptable — but it logs a loud warning because it is not a real secret.
-const MASTER_KEY_SEED = (process.env.MASTER_KEY || '').trim() || 'studio-secret-auth-key-2026';
-const MASTER_KEY = crypto.scryptSync(MASTER_KEY_SEED, 'static-salt-studio', 32);
-if (!process.env.MASTER_KEY) {
-  console.warn('[SECURITY] MASTER_KEY is not set — using the legacy development fallback. Set MASTER_KEY in production to protect encrypted backups.');
+// There is NO static/hardcoded fallback. In production MASTER_KEY is REQUIRED:
+// validateStartupEnvironment() exits at boot if it is missing, and the guard below
+// is defense-in-depth. In development, an EPHEMERAL per-process key lets the sandbox
+// boot without a known constant — password recovery / encrypted backups created under
+// an earlier key will simply not survive a restart (loud warning tells the operator
+// to set MASTER_KEY in .env).
+const MASTER_KEY_SEED = (process.env.MASTER_KEY || '').trim();
+if (!MASTER_KEY_SEED && IS_PRODUCTION) {
+  console.error('[FATAL ERROR] MASTER_KEY is required in production (validateStartupEnvironment should have exited first).');
+  process.exit(1);
+}
+const MASTER_KEY = crypto.scryptSync(MASTER_KEY_SEED || crypto.randomBytes(32).toString('hex'), 'static-salt-studio', 32);
+if (!MASTER_KEY_SEED) {
+  console.warn('[SECURITY] MASTER_KEY is not set — using an EPHEMERAL per-process key. Password recovery and encrypted backups will not survive restarts. Set MASTER_KEY in .env (REQUIRED for production).');
 }
 
 // --- ENVELOPE ENCRYPTION UTILITIES ---
@@ -977,7 +1048,7 @@ interface SessionEntry {
 
 const activeSessions = new Map<string, SessionEntry>(); // sessionToken -> SessionEntry
 
-const SESSIONS_FILE = path.join(process.cwd(), 'sessions.json');
+const SESSIONS_FILE = process.env.SESSIONS_FILE || path.join(process.cwd(), 'sessions.json');
 
 function loadSessions() {
   try {
@@ -1249,9 +1320,18 @@ const UNPLAYABLE_VIDEO_EXT = new Set(['mkv', 'avi', 'flv', 'wmv', 'm4v', '3gp', 
 // Basic email shape check (production hardening).
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => {
+/** Shared file-upload pipeline (multipart + legacy base64). Mounted under both
+ *  /api/upload and the dedicated /api/voice/upload so chat voice notes get the
+ *  same auth + multer + magic-byte validation path. */
+async function handleUpload(req: express.Request, res: express.Response) {
   try {
     if (req.file) {
+      // SECURITY: Validate file has a path and non-zero size before filesystem operations
+      // to prevent empty-buffer pointer exceptions and null-reference crashes.
+      if (!req.file.path || !req.file.size || req.file.size === 0) {
+        return res.status(400).json({ error: 'Uploaded file is empty or invalid.' });
+      }
+
       const claimedExt = (req.file.originalname.split('.').pop() || 'bin').toLowerCase();
       const check: UploadCheck = validateUpload(readFileHead(req.file.path), claimedExt, req.file.size);
       if (!isUploadOk(check)) {
@@ -1269,7 +1349,7 @@ app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => 
 
     // Fallback to legacy base64 upload logic
     const { fileData, fileName, fileType } = req.body || {};
-    
+
     if (!fileData) {
       return res.status(400).json({ error: 'No file data provided' });
     }
@@ -1277,21 +1357,31 @@ app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => 
     let buffer: Buffer;
     let claimedExt = 'bin';
 
-    const matches = typeof fileData === 'string' ? fileData.match(/^data:(.+);base64,(.+)$/) : null;
-    if (matches && matches.length === 3) {
-      const mime = matches[1];
-      claimedExt = mime.split('/')[1] || 'bin';
-      if (claimedExt === 'quicktime') claimedExt = 'mp4';
-      if (claimedExt === 'mpeg') claimedExt = 'mp3';
-      if (claimedExt === 'webm') claimedExt = 'webm';
-      buffer = Buffer.from(matches[2], 'base64');
-    } else if (typeof fileData === 'string') {
-      buffer = Buffer.from(fileData, 'base64');
-      if (fileType) {
-        claimedExt = fileType.split('/')[1] || 'bin';
+    // SECURITY: Validate buffer can be created from fileData before processing
+    try {
+      const matches = typeof fileData === 'string' ? fileData.match(/^data:(.+);base64,(.+)$/) : null;
+      if (matches && matches.length === 3) {
+        const mime = matches[1];
+        claimedExt = mime.split('/')[1] || 'bin';
+        if (claimedExt === 'quicktime') claimedExt = 'mp4';
+        if (claimedExt === 'mpeg') claimedExt = 'mp3';
+        if (claimedExt === 'webm') claimedExt = 'webm';
+        buffer = Buffer.from(matches[2], 'base64');
+      } else if (typeof fileData === 'string') {
+        buffer = Buffer.from(fileData, 'base64');
+        if (fileType) {
+          claimedExt = fileType.split('/')[1] || 'bin';
+        }
+      } else {
+        buffer = Buffer.from(fileData);
       }
-    } else {
-      buffer = Buffer.from(fileData);
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid file data: cannot decode payload.' });
+    }
+
+    // SECURITY: Validate buffer has content before filesystem write
+    if (!buffer || buffer.length === 0) {
+      return res.status(400).json({ error: 'Uploaded file data is empty.' });
     }
 
     if (fileName && fileName.includes('.')) {
@@ -1342,7 +1432,11 @@ app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => 
     console.error('[Upload] Error saving uploaded file:', err);
     return res.status(500).json({ error: 'Failed to save file on server' });
   }
-});
+}
+
+// Generic media upload (images, video, audio) + dedicated voice-note upload.
+app.post('/api/upload', requireAuth, upload.single('file'), handleUpload);
+app.post('/api/voice/upload', requireAuth, upload.single('file'), handleUpload);
 
 // --- NON-BLOCKING ASYNCHRONOUS FIRESTORE SYNC MIDDLEWARE ---
 // Instead of await blocking every API request, run non-blocking background sync
@@ -1579,7 +1673,15 @@ function getRepostsCountMap(db: any) {
 // --- API ENDPOINTS ---
 
 // 1. SIGN UP
-app.post('/api/auth/signup', (req, res) => {
+// Signup abuse protection: max 5 registrations per 15 minutes per IP.
+// (Login already has its own per-email 30s lockout — see failedLoginAttempts.)
+const signupLimiter = createIpRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many signup attempts from this IP. Please try again later.',
+});
+
+app.post('/api/auth/signup', signupLimiter, (req, res) => {
   const { name, email, password, countryCode } = req.body || {};
 
   if (!name || !email || !password) {
@@ -3853,10 +3955,11 @@ app.get('/api/creators/:id', (req, res) => {
 });
 
 // --- ADMIN DATABASE RESET API ---
-app.post('/api/admin/reset-database', (req, res) => {
+// SECURED: requires authentication + admin role (isAdmin flag or MASTER_KEY header)
+app.post('/api/admin/reset-database', requireAuth, requireAdmin, async (req, res) => {
   try {
     const db = loadDatabase();
-    
+
     // 1. Wipe all posts from all users
     db.users.forEach((u: any) => {
       if (u.profile) {
@@ -3881,7 +3984,7 @@ app.post('/api/admin/reset-database', (req, res) => {
       chatMessages: []
     };
 
-    console.log("[Admin] Database has been successfully reset. Preserved user accounts.");
+    console.log("[Admin] Database has been successfully reset by user " + (req as any).user?.id + ". Preserved user accounts.");
     res.json({ success: true, message: "Application database has been reset! All posts and messages are cleared, while registered user accounts remain intact." });
   } catch (err: any) {
     console.error("Failed to reset database:", err);
@@ -4205,46 +4308,8 @@ app.post('/api/posts/create', (req, res) => {
 });
 
 // --- STORIES (Ocean Stories 2.0 — #249) ---
-app.post('/api/stories/create', (req, res) => {
-  const { story } = req.body;
-  if (!story || !story.id || !story.imageUrl) {
-    return res.status(400).json({ error: 'Story object with id and imageUrl is required.' });
-  }
-
-  const user = getRequestUser(req);
-  const db = loadDatabase();
-  const timestamp = Date.now();
-
-  const fullStory = {
-    ...story,
-    userId: user?.id || story.userId || 'anonymous',
-    userName: user?.name || story.userName || 'Anonymous',
-    createdAt: story.createdAt || new Date(timestamp).toISOString(),
-    createdTime: timestamp,
-    views: 0,
-    reactions: [],
-  };
-
-  // Push to global stories list
-  db.stories = db.stories || [];
-  db.stories.unshift(fullStory);
-
-  // Also push to user's profile stories
-  if (user) {
-    const dbUser = db.users?.find((u: any) => u.id === user.id);
-    if (dbUser) {
-      dbUser.profile = dbUser.profile || {};
-      dbUser.profile.stories = dbUser.profile.stories || [];
-      dbUser.profile.stories.unshift(fullStory);
-    }
-  }
-
-  saveDatabase(db);
-  try {
-    broadcastMessageToUsers([], { type: 'stories_updated', action: 'create_story', story: fullStory });
-  } catch (e) {}
-  res.json({ success: true, story: fullStory });
-});
+// Full stories backend with 24h expiry, viewers, reactions, polls, Q&A, music
+// Registered via registerOceanFeatures(app) in turtleFeatureRegistry.ts
 
 // --- REELS (Short Video — client-side FFmpeg processed) ---
 app.post('/api/reels/upload', requireAuth, async (req, res) => {
@@ -4310,6 +4375,14 @@ function findReelInDb(db: any, reelId: string): { reel: any; ownerUser?: any } |
   }
   return null;
 }
+
+// Alias: /api/reels serves the exact same ranked feed as /api/reels/feed
+// (cursor-paginated, engagement-ranked). Keeps old clients working while the
+// app's Reels feed is backed by real server data instead of mock fixtures.
+app.get('/api/reels', requireAuth, (req, res) => {
+  req.url = '/api/reels/feed' + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '');
+  app._router.handle(req, res, () => {});
+});
 
 app.get('/api/reels/feed', requireAuth, (req, res) => {
   const db = loadDatabase();
@@ -5800,7 +5873,7 @@ function decodeEntities(input: string): string {
     .replace(/\s+/g, ' ').trim();
 }
 
-app.post('/api/link-preview', async (req, res) => {
+app.post('/api/link-preview', requireAuth, async (req, res) => {
   const raw = String(req.body?.url || '').trim();
   if (!/^https?:\/\//i.test(raw)) {
     return res.status(400).json({ error: 'A valid http(s) URL is required.' });
@@ -6400,7 +6473,30 @@ app.post('/api/community/events', requireAuth, (req, res) => {
   res.json({ event: ev });
 });
 
+// Feature #64 — shorthand aliases: same handlers as /api/community/events.
+app.post('/api/events/create', requireAuth, (req, res) => {
+  const user = (req as any).user;
+  const { title, description, category, location, date, capacity } = req.body || {};
+  if (!title) return res.status(400).json({ error: 'Title required' });
+  const state = loadCommunity();
+  const ev = createEvent(state, {
+    title, description: description || '', category: category || 'general',
+    location: location || 'Online', date: Number(date) || Date.now() + 86400000,
+    capacity: Number(capacity) || 0, createdBy: user.id,
+  });
+  saveCommunity(state);
+  res.json({ event: ev });
+});
+
 app.post('/api/community/events/:id/rsvp', requireAuth, (req, res) => {
+  const user = (req as any).user;
+  const state = loadCommunity();
+  const result = rsvpEvent(state, req.params.id, user.id);
+  saveCommunity(state);
+  res.json(result);
+});
+
+app.post('/api/events/:id/rsvp', requireAuth, (req, res) => {
   const user = (req as any).user;
   const state = loadCommunity();
   const result = rsvpEvent(state, req.params.id, user.id);
@@ -6498,8 +6594,25 @@ app.get('/api/ai/status', requireAuth, (req, res) => {
 app.post('/api/ai/transcribe', requireAuth, aiRateLimit, async (req, res) => {
   const { audioUrl, language, prompt } = req.body || {};
   if (!audioUrl) return res.status(400).json({ error: 'audioUrl required' });
-  const result = await transcribeAudio({ audioUrl, language, prompt });
-  return res.json(result);
+  try {
+    const result = await transcribeAudio({ audioUrl, language, prompt });
+    if (result && (result as any).code === 'SERVICE_ERROR') {
+      // No transcription engine configured (BUILT_IN_FORGE_API_URL/KEY unset).
+      // Tell the client to fall back to the in-browser Web Speech transcriber
+      // instead of failing silently.
+      return res.status(501).json({
+        error: (result as any).error || 'Server-side transcription is not configured.',
+        code: 'SERVICE_ERROR',
+        available: false,
+        details: (result as any).details,
+        hint: 'Use the in-browser Local Transcriber (Web Speech API) — nothing is uploaded.',
+      });
+    }
+    if (result && (result as any).error) return res.status(422).json(result);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err?.message || 'Transcription failed' });
+  }
 });
 
 app.post('/api/ai/chat', requireAuth, aiRateLimit, async (req, res) => {
@@ -6652,41 +6765,84 @@ app.get('/api/meet/room/:roomId/messages', requireAuth, (req, res) => {
 
 app.post('/api/meet/room/:roomId/signal', requireAuth, (req, res) => {
   const { roomId } = req.params;
-  const { type, payload } = req.body;
+  const { type, payload } = req.body || {};
   const user = (req as any).user;
 
-  if (!meetSignals.has(roomId)) {
-    meetSignals.set(roomId, []);
+  // Strict boundary: a malformed or oversized signaling payload (bad ICE
+  // candidate from a flaky tunnel) must be rejected cleanly, never allowed to
+  // throw inside the relay and take the process down.
+  if (!roomId || !type || typeof type !== 'string') {
+    return res.status(400).json({ error: 'type is required.' });
+  }
+  if (!payload || typeof payload !== 'object') {
+    return res.status(400).json({ error: 'payload must be an object.' });
+  }
+  try {
+    const serialized = JSON.stringify(payload);
+    if (serialized && serialized.length > 100_000) {
+      return res.status(413).json({ error: 'signal payload too large.' });
+    }
+  } catch {
+    return res.status(400).json({ error: 'payload is not JSON-serializable.' });
   }
 
-  const list = meetSignals.get(roomId)!;
-  list.push({
-    senderId: user.id,
-    type,
-    payload,
-    timestamp: Date.now()
-  });
+  try {
+    if (!meetSignals.has(roomId)) {
+      meetSignals.set(roomId, []);
+    }
 
-  // Keep only last 50 signals
-  if (list.length > 50) {
-    list.shift();
+    const list = meetSignals.get(roomId)!;
+    list.push({
+      senderId: user.id,
+      type,
+      payload,
+      timestamp: Date.now()
+    });
+
+    // Keep only last 50 signals
+    if (list.length > 50) {
+      list.shift();
+    }
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Meet signal relay error:', e);
+    res.status(500).json({ error: 'Signal relay failed.' });
   }
-
-  res.json({ success: true });
 });
 
 app.get('/api/meet/room/:roomId/signals', requireAuth, (req, res) => {
-  const { roomId } = req.params;
-  const { lastTimestamp } = req.query;
-  const ts = lastTimestamp ? parseInt(lastTimestamp as string, 10) : 0;
+  try {
+    const { roomId } = req.params;
+    const { lastTimestamp } = req.query;
+    const ts = lastTimestamp ? parseInt(lastTimestamp as string, 10) : 0;
 
-  const all = meetSignals.get(roomId) || [];
-  const filtered = all.filter(s => s.timestamp > ts);
-  res.json({ signals: filtered });
+    const all = meetSignals.get(roomId) || [];
+    const filtered = all.filter(s => s.timestamp > ts);
+    res.json({ signals: filtered });
+  } catch (e) {
+    console.error('Meet signals read error:', e);
+    res.status(500).json({ error: 'Signals read failed.' });
+  }
 });
 
 // --- VITE DEV AND PROD MIDDLEWARE SETUP ---
 async function startServer() {
+  // Startup warning for server-side NSFW screening. The client-side TF.js path
+  // (public/models/mobilenet_v2/) is PRIMARY and works; the dedicated server
+  // folder is an optional second line of defence (OpenNSFW/Caffe, or a
+  // server_models/ copy of the mobilenet_v2 model). Without it the server
+  // engine falls back to NSFWJS with the client model, or fails open.
+  const openNsfwDir = path.join(process.cwd(), 'server_models', 'open_nsfw');
+  const serverModelDir = path.join(process.cwd(), 'server_models', 'mobilenet_v2');
+  const clientModelPath = path.join(process.cwd(), 'public', 'models', 'mobilenet_v2', 'model.json');
+  if (!fs.existsSync(openNsfwDir) && !fs.existsSync(serverModelDir)) {
+    console.warn(
+      '[NSFW][STARTUP] server_models/open_nsfw (OpenNSFW/Caffe) is missing — server-side image screening will use the client NSFWJS model' +
+      (fs.existsSync(clientModelPath) ? ' (present at public/models/mobilenet_v2/, loaded automatically)' : ' — NO model found anywhere, server screening FAILS OPEN') +
+      '. Client-side TF.js screening remains primary and works. To enable a dedicated server model, place mobilenet_v2 at server_models/mobilenet_v2/ (see CLAUDE.md → Known publish blockers).'
+    );
+  }
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -6703,9 +6859,11 @@ async function startServer() {
 
   if (IS_PRODUCTION) {
     const appUrl = process.env.APP_URL || '';
-    const behindHttps = /^https:\/\//i.test(appUrl);
+    // HTTPS is considered configured when APP_URL is an https:// URL, or when
+    // the operator sets HTTPS=true to signal TLS is terminated at the proxy.
+    const behindHttps = /^https:\/\//i.test(appUrl) || process.env.HTTPS === 'true';
     if (!behindHttps) {
-      console.warn('[SECURITY][SEVERE] NODE_ENV=production but no HTTPS detected (APP_URL unset or not https://). WebRTC video/audio calls, the camera/mic, and the offline service worker all require a secure context — serve this app behind TLS (reverse proxy / HTTPS load balancer) before going live.');
+      console.warn('[SECURITY][SEVERE] WARNING: HTTPS not configured. WebRTC calls and getUserMedia will fail in production. Serve this app behind TLS (reverse proxy / HTTPS load balancer) and set APP_URL to an https:// URL, or set HTTPS=true when TLS is already terminated upstream.');
     }
   }
 
@@ -6717,4 +6875,12 @@ async function startServer() {
   setupChatServer(server);
 }
 
-startServer();
+// Test hook: when running under Vitest (NODE_ENV=test) we skip binding a port
+// and the Vite dev middleware, and instead export the Express app so supertest
+// can exercise routes in-process against a temp database.json. Production and
+// `npm run dev` behavior is unchanged.
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
+
+export { app };

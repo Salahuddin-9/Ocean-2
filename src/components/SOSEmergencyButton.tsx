@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Siren, X, MapPin, AlertTriangle, Send, ShieldCheck } from "lucide-react";
 import {
@@ -72,6 +72,55 @@ export default function SOSEmergencyButton({ currentUser, onShowToast, token, na
     userId: currentUser?.id || "guest",
     alertTimestamps: [],
   });
+
+  // #119 — offline queue: alerts composed while the network is down are stored
+  // in localStorage and auto-flushed to /api/sos/alert the moment we reconnect.
+  const readQueued = useCallback((): SOSAlertRecord[] => {
+    try {
+      return JSON.parse(localStorage.getItem("ocean_sos_alerts") || "[]") as SOSAlertRecord[];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const flushQueued = useCallback(async () => {
+    if (!token) return;
+    const queued = readQueued().filter((a) => a.id.startsWith("sos-offline-"));
+    if (queued.length === 0) return;
+    const remaining: SOSAlertRecord[] = readQueued().filter((a) => !a.id.startsWith("sos-offline-"));
+    let flushed = 0;
+    for (const a of queued) {
+      try {
+        const res = await fetch("/api/sos/alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            message: `${a.title} — ${a.messageContent}`.slice(0, 600),
+            area: "Community pool (offline queue)",
+            urgency: a.urgency,
+            shareLocation: false,
+          }),
+        });
+        if (res.ok) flushed += 1;
+        else remaining.push(a); // keep for the next flush attempt
+      } catch {
+        remaining.push(a);
+      }
+    }
+    localStorage.setItem("ocean_sos_alerts", JSON.stringify(remaining.slice(0, 50)));
+    if (flushed > 0) {
+      onShowToast(`📡 Connection restored — ${flushed} queued SOS alert${flushed === 1 ? "" : "s"} dispatched.`);
+    }
+  }, [token, readQueued, onShowToast]);
+
+  // Flush the offline queue whenever the browser reconnects.
+  useEffect(() => {
+    const onOnline = () => { flushQueued(); };
+    window.addEventListener("online", onOnline);
+    // Also try once on mount (a reload may have come back online already).
+    if (typeof navigator !== "undefined" && navigator.onLine) onOnline();
+    return () => window.removeEventListener("online", onOnline);
+  }, [flushQueued]);
 
   const selectPool = (id: string) => {
     setPoolId(id);
@@ -190,19 +239,21 @@ export default function SOSEmergencyButton({ currentUser, onShowToast, token, na
 
   return (
     <>
-      {/* Floating SOS button — always visible, opposite side of the bottom nav to avoid overlap */}
-      <motion.button
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 ${navSide === 'right' ? 'left-6' : 'right-6'} z-[95] w-14 h-14 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white shadow-[0_8px_30px_rgba(220,38,38,0.45)] border border-red-400/50 flex items-center justify-center cursor-pointer group`}
-        title="Send Emergency Alert (SOS)"
-      >
-        <Siren size={22} className="group-hover:animate-pulse" />
-        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-400 border-2 border-white animate-ping" />
-      </motion.button>
+      {/* Floating SOS button — visually hidden per request (markup/logic kept intact, just not rendered) */}
+      <div className="hidden">
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          onClick={() => setIsOpen(true)}
+          className={`fixed bottom-32 ${navSide === 'right' ? 'left-6' : 'right-6'} z-[95] w-14 h-14 rounded-full bg-gradient-to-br from-red-600 to-red-800 text-white shadow-[0_8px_30px_rgba(220,38,38,0.45)] border border-red-400/50 flex items-center justify-center cursor-pointer group`}
+          title="Send Emergency Alert (SOS)"
+        >
+          <Siren size={22} className="group-hover:animate-pulse" />
+          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-400 border-2 border-white animate-ping" />
+        </motion.button>
+      </div>
 
       <AnimatePresence>
         {isOpen && (

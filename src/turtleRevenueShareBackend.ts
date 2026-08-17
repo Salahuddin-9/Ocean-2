@@ -274,6 +274,73 @@ export function registerRevenueShareRoutes(app: express.Express): void {
     res.json({ success: true, group });
   });
 
+  // ── Channel-scoped revenue aliases (Feature 112): /api/channels/:id/revenue ──
+  // Maps a Creator Studio channel onto the same group-monetization machinery:
+  // the channel id doubles as the revenue group id, the channel owner is the
+  // default admin, and distribution credits REAL coins to the admin wallets.
+  function channelGroup(db: any, channelId: string): RevenueShareGroup | undefined {
+    ensureCollection(db);
+    let group = findGroup(db, channelId);
+    if (!group) {
+      const ch =
+        (db.channels || []).find((c: any) => c && (c.id === channelId || c.slug === channelId)) ||
+        (db.channel && db.channel.id === channelId ? db.channel : undefined);
+      group = {
+        id: channelId,
+        groupName: ch?.name ? String(ch.name) : `Channel ${channelId}`,
+        adRevenuePool: 0,
+        sharePercent: 100,
+        // server.ts stores the creator as `creatorId`; the Supabase channels
+        // backend uses `ownerId`. Honor either so the owner is always the
+        // default admin.
+        admins: ch?.creatorId ? [String(ch.creatorId)] : ch?.ownerId ? [String(ch.ownerId)] : [],
+        lastDistributedAt: 0,
+        history: [],
+      };
+      (db.revenueShare as RevenueShareGroup[]).push(group);
+    }
+    return group;
+  }
+
+  // GET /api/channels/:id/revenue — channel monetization record + pending estimate.
+  app.get('/api/channels/:id/revenue', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    ensureCollection(db);
+    const group = channelGroup(db, req.params.id);
+    if (!isAdmin(group, user.id)) return res.status(403).json({ error: 'Only channel admins can view revenue.' });
+    res.json({ channelId: req.params.id, group, pending: pendingEstimate(group) });
+  });
+
+  // POST /api/channels/:id/revenue/deposit — add simulated ad revenue (admin).
+  app.post('/api/channels/:id/revenue/deposit', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    ensureCollection(db);
+    const group = channelGroup(db, req.params.id);
+    if (!isAdmin(group, user.id)) return res.status(403).json({ error: 'Only channel admins can deposit.' });
+    const amount = Math.max(1, Math.floor(Number(req.body?.amount) || 0));
+    if (amount <= 0) return res.status(400).json({ error: 'A positive deposit amount is required.' });
+    group.adRevenuePool = (group.adRevenuePool || 0) + amount;
+    saveDatabase(db);
+    res.json({ success: true, channelId: req.params.id, group, pool: group.adRevenuePool });
+  });
+
+  // POST /api/channels/:id/revenue/distribute — split the pool to admin wallets.
+  app.post('/api/channels/:id/revenue/distribute', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    ensureCollection(db);
+    const group = channelGroup(db, req.params.id);
+    if (!isAdmin(group, user.id)) return res.status(403).json({ error: 'Only channel admins can distribute.' });
+    const result = distributePool(group);
+    if (!result) {
+      return res.json({ success: true, distributed: 0, perAdmin: [], group, pending: pendingEstimate(group) });
+    }
+    saveDatabase(db);
+    res.json({ success: true, ...result, group, pending: pendingEstimate(group) });
+  });
+
   // Start the 24h auto-distribution cron.
   startAutoDistributionCron();
 }

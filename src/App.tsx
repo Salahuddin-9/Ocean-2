@@ -9,8 +9,8 @@ import { screenContentText, screenImageSource } from '../turtleNSFWFilter';
 import { saveMediaItem, getMediaItem } from './utils/mediaStore';
 import { AudioService } from './audioService';
 import { DEFAULT_PROFILE } from './defaultData';
-import { MOCK_REELS, REELS_CATEGORIES, Reel } from './reelsData';
 import { ReelAICaptionGenerator } from './turtleReelsBackend';
+import { Reel } from './reelsData';
 import IdentityCard from './components/IdentityCard';
 import PostsSection, { PostTimestamp } from './components/PostsSection';
 import CommentsModal from './components/CommentsModal';
@@ -308,7 +308,7 @@ export const CollapsibleText = ({ content, hasAttachment }: { content: string, h
         )}
         <button 
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-[#8a8172] hover:text-[#3a342a] font-mono text-[9px] font-bold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 pt-1"
+          className="text-on-surface-variant hover:text-primary font-mono text-[9px] font-bold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 pt-1"
         >
           {isExpanded ? '📖 Hide Text Content' : '📝 Show Text Content'}
         </button>
@@ -343,7 +343,7 @@ export const CollapsibleText = ({ content, hasAttachment }: { content: string, h
       </p>
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="text-[#8a8172] hover:text-[#3a342a] font-mono text-[10px] font-bold uppercase tracking-wider transition-colors inline-block pt-1"
+        className="text-on-surface-variant hover:text-primary font-mono text-[10px] font-bold uppercase tracking-wider transition-colors inline-block pt-1"
       >
         {isExpanded ? 'See less' : 'See more'}
       </button>
@@ -388,7 +388,7 @@ export const compressAndAttachImage = (file: File, callback: (base64: string) =>
 };
 
 export async function uploadMediaFile(file: File | Blob, customFileName?: string): Promise<string> {
-  const storedToken = localStorage.getItem('turtle_auth_token');
+  const storedToken = localStorage.getItem('secure_auth_token');
   const ext = file.type.includes('video') ? 'mp4' : file.type.includes('audio') ? 'webm' : 'jpg';
   const fileName = customFileName || (file instanceof File ? file.name : `media-${Date.now()}.${ext}`);
 
@@ -739,6 +739,9 @@ export default function App() {
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostImage, setNewPostImage] = useState('');
+
+  // AI-caption flag: set when the composer filled the caption via /api/ai/caption.
+  const [usedAiCaption, setUsedAiCaption] = useState(false);
 
   // YouTube-style Video Creator Studio States
   const [isVideoStudioOpen, setIsVideoStudioOpen] = useState(false);
@@ -1514,6 +1517,11 @@ export default function App() {
 
   const [realTopSearches, setRealTopSearches] = useState<{ term: string; count: number }[]>(ALL_COMMON_SEARCHES);
 
+  // Channels tab data for the universal search (feature #55): fetched lazily
+  // from /api/channels the first time the tab is opened.
+  const [searchChannels, setSearchChannels] = useState<any[] | null>(null);
+  const searchChannelsLoadedRef = useRef(false);
+
   const loadRealSearches = async () => {
     try {
       let queriesList: any[] = [];
@@ -1583,6 +1591,16 @@ export default function App() {
       console.error("Error loading real searches:", err);
     }
   };
+
+  useEffect(() => {
+    if (searchSubTab === 'channels' && !searchChannelsLoadedRef.current) {
+      searchChannelsLoadedRef.current = true;
+      fetch('/api/channels')
+        .then((r) => r.json())
+        .then((d) => setSearchChannels(Array.isArray(d.channels) ? d.channels : []))
+        .catch(() => setSearchChannels([]));
+    }
+  }, [searchSubTab]);
 
   useEffect(() => {
     let interval: any = null;
@@ -2663,6 +2681,49 @@ export default function App() {
   };
 
   // Helper to publish a post directly from the Feed tab
+  // AI caption suggestion (feature #87): calls /api/ai/caption — the engine
+  // degrades to a local keyword/template generator when no GEMINI_API_KEY is
+  // configured, so the button always works. Picks the "catchy" suggestion +
+  // hashtags and fills the composer.
+  const generateAiCaption = async () => {
+    if (!token) {
+      showToast("🔒 Please log in to use AI captions.");
+      return;
+    }
+    setIsGeneratingAiCaption(true);
+    try {
+      const isVideo = !!(attachedVideo || attachedAudio);
+      const isDataUrl = typeof attachedImage === 'string' && attachedImage.startsWith('data:');
+      const res = await fetch('/api/ai/caption', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          mediaCategory: isVideo ? 'VIDEO' : 'PHOTO',
+          mediaMimeType: isVideo ? 'video/mp4' : 'image/jpeg',
+          mediaBase64: isDataUrl ? attachedImage.split(',')[1] : undefined,
+          userHint: postContent || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Caption generation failed');
+      const s = data.data || {};
+      const caption = (Array.isArray(s.captionSuggestions) ? s.captionSuggestions[0]?.text : '') || '';
+      const tags = Array.isArray(s.hashtags) ? s.hashtags.join(' ') : '';
+      const combined = [caption, tags].filter(Boolean).join('\n');
+      if (combined) {
+        setPostContent((prev) => (prev ? `${prev.trim()}\n\n${combined}` : combined));
+        setUsedAiCaption(true);
+        showToast(`✨ AI caption ready (${s.detectedTopic || 'topic detected'}) — tweak before publishing.`);
+      } else {
+        showToast('⚠️ AI returned no caption suggestions.');
+      }
+    } catch (e: any) {
+      showToast(`⛔ ${e.message || 'AI caption failed — are you online?'}`);
+    } finally {
+      setIsGeneratingAiCaption(false);
+    }
+  };
+
   const handleCreatePostFromFeed = async (title: string, content: string, imageUrl?: string, videoUrl?: string, audioUrl?: string) => {
     if (!token) {
       showToast("🔒 Please log in to publish a post.");
@@ -2768,7 +2829,8 @@ export default function App() {
         needBox: isNeedPost ? needBox.trim() : undefined,
         needTime: isNeedPost ? needTime.trim() : undefined,
         needUrgency: isNeedPost ? needUrgency : undefined,
-        needTexts: isNeedPost ? [] : []
+        needTexts: isNeedPost ? [] : [],
+        aiCaptionGenerated: usedAiCaption || undefined
       };
 
       if (videoUrl) saveMediaItem(`post_vid_${newPost.id}`, videoUrl);
@@ -2777,13 +2839,18 @@ export default function App() {
       try {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        await fetch('/api/posts/create', {
+        const res = await fetch('/api/posts/create', {
           method: 'POST',
           headers,
           body: JSON.stringify({ post: newPost })
         });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({ error: 'Server error' }));
+          throw new Error(errData.error || `Server error: ${res.status}`);
+        }
       } catch (err) {
-        console.warn("Direct post creation endpoint error:", err);
+        console.error("Direct post creation endpoint error:", err);
+        showToast(`⚠️ Server sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
 
       const updatedPosts = [newPost, ...(profile.posts || [])];
@@ -4536,17 +4603,17 @@ export default function App() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#f4f1ea] bg-dots flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-[#ebdcca] selection:text-[#3a342a] text-[#3a342a]">
-        <div className="max-w-md w-full space-y-6 bg-[#fcfaf4] border border-[#ebdcca] rounded-3xl p-6 md:p-8 shadow-2xl">
+      <div className="min-h-screen bg-[#f9f9ff] dark:bg-[#0b0d18] bg-dots flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans text-on-surface">
+        <div className="max-w-md w-full space-y-6 bg-white dark:bg-[#151826] border border-outline-variant rounded-2xl p-6 md:p-8 nexus-shadow-2">
           {/* Header */}
-          <div className="flex flex-col items-center text-center space-y-2 border-b border-[#ebdcca] pb-5">
-            <div className="w-12 h-12 bg-[#ebdcca] rounded-full flex items-center justify-center text-[#3a342a] mb-2 shadow-xs">
-              <Shield size={24} className="text-[#3a342a]" />
+          <div className="flex flex-col items-center text-center space-y-2 border-b border-outline-variant pb-5">
+            <div className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-primary mb-2 shadow-xs">
+              <Waves size={24} className="text-primary" />
             </div>
-            <h2 className="font-display font-black text-xl tracking-tight text-[#3a342a] uppercase">
+            <h2 className="font-display font-black text-xl tracking-tight text-primary uppercase">
               {signupWords ? "Backup Words" : "MYSOCIAL"}
             </h2>
-            <p className="text-xs text-[#8a8172] font-mono uppercase tracking-wider">
+            <p className="text-xs text-on-surface-variant font-sans tracking-wide">
               {signupWords ? "CRITICAL STORAGE DIRECTIVE" : "Identity Verification Required"}
             </p>
           </div>
@@ -4565,8 +4632,8 @@ export default function App() {
           {/* SIGNUP DEK GENERATION WORDS DISPLAY */}
           {signupWords ? (
             <div className="space-y-5 text-left">
-              <div className="bg-amber-50/80 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 space-y-2">
-                <p className="font-bold font-mono text-[9px] uppercase tracking-wider text-amber-800">
+              <div className="bg-error-container/80 border border-error-container p-4 rounded-2xl text-xs text-on-error-container space-y-2">
+                <p className="font-bold font-mono text-[9px] uppercase tracking-wider text-on-error-container">
                   ⚠️ CRITICAL STORAGE DIRECTIVE
                 </p>
                 <p className="leading-relaxed">
@@ -4575,9 +4642,9 @@ export default function App() {
               </div>
 
               {/* 12 WORDS GRID */}
-              <div className="grid grid-cols-3 gap-2.5 bg-[#f5f2eb] p-4 rounded-2xl border border-[#ebdcca]">
+              <div className="grid grid-cols-3 gap-2.5 bg-surface-container p-4 rounded-2xl border border-outline-variant">
                 {signupWords.map((word, idx) => (
-                  <div key={idx} className="bg-white border border-[#ebdcca] rounded-xl py-2 px-2.5 flex items-center gap-1.5 font-mono text-[11px]">
+                  <div key={idx} className="bg-surface-container-lowest border border-outline-variant rounded-xl py-2 px-2.5 flex items-center gap-1.5 font-mono text-[11px]">
                     <span className="text-[#8a8172] font-bold text-[9px] w-4 text-right">{idx + 1}.</span>
                     <span className="text-[#3a342a] font-bold">{word}</span>
                   </div>
@@ -4590,9 +4657,9 @@ export default function App() {
                   type="checkbox"
                   checked={hasConfirmedWords}
                   onChange={(e) => setHasConfirmedWords(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-amber-900 focus:ring-amber-800"
+                  className="mt-0.5 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
                 />
-                <span className="text-[11px] text-[#5c5446] leading-relaxed font-medium">
+                <span className="text-[11px] text-on-surface-variant leading-relaxed font-medium">
                   I have saved my words securely. I understand that if I lose them, I will lose access to my recovery keys permanently.
                 </span>
               </label>
@@ -4619,11 +4686,11 @@ export default function App() {
             <>
               {/* TABS */}
               {!twoFactorToken && (authTab === 'login' || authTab === 'signup') && (
-                <div className="bg-[#ebdcca]/40 border border-[#ebdcca]/60 p-1 rounded-xl grid grid-cols-2 text-center h-9 items-center">
+                <div className="bg-surface-container border border-outline-variant p-1 rounded-xl grid grid-cols-2 text-center h-9 items-center">
                   <button
                     onClick={() => { setAuthTab('login'); setAuthError(''); }}
                     className={`text-[10px] font-mono uppercase font-bold py-1 rounded-lg transition-all ${
-                      authTab === 'login' ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs' : 'text-[#8a8172] hover:text-[#3a342a]'
+                      authTab === 'login' ? 'bg-primary text-white shadow-xs' : 'text-on-surface-variant hover:text-primary'
                     }`}
                   >
                     Unlock Space
@@ -4631,7 +4698,7 @@ export default function App() {
                   <button
                     onClick={() => { setAuthTab('signup'); setAuthError(''); }}
                     className={`text-[10px] font-mono uppercase font-bold py-1 rounded-lg transition-all ${
-                      authTab === 'signup' ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs' : 'text-[#8a8172] hover:text-[#3a342a]'
+                      authTab === 'signup' ? 'bg-primary text-white shadow-xs' : 'text-on-surface-variant hover:text-primary'
                     }`}
                   >
                     Register
@@ -4645,8 +4712,8 @@ export default function App() {
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🔐</span>
                     <div>
-                      <div className="text-sm font-bold text-[#3a342a]">Two-Factor Verification</div>
-                      <div className="text-[10px] font-mono text-[#8a8172]">Enter the 6-digit code from your authenticator app</div>
+                      <div className="text-sm font-semibold text-on-surface">Two-Factor Verification</div>
+                      <div className="text-xs font-sans text-on-surface-variant">Enter the 6-digit code from your authenticator app</div>
                     </div>
                   </div>
                   <input
@@ -4657,7 +4724,7 @@ export default function App() {
                     value={twoFactorCode}
                     onChange={(e) => setTwoFactorCode(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="000000"
-                    className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2.5 font-mono text-center text-lg tracking-[0.5em] text-[#3a342a] placeholder:text-[#cfcac0] focus:border-[#8a8172] outline-none"
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3 py-2.5 font-mono text-center text-lg tracking-[0.5em] text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                   />
                   <button
                     type="submit"
@@ -4669,7 +4736,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => { setTwoFactorToken(null); setTwoFactorCode(''); setAuthError(''); }}
-                    className="w-full text-center text-[10px] font-mono uppercase tracking-wider text-[#8a8172] hover:text-[#3a342a]"
+                    className="w-full text-center text-[10px] font-mono uppercase tracking-wider text-on-surface-variant hover:text-primary"
                   >
                     ← Back to password
                   </button>
@@ -4680,24 +4747,24 @@ export default function App() {
               {authTab === 'login' && !twoFactorToken && (
                 <form onSubmit={handleLoginSubmit} className="space-y-4 text-left">
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Email Address</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Email Address</label>
                     <input
                       type="email"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       placeholder="Enter email"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Password</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Password</label>
                     <input
                       type="password"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
@@ -4706,7 +4773,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => { setAuthTab('reset-request'); setAuthError(''); }}
-                      className="font-mono text-[9px] text-[#8a8172] hover:text-[#3a342a] uppercase font-bold"
+                      className="font-mono text-[9px] text-on-surface-variant hover:text-primary uppercase font-bold"
                     >
                       Forgot Password?
                     </button>
@@ -4715,7 +4782,7 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={authLoading}
-                    className="w-full font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                   >
                     {authLoading ? (
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -4731,49 +4798,49 @@ export default function App() {
               {authTab === 'signup' && (
                 <form onSubmit={handleSignUpSubmit} className="space-y-4 text-left">
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Full Name</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Full Name</label>
                     <input
                       type="text"
                       value={signupName}
                       onChange={(e) => setSignupName(e.target.value)}
                       placeholder="Enter full name"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Email Address</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Email Address</label>
                     <input
                       type="email"
                       value={signupEmail}
                       onChange={(e) => setSignupEmail(e.target.value)}
                       placeholder="Enter email"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Master Password</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Master Password</label>
                     <input
                       type="password"
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
                       placeholder="Min 6 characters recommended"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
 
-                  <div className="bg-[#f0ede6] border border-[#ebdcca] rounded-xl p-3.5 space-y-2">
+                  <div className="bg-surface-container border border-outline-variant rounded-xl p-4 space-y-2">
                     <div className="flex items-start gap-2.5">
                       <input
                         type="checkbox"
                         id="location-lock-toggle"
                         checked={isLocationLockEnabled}
                         onChange={(e) => setIsLocationLockEnabled(e.target.checked)}
-                        className="mt-0.5 rounded text-amber-800 focus:ring-amber-500 cursor-pointer h-3.5 w-3.5"
+                        className="mt-0.5 rounded text-primary focus:ring-primary cursor-pointer h-3.5 w-3.5"
                       />
-                      <label htmlFor="location-lock-toggle" className="text-[10px] font-mono text-[#3a342a] uppercase font-bold tracking-wide select-none cursor-pointer">
+                      <label htmlFor="location-lock-toggle" className="text-[11px] font-sans font-semibold text-on-surface tracking-wide select-none cursor-pointer">
                         Secure Region-Locked ID (Recommended)
                       </label>
                     </div>
@@ -4789,7 +4856,7 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={authLoading}
-                    className="w-full font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                   >
                     {authLoading ? (
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -4809,13 +4876,13 @@ export default function App() {
                   </p>
                   
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Workspace Email</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Workspace Email</label>
                     <input
                       type="email"
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
                       placeholder="Enter email"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
@@ -4824,14 +4891,14 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setAuthTab('login')}
-                      className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#3a342a] bg-transparent border border-[#cfcac0] hover:bg-[#ebdcca]/20 py-2.5 rounded-xl transition-all"
+                      className="w-1/2 font-sans text-sm font-semibold text-on-surface bg-transparent border border-outline-variant hover:bg-surface-container py-2.5 rounded-xl transition-all"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={authLoading}
-                      className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                      className="w-1/2 font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                     >
                       {authLoading ? (
                         <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -4874,13 +4941,13 @@ export default function App() {
                   </div>
 
                   <div className="space-y-1.5 pt-2 border-t border-[#ebdcca]/60">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">New Master Password</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">New Master Password</label>
                     <input
                       type="password"
                       value={resetNewPassword}
                       onChange={(e) => setResetNewPassword(e.target.value)}
                       placeholder="Enter your new password"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
@@ -4889,14 +4956,14 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setAuthTab('reset-request')}
-                      className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#3a342a] bg-transparent border border-[#cfcac0] hover:bg-[#ebdcca]/20 py-2.5 rounded-xl transition-all"
+                      className="w-1/2 font-sans text-sm font-semibold text-on-surface bg-transparent border border-outline-variant hover:bg-surface-container py-2.5 rounded-xl transition-all"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
                       disabled={authLoading}
-                      className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                      className="w-1/2 font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                     >
                       {authLoading ? (
                         <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -4920,17 +4987,17 @@ export default function App() {
       user={user ? { id: user.id, name: user.name || 'User', avatarUrl: user.profile?.avatarUrl } : null}
       token={token}
     >
-    <div className={`min-h-screen bg-[#f4f1ea] ${activeView === 'workspace' ? 'bg-dots p-0' : 'py-6 px-0 md:py-12 md:px-0'} selection:bg-[#ebdcca] selection:text-[#3a342a] text-[#3a342a] font-sans smooth-transition pb-24`}>
+    <div className={`min-h-screen bg-[#f9f9ff] dark:bg-[#0b0d18] ${activeView === 'workspace' ? 'bg-dots p-0' : 'py-6 px-0 md:py-12 md:px-0'} text-on-surface font-sans smooth-transition pb-24`}>
       
       {/* HEADER SECTION WITH MODE TOGGLER */}
       {activeView === 'workspace' && (
-        <header className="max-w-full px-4 md:px-8 mx-auto mb-8 flex flex-col sm:flex-row items-center justify-end gap-4 border-b border-[#ebdcca]/50 pt-6 pb-5">
+        <header className="max-w-full px-4 md:px-8 mx-auto mb-8 flex flex-col sm:flex-row items-center justify-end gap-4 border-b border-outline-variant/60 pt-6 pb-5">
           <div className="flex flex-wrap items-center justify-center gap-3">
             {/* Theme Toggle Button */}
             <motion.button
               onClick={toggleDarkMode}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#ebdcca]/50 text-[#3a342a] hover:bg-[#ebdcca] transition-colors border border-[#cfcac0]"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors border border-outline-variant"
               title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               <AnimatePresence mode="wait">
@@ -4950,7 +5017,7 @@ export default function App() {
             {token && !viewingCreator ? (
               <button
                 onClick={() => { setIsSettingsOpen(true); fetch2FAStatus(); }}
-                className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2 px-3 rounded-2xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1.5 font-sans text-xs font-semibold text-white bg-primary hover:bg-primary-pressed py-2 px-3 rounded-xl shadow-xs transition-colors"
                 title="Workspace Settings"
               >
                 <Settings size={12} />
@@ -4959,7 +5026,7 @@ export default function App() {
             ) : !token && !viewingCreator ? (
               <button
                 onClick={() => { setAuthTab('login'); setIsAuthOpen(true); }}
-                className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2 px-3 rounded-2xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1.5 font-sans text-xs font-semibold text-white bg-primary hover:bg-primary-pressed py-2 px-3 rounded-xl shadow-xs transition-colors"
               >
                 <Unlock size={12} />
                 Unlock Space
@@ -4968,11 +5035,11 @@ export default function App() {
 
             {/* PREVIEW/EDIT SLIDER */}
             {!viewingCreator && (
-              <div className="relative bg-[#ebdcca]/50 border border-[#cfcac0] p-1 rounded-full flex items-center select-none w-48 h-10">
+              <div className="relative bg-surface-container border border-outline-variant p-1 rounded-full flex items-center select-none w-48 h-10">
                 <motion.div
                   layout
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  className="absolute top-1 bottom-1 bg-[#2e2920] rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.1)]"
+                  className="absolute top-1 bottom-1 bg-primary rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.1)]"
                   style={{
                     left: isEditMode && !viewingCreator ? 'calc(50% - 2px)' : '4px',
                     right: isEditMode && !viewingCreator ? '4px' : 'calc(50% - 2px)'
@@ -4982,7 +5049,7 @@ export default function App() {
                 <button
                   onClick={() => setIsEditMode(false)}
                   className={`relative z-10 w-1/2 text-center text-[10px] font-mono font-bold uppercase transition-colors duration-200 py-1.5 flex items-center justify-center gap-1 ${
-                    (!isEditMode || viewingCreator) ? 'text-[#f4f1ea]' : 'text-[#8a8172] hover:text-[#3a342a]'
+                    (!isEditMode || viewingCreator) ? 'text-[#f4f1ea]' : 'text-on-surface-variant hover:text-primary'
                   }`}
                 >
                   <Eye size={12} />
@@ -5004,7 +5071,7 @@ export default function App() {
                     setIsEditMode(true);
                   }}
                   className={`relative z-10 w-1/2 text-center text-[10px] font-mono font-bold uppercase transition-colors duration-200 py-1.5 flex items-center justify-center gap-1 ${
-                    (isEditMode && !viewingCreator) ? 'text-[#f4f1ea]' : 'text-[#8a8172] hover:text-[#3a342a]'
+                    (isEditMode && !viewingCreator) ? 'text-[#f4f1ea]' : 'text-on-surface-variant hover:text-primary'
                   }`}
                 >
                   <Edit size={12} />
@@ -5019,11 +5086,11 @@ export default function App() {
 
 
       {token && user && !user.isLocationVerified && (
-        <div className="max-w-3xl mx-auto mb-6 bg-amber-50 border border-amber-200 rounded-3xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-amber-900 shadow-sm">
+        <div className="max-w-3xl mx-auto mb-6 bg-surface-container border border-outline-variant rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface shadow-sm">
           <div className="flex items-start gap-3">
-            <Shield className="text-amber-800 shrink-0 mt-0.5" size={16} />
+            <Shield className="text-primary shrink-0 mt-0.5" size={16} />
             <div>
-              <p className="font-mono text-[9px] uppercase font-bold text-amber-800 tracking-wider">📍 REGION UNVERIFIED</p>
+              <p className="font-mono text-[9px] uppercase font-bold text-primary tracking-wider">📍 REGION UNVERIFIED</p>
               <p className="font-sans font-medium text-[11px] leading-relaxed">
                 You do not have an official Region-Locked ID (username) yet. Mentions, chat features, and custom group participation are restricted until your region is verified.
               </p>
@@ -5032,7 +5099,7 @@ export default function App() {
           <button
             onClick={handleVerifyLocationLater}
             disabled={locationVerificationLoading}
-            className="shrink-0 inline-flex items-center gap-1.5 font-mono text-[9px] uppercase font-bold py-2 px-3.5 rounded-xl bg-amber-900 text-white hover:bg-amber-950 transition-all shadow-xs"
+            className="shrink-0 inline-flex items-center gap-1.5 font-sans text-xs font-semibold py-2 px-3.5 rounded-xl bg-primary text-white hover:bg-primary-pressed transition-all shadow-xs"
           >
             {locationVerificationLoading ? (
               <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -5046,7 +5113,7 @@ export default function App() {
       {/* MAIN WORKSPACE WRAPPER */}
       <main className={`${activeView === 'chat' ? 'max-w-[1400px] px-0 sm:px-2' : activeView === 'workspace' ? 'max-w-full px-0' : 'max-w-full px-0 sm:max-w-3xl sm:px-0'} mx-auto space-y-8`}>
         {activeView === 'chat' ? (
-          <div className="w-full bg-[#0b0a0e] dark:bg-[#000000] border border-stone-800 rounded-3xl p-1 md:p-2 shadow-2xl min-h-[720px] flex flex-col">
+          <div className="w-full bg-[#141b2b] dark:bg-[#0b0d18] border border-[#2a3042] rounded-3xl p-1 md:p-2 shadow-2xl min-h-[720px] flex flex-col">
             <ChatModal
               token={token || 'guest'}
               currentUser={{
@@ -5207,7 +5274,7 @@ export default function App() {
                       viewport={{ once: true, amount: 0.05 }}
                       exit={{ opacity: 0, y: -20, scale: 0.9 }}
                       transition={{ type: 'spring', stiffness: 140, damping: 15, mass: 0.8 }}
-                      className={`post-card border rounded-xl overflow-hidden shadow-xs hover:border-[#cfcac0]/60 transition-colors cursor-pointer group ${
+                      className={`post-card border rounded-2xl overflow-hidden nexus-shadow-1 hover:border-[#cfcac0]/60 transition-colors cursor-pointer group ${
                         (post.isTimeCapsule && !isCapsuleLocked)
                           ? 'bg-emerald-50/20 border-emerald-600/30 hover:border-emerald-500/50 ring-1 ring-emerald-500/5'
                           : 'bg-white border-[#ebdcca]/40'
@@ -5264,7 +5331,7 @@ export default function App() {
                               e.stopPropagation();
                               setFeedDropdownPostId(feedDropdownPostId === post.id ? null : post.id);
                             }}
-                            className="text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all flex items-center justify-center cursor-pointer p-1 rounded-lg hover:bg-stone-50"
+                            className="text-on-surface-variant hover:text-primary hover:scale-110 active:scale-95 transition-all flex items-center justify-center cursor-pointer p-1 rounded-lg hover:bg-stone-50"
                             title="Post Options"
                           >
                             <MoreVertical size={14} />
@@ -5532,7 +5599,7 @@ export default function App() {
                                     e.stopPropagation();
                                     setLikedUsersPost(post);
                                   }}
-                                  className="text-[10.5px] font-bold text-[#8a8172] hover:text-[#3a342a] hover:underline cursor-pointer px-1 py-0.5"
+                                  className="text-[10.5px] font-bold text-on-surface-variant hover:text-primary hover:underline cursor-pointer px-1 py-0.5"
                                   title="View who reacted to this post"
                                 >
                                   {totalReactions(post)}
@@ -5541,7 +5608,7 @@ export default function App() {
 
                               {/* 2. Comment (with number showing) */}
                               <button 
-                                className="flex items-center gap-1.5 text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                                className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary hover:scale-110 active:scale-95 transition-all cursor-pointer"
                                 onClick={() => setActiveCommentsPost(post)}
                                 title="Comment on post"
                               >
@@ -5552,7 +5619,7 @@ export default function App() {
                               {/* 3. Repost (with number showing) */}
                               <button
                                 onClick={() => handleRepostFeedPost(post)}
-                                className="text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                                className="text-on-surface-variant hover:text-primary hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                                 title="Repost to My Stream"
                               >
                                 <Repeat size={14} />
@@ -5582,7 +5649,7 @@ export default function App() {
                                   e.stopPropagation();
                                   setSharingPost(post);
                                 }}
-                                className="text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5"
+                                className="text-on-surface-variant hover:text-primary hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5"
                                 title="Share post"
                               >
                                 <Share2 size={14} />
@@ -6049,7 +6116,7 @@ export default function App() {
                         className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-1 rounded-full font-mono text-[9px] sm:text-[10px] font-bold tracking-wider transition-all cursor-pointer ${
                           isActive
                             ? 'bg-[#3a342a] text-[#f4f1ea] shadow-3xs font-extrabold'
-                            : 'text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/20'
+                            : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
                         }`}
                       >
                         <span>{tab.label}</span>
@@ -6073,7 +6140,7 @@ export default function App() {
                     className="w-full bg-white/95 border-2 border-[#ebdcca]/70 focus:border-[#3a342a] rounded-full py-2.5 pl-10 pr-10 focus:outline-none font-mono text-xs text-[#3a342a] placeholder-[#8a8172]/50 shadow-inner transition-all"
                   />
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8a8172]/60" size={13} />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-[#fdfbf7] border border-[#ebdcca] text-[#8a8172] cursor-pointer hover:bg-[#ebdcca]/20 hover:text-[#3a342a] transition-all">
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-[#fdfbf7] border border-[#ebdcca] text-[#8a8172] cursor-pointer hover:bg-surface-container hover:text-[#3a342a] transition-all">
                     <Mic size={12} />
                   </div>
                 </div>
@@ -6316,7 +6383,7 @@ export default function App() {
                     <button 
                       type="button"
                       onClick={() => setSearchPageQuery('')}
-                      className="text-[#8a8172] hover:text-[#3a342a] dark:text-zinc-400 dark:hover:text-white focus:outline-none p-1"
+                      className="text-on-surface-variant hover:text-primary dark:text-zinc-400 dark:hover:text-white focus:outline-none p-1"
                     >
                       <X size={14} />
                     </button>
@@ -6336,7 +6403,7 @@ export default function App() {
                       key={sug}
                       type="button"
                       onClick={() => handleExecuteSearch(sug)}
-                      className="font-mono text-[8px] bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 text-[#5c5446] dark:text-zinc-300 py-1 px-2.5 rounded-full hover:bg-[#ebdcca]/20 dark:hover:bg-zinc-700 transition-all"
+                      className="font-mono text-[8px] bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 text-[#5c5446] dark:text-zinc-300 py-1 px-2.5 rounded-full hover:bg-surface-container dark:hover:bg-zinc-700 transition-all"
                     >
                       {sug}
                     </button>
@@ -6450,7 +6517,8 @@ export default function App() {
                         { id: 'posts', label: 'Posts', count: matchedPosts.length, icon: '📝' },
                         { id: 'hashtags', label: 'Hashtags', count: extractedHashtags.length, icon: '#' },
                         { id: 'portfolios', label: 'Portfolios', count: matchedCreators.length, icon: '👥' },
-                        { id: 'reels', label: 'Reels', count: matchedReels.length, icon: '🎬' }
+                        { id: 'reels', label: 'Reels', count: matchedReels.length, icon: '🎬' },
+                        { id: 'channels', label: 'Channels', count: searchChannels?.length ?? 0, icon: '📺' }
                       ].map(tab => {
                         const isActive = searchSubTab === tab.id;
                         return (
@@ -6648,6 +6716,49 @@ export default function App() {
                       </div>
                     )}
 
+                    {/* Channels results list (fetched from /api/channels) */}
+                    {searchSubTab === 'channels' && (
+                      <div className="space-y-4">
+                        {!searchChannels ? (
+                          <div className="py-12 text-center text-[#8a8172] dark:text-zinc-400 font-mono text-xs">Loading channels…</div>
+                        ) : searchChannels.length === 0 ? (
+                          <div className="py-12 text-center text-[#8a8172] dark:text-zinc-400 font-mono text-xs border border-dashed border-[#ebdcca] dark:border-zinc-800 rounded-3xl bg-[#ebdcca]/5 dark:bg-zinc-900/50">
+                            No channels yet — create one in Creator Studio.
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {searchChannels
+                              .filter((ch) => {
+                                if (!qRaw) return true;
+                                const c = `${ch.name} ${ch.handle} ${ch.category} ${ch.description}`.toLowerCase();
+                                return c.includes(qRaw);
+                              })
+                              .map((ch) => (
+                                <button
+                                  key={ch.id}
+                                  onClick={() => { setShowCreatorStudio(true); }}
+                                  className="w-full flex items-center gap-3 p-3.5 bg-white dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-2xl hover:border-[#cfcac0] dark:hover:border-zinc-600 transition-all text-left group"
+                                >
+                                  <div className="w-10 h-10 rounded-xl bg-[#ebdcca]/30 dark:bg-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
+                                    {ch.avatarUrl ? <img src={ch.avatarUrl} alt="" className="w-full h-full object-cover" /> : <span className="font-bold text-[13px] text-[#5c5446] dark:text-zinc-300">{String(ch.name || 'C').charAt(0).toUpperCase()}</span>}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-sans font-bold text-[11px] text-[#3a342a] dark:text-zinc-100 flex items-center gap-1.5 truncate">
+                                      {ch.name}
+                                      <span className="font-mono text-[7px] text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-zinc-800 px-1.5 py-0.25 rounded-md font-bold">{ch.category || 'Other'}</span>
+                                    </p>
+                                    <p className="font-mono text-[8px] text-[#8a8172] dark:text-zinc-400 truncate">
+                                      {ch.handle ? `@${ch.handle}` : ''} · {ch.subscriberCount ?? ch.subscriberIds?.length ?? 0} subscribers
+                                    </p>
+                                    {ch.description && <p className="text-[9px] text-[#5c5446] dark:text-zinc-300 line-clamp-1">{ch.description}</p>}
+                                  </div>
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                   </div>
                 );
               })()}
@@ -6790,7 +6901,7 @@ export default function App() {
                     <button 
                       type="button"
                       onClick={() => setExploreSearchQuery('')}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a8172] hover:text-[#3a342a] dark:text-zinc-400 dark:hover:text-white focus:outline-none"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary dark:text-zinc-400 dark:hover:text-white focus:outline-none"
                     >
                       <X size={14} />
                     </button>
@@ -7567,8 +7678,8 @@ export default function App() {
                       }}
                       className={`font-mono text-[10px] uppercase font-black py-2 px-3.5 rounded-xl transition-all ${
                         studioSubTab === tab
-                          ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs'
-                          : 'text-[#8a8172] hover:text-[#3a342a]'
+                          ? 'bg-primary text-white shadow-xs'
+                          : 'text-on-surface-variant hover:text-primary'
                       }`}
                     >
                       {tab === 'dashboard' ? '📊 Creator & Sync' : tab === 'wellness' ? '🧠 Mind & Voice' : '🌍 Secure Space'}
@@ -7880,14 +7991,14 @@ export default function App() {
                           <button
                             onMouseEnter={() => speakAssist("Play Ambient Sound Stream")}
                             onClick={() => speakAssist("Initiating marine field-recording background streams.")}
-                            className="bg-neutral-100 hover:bg-[#ebdcca]/20 border border-neutral-200 py-1.5 px-2 rounded-xl text-[8px] font-mono uppercase font-bold text-[#3a342a] text-center"
+                            className="bg-neutral-100 hover:bg-surface-container border border-neutral-200 py-1.5 px-2 rounded-xl text-[8px] font-mono uppercase font-bold text-[#3a342a] text-center"
                           >
                             Listen Tag (Hover)
                           </button>
                           <button
                             onMouseEnter={() => speakAssist("Secure Auth Safe Room status")}
                             onClick={() => speakAssist("Your safe room is cryptographically verified on Dhaka server.")}
-                            className="bg-neutral-100 hover:bg-[#ebdcca]/20 border border-neutral-200 py-1.5 px-2 rounded-xl text-[8px] font-mono uppercase font-bold text-[#3a342a] text-center"
+                            className="bg-neutral-100 hover:bg-surface-container border border-neutral-200 py-1.5 px-2 rounded-xl text-[8px] font-mono uppercase font-bold text-[#3a342a] text-center"
                           >
                             Listen Node (Hover)
                           </button>
@@ -8652,7 +8763,7 @@ export default function App() {
                       <button
                         onClick={() => setWorkspaceSubTab('posts')}
                         className={`flex-1 text-[10px] font-mono uppercase font-bold py-1.5 rounded-xl transition-all ${
-                          workspaceSubTab === 'posts' ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs' : 'text-[#8a8172] hover:text-[#3a342a]'
+                          workspaceSubTab === 'posts' ? 'bg-primary text-white shadow-xs' : 'text-on-surface-variant hover:text-primary'
                         }`}
                       >
                         My Portfolio Posts
@@ -8660,7 +8771,7 @@ export default function App() {
                       <button
                         onClick={() => setWorkspaceSubTab('bookmarks')}
                         className={`flex-1 text-[10px] font-mono uppercase font-bold py-1.5 rounded-xl transition-all ${
-                          workspaceSubTab === 'bookmarks' ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs' : 'text-[#8a8172] hover:text-[#3a342a]'
+                          workspaceSubTab === 'bookmarks' ? 'bg-primary text-white shadow-xs' : 'text-on-surface-variant hover:text-primary'
                         }`}
                       >
                         Saved Bookmarks
@@ -8770,7 +8881,7 @@ export default function App() {
               e.stopPropagation();
               handleGoBack();
             }}
-            className="w-10 h-10 rounded-full bg-[#fdfbf7] hover:bg-[#ebdcca] text-[#3a342a] flex items-center justify-center shadow-lg hover:shadow-xl transition-all border border-[#ebdcca] cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white hover:bg-surface-container text-on-surface flex items-center justify-center shadow-lg hover:shadow-xl transition-all border border-outline-variant cursor-pointer"
             title="Go Back"
           >
             <ArrowLeft size={16} />
@@ -8780,7 +8891,7 @@ export default function App() {
         {/* Toggle / Fold Button */}
         <button
           onClick={() => setIsBottomNavExpanded(!isBottomNavExpanded)}
-          className="w-12 h-12 rounded-full bg-[#3a342a] hover:bg-[#52493b] text-[#f4f1ea] flex items-center justify-center shadow-lg hover:shadow-xl transition-all relative z-50 shrink-0 cursor-pointer border border-[#ebdcca]"
+          className="w-12 h-12 rounded-full bg-primary hover:bg-primary-pressed text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all relative z-50 shrink-0 cursor-pointer border border-transparent"
           title={isBottomNavExpanded ? "Fold Menu" : "Unfold Menu"}
         >
           {isBottomNavExpanded ? (
@@ -8802,7 +8913,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="bg-[#fdfbf7]/95 backdrop-blur-md border border-[#ebdcca] rounded-full p-1 shadow-lg flex flex-col items-center gap-1"
+              className="bg-white/95 backdrop-blur-md border border-outline-variant rounded-full p-1 shadow-lg flex flex-col items-center gap-1"
             >
               {/* Profile Tab */}
               <button
@@ -8817,7 +8928,7 @@ export default function App() {
                   setViewingCreator(null);
                 }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group shrink-0 relative ${
-                  activeView === 'workspace' ? 'text-amber-800 bg-[#ebdcca]/40 font-bold border border-[#ebdcca]/30' : 'text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/20'
+                  activeView === 'workspace' ? 'text-primary bg-primary-container/40 font-bold border border-primary/20' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
                 }`}
                 title="View My Profile"
               >
@@ -8826,7 +8937,7 @@ export default function App() {
                     <img src={profile.avatarUrl || null} alt={profile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                 ) : (
-                  <User size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'workspace' ? 'text-amber-800' : 'text-[#8a8172] group-hover:text-[#3a342a]'}`} />
+                  <User size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'workspace' ? 'text-primary' : 'text-on-surface-variant group-hover:text-primary'}`} />
                 )}
               </button>
 
@@ -8847,11 +8958,11 @@ export default function App() {
                   setViewingCreator(null);
                 }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group shrink-0 relative ${
-                  activeView === 'meet' ? 'text-amber-800 bg-[#ebdcca]/40 font-bold' : 'text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/20'
+                  activeView === 'meet' ? 'text-primary bg-primary-container/40 font-bold' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
                 }`}
                 title="Random Video Calling"
               >
-                <Video size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'meet' ? 'text-amber-800' : 'text-[#8a8172] group-hover:text-[#3a342a]'}`} />
+                <Video size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'meet' ? 'text-primary' : 'text-on-surface-variant group-hover:text-primary'}`} />
               </button>
 
               {/* Feed Tab */}
@@ -8863,11 +8974,11 @@ export default function App() {
                   setFeedSearchQuery('');
                 }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group shrink-0 relative ${
-                  activeView === 'feed' ? 'text-amber-800 bg-[#ebdcca]/40 font-bold' : 'text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/20'
+                  activeView === 'feed' ? 'text-primary bg-primary-container/40 font-bold' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
                 }`}
                 title="View Posts Feed"
               >
-                <Rss size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'feed' ? 'text-amber-800' : 'text-[#8a8172] group-hover:text-[#3a342a]'}`} />
+                <Rss size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'feed' ? 'text-primary' : 'text-on-surface-variant group-hover:text-primary'}`} />
               </button>
 
               {/* Message Tab */}
@@ -8887,11 +8998,11 @@ export default function App() {
                   setViewingCreator(null);
                 }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group shrink-0 relative ${
-                  activeView === 'chat' ? 'text-amber-800 bg-[#ebdcca]/40 font-bold' : 'text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/20'
+                  activeView === 'chat' ? 'text-primary bg-primary-container/40 font-bold' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
                 }`}
                 title="Send Direct Message"
               >
-                <MessageSquare size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'chat' ? 'text-amber-800 animate-pulse' : 'text-[#8a8172] group-hover:text-[#3a342a]'}`} />
+                <MessageSquare size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'chat' ? 'text-primary animate-pulse' : 'text-on-surface-variant group-hover:text-primary'}`} />
                 {(notifications.some(n => n.type === 'chat_message' && !n.isRead) || (messages.length > 0 && token)) && (
                   <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-rose-600 rounded-full border border-[#fcfaf4] animate-pulse shrink-0" />
                 )}
@@ -8905,7 +9016,7 @@ export default function App() {
                   handleMarkNotificationsAsRead();
                 }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group shrink-0 relative ${
-                  activeView === 'alerts' ? 'text-amber-800 bg-[#ebdcca]/40 font-bold' : 'text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/20'
+                  activeView === 'alerts' ? 'text-primary bg-primary-container/40 font-bold' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
                 }`}
                 title="Notifications"
               >
@@ -8915,7 +9026,7 @@ export default function App() {
                 {notifications.some(n => !n.isRead) && (
                   <span className="absolute top-3 right-3 w-1.5 h-1.5 bg-rose-600 rounded-full" />
                 )}
-                <Bell size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'alerts' ? 'text-amber-800' : 'text-[#8a8172] group-hover:text-[#3a342a]'}`} />
+                <Bell size={20} className={`transition-transform group-hover:scale-110 ${activeView === 'alerts' ? 'text-primary' : 'text-on-surface-variant group-hover:text-primary'}`} />
               </button>
 
 
@@ -8935,9 +9046,10 @@ export default function App() {
                   setIsTimeCapsule(false);
                   setIsNeedPost(false);
                   setNeedType('other');
+                  setUsedAiCaption(false);
                   setIsCreatePostOpen(true);
                 }}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-[#3a342a] text-[#f4f1ea] hover:bg-[#52493b] transition-all group shrink-0 shadow-sm cursor-pointer border border-[#ebdcca]/10"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-white hover:bg-primary-pressed transition-all group shrink-0 shadow-sm cursor-pointer border border-transparent"
                 title="Create a new post"
               >
                 <Upload size={20} className="transition-transform group-hover:scale-110 active:scale-95" />
@@ -8953,28 +9065,30 @@ export default function App() {
       {/* OFFLINE MESH — Bluetooth + LAN P2P messaging without internet */}
       <OfflineMeshFab currentUser={user} token={token} navSide={bottomNavSide} />
 
-      {/* EMERGENCY COMMUNITY POOLS BUTTON (base44 Emergency page port) */}
-      <motion.button
-        onClick={() => setShowEmergencyPools(v => !v)}
-        whileTap={{ scale: 0.92 }}
-        className={`fixed bottom-24 ${bottomNavSide === 'right' ? 'left-6' : 'right-6'} z-[95] w-12 h-12 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 text-white shadow-[0_8px_30px_rgba(217,119,6,0.4)] border border-amber-400/40 flex items-center justify-center cursor-pointer group`}
-        title={showEmergencyPools ? 'Close Emergency Pools' : 'Emergency Pools'}
-      >
-        <Siren size={20} className={`transition-transform group-hover:scale-110 ${showEmergencyPools ? 'animate-pulse' : ''}`} />
-      </motion.button>
+      {/* EMERGENCY COMMUNITY POOLS BUTTON (base44 Emergency page port) — visually hidden per request (markup/logic kept intact, just not rendered) */}
+      <div className="hidden">
+        <motion.button
+          onClick={() => setShowEmergencyPools(v => !v)}
+          whileTap={{ scale: 0.92 }}
+          className={`fixed bottom-48 ${bottomNavSide === 'right' ? 'left-6' : 'right-6'} z-[95] w-12 h-12 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 text-white shadow-[0_8px_30px_rgba(217,119,6,0.4)] border border-amber-400/40 flex items-center justify-center cursor-pointer group`}
+          title={showEmergencyPools ? 'Close Emergency Pools' : 'Emergency Pools'}
+        >
+          <Siren size={20} className={`transition-transform group-hover:scale-110 ${showEmergencyPools ? 'animate-pulse' : ''}`} />
+        </motion.button>
+      </div>
 
       {/* EMERGENCY POOLS OVERLAY */}
       <AnimatePresence>
         {showEmergencyPools && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+            className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
           >
             <div className="flex items-center justify-between max-w-xl mx-auto mb-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#8a8172] dark:text-zinc-400">Emergency response</span>
               <button
                 onClick={() => setShowEmergencyPools(false)}
-                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-[#ebdcca]/50 transition-all"
+                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-surface-container transition-all"
               >
                 <X size={16} />
               </button>
@@ -9024,13 +9138,13 @@ export default function App() {
         {showCreatorStudio && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+            className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
           >
             <div className="flex items-center justify-between max-w-2xl mx-auto mb-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#8a8172] dark:text-zinc-400">Creator Studio</span>
               <button
                 onClick={() => setShowCreatorStudio(false)}
-                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-[#ebdcca]/50 transition-all"
+                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-surface-container transition-all"
               >
                 <X size={16} />
               </button>
@@ -9045,13 +9159,13 @@ export default function App() {
         {showGeohash && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+            className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
           >
             <div className="flex items-center justify-between max-w-2xl mx-auto mb-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#8a8172] dark:text-zinc-400">Nearby people</span>
               <button
                 onClick={() => setShowGeohash(false)}
-                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-[#ebdcca]/50 transition-all"
+                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-surface-container transition-all"
               >
                 <X size={16} />
               </button>
@@ -9066,7 +9180,7 @@ export default function App() {
         {showRandomDm && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+            className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
           >
             <RandomTextDmView token={token} onClose={() => setShowRandomDm(false)} />
           </motion.div>
@@ -9083,13 +9197,13 @@ export default function App() {
         {showStreamAdmin && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+            className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
           >
             <div className="flex items-center justify-between max-w-2xl mx-auto mb-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#8a8172] dark:text-zinc-400">Stream API Admin</span>
               <button
                 onClick={() => setShowStreamAdmin(false)}
-                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-[#ebdcca]/50 transition-all"
+                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-surface-container transition-all"
               >
                 <X size={16} />
               </button>
@@ -9104,13 +9218,13 @@ export default function App() {
         {showRankingDemo && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+            className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
           >
             <div className="flex items-center justify-between max-w-2xl mx-auto mb-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#8a8172] dark:text-zinc-400">Feed ranking engine</span>
               <button
                 onClick={() => setShowRankingDemo(false)}
-                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-[#ebdcca]/50 transition-all"
+                className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 flex items-center justify-center text-[#5c5446] dark:text-zinc-300 hover:bg-surface-container transition-all"
               >
                 <X size={16} />
               </button>
@@ -9185,7 +9299,7 @@ export default function App() {
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group shadow-lg hover:shadow-xl border border-[#ebdcca] ${
               activeView === 'explore' 
                 ? 'bg-[#3a342a] text-[#f4f1ea]' 
-                : 'bg-[#fdfbf7]/95 backdrop-blur-md text-[#8a8172] hover:text-[#3a342a]'
+                : 'bg-[#fdfbf7]/95 backdrop-blur-md text-on-surface-variant hover:text-primary'
             }`}
             title="Search & Explore"
           >
@@ -9327,7 +9441,7 @@ export default function App() {
                 {!signupWords && (
                   <button
                     onClick={() => setIsAuthOpen(false)}
-                    className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                    className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors"
                   >
                     <X size={16} />
                   </button>
@@ -9348,8 +9462,8 @@ export default function App() {
               {/* SIGNUP DEK GENERATION WORDS DISPLAY (Must only show exactly once) */}
               {signupWords ? (
                 <div className="space-y-5">
-                  <div className="bg-amber-50/80 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 space-y-2">
-                    <p className="font-bold font-mono text-[9px] uppercase tracking-wider text-amber-800">
+                  <div className="bg-error-container/80 border border-error-container p-4 rounded-2xl text-xs text-on-error-container space-y-2">
+                    <p className="font-bold font-mono text-[9px] uppercase tracking-wider text-on-error-container">
                       ⚠️ CRITICAL STORAGE DIRECTIVE
                     </p>
                     <p className="leading-relaxed">
@@ -9358,9 +9472,9 @@ export default function App() {
                   </div>
 
                   {/* 12 WORDS GRID */}
-                  <div className="grid grid-cols-3 gap-2.5 bg-[#f5f2eb] p-4 rounded-2xl border border-[#ebdcca]">
+                  <div className="grid grid-cols-3 gap-2.5 bg-surface-container p-4 rounded-2xl border border-outline-variant">
                     {signupWords.map((word, idx) => (
-                      <div key={idx} className="bg-white border border-[#ebdcca] rounded-xl py-2 px-2.5 flex items-center gap-1.5 font-mono text-[11px]">
+                      <div key={idx} className="bg-surface-container-lowest border border-outline-variant rounded-xl py-2 px-2.5 flex items-center gap-1.5 font-mono text-[11px]">
                         <span className="text-[#8a8172] font-bold text-[9px] w-4 text-right">{idx + 1}.</span>
                         <span className="text-[#3a342a] font-bold">{word}</span>
                       </div>
@@ -9373,9 +9487,9 @@ export default function App() {
                       type="checkbox"
                       checked={hasConfirmedWords}
                       onChange={(e) => setHasConfirmedWords(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded border-gray-300 text-amber-900 focus:ring-amber-800"
+                      className="mt-0.5 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
                     />
-                    <span className="text-[11px] text-[#5c5446] leading-relaxed font-medium">
+                    <span className="text-[11px] text-on-surface-variant leading-relaxed font-medium">
                       I have saved my words securely. I understand that if I lose them, I will lose access to my recovery keys permanently.
                     </span>
                   </label>
@@ -9402,11 +9516,11 @@ export default function App() {
                 <>
                   {/* TABS (No theme presets, simple modern) */}
                   {(authTab === 'login' || authTab === 'signup') && (
-                    <div className="bg-[#ebdcca]/40 border border-[#ebdcca]/60 p-1 rounded-xl grid grid-cols-2 text-center h-9 items-center">
+                    <div className="bg-surface-container border border-outline-variant p-1 rounded-xl grid grid-cols-2 text-center h-9 items-center">
                       <button
                         onClick={() => { setAuthTab('login'); setAuthError(''); }}
                         className={`text-[10px] font-mono uppercase font-bold py-1 rounded-lg transition-all ${
-                          authTab === 'login' ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs' : 'text-[#8a8172] hover:text-[#3a342a]'
+                          authTab === 'login' ? 'bg-primary text-white shadow-xs' : 'text-on-surface-variant hover:text-primary'
                         }`}
                       >
                         Unlock Space
@@ -9414,7 +9528,7 @@ export default function App() {
                       <button
                         onClick={() => { setAuthTab('signup'); setAuthError(''); }}
                         className={`text-[10px] font-mono uppercase font-bold py-1 rounded-lg transition-all ${
-                          authTab === 'signup' ? 'bg-[#3a342a] text-[#f4f1ea] shadow-xs' : 'text-[#8a8172] hover:text-[#3a342a]'
+                          authTab === 'signup' ? 'bg-primary text-white shadow-xs' : 'text-on-surface-variant hover:text-primary'
                         }`}
                       >
                         Register
@@ -9426,24 +9540,24 @@ export default function App() {
                   {authTab === 'login' && (
                     <form onSubmit={handleLoginSubmit} className="space-y-4">
                       <div className="space-y-1.5">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Email Address</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Email Address</label>
                         <input
                           type="email"
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
                           placeholder="Enter email"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Password</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Password</label>
                         <input
                           type="password"
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
                           placeholder="••••••••••••"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
@@ -9453,7 +9567,7 @@ export default function App() {
                       <button
                         type="submit"
                         disabled={authLoading}
-                        className="w-full font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                        className="w-full font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                       >
                         {authLoading ? (
                           <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -9469,35 +9583,35 @@ export default function App() {
                   {authTab === 'signup' && (
                     <form onSubmit={handleSignUpSubmit} className="space-y-4">
                       <div className="space-y-1.5">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Full Name</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Full Name</label>
                         <input
                           type="text"
                           value={signupName}
                           onChange={(e) => setSignupName(e.target.value)}
                           placeholder="Enter full name"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Email Address</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Email Address</label>
                         <input
                           type="email"
                           value={signupEmail}
                           onChange={(e) => setSignupEmail(e.target.value)}
                           placeholder="Enter email"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Master Password</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Master Password</label>
                         <input
                           type="password"
                           value={signupPassword}
                           onChange={(e) => setSignupPassword(e.target.value)}
                           placeholder="Min 6 characters recommended"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
@@ -9505,7 +9619,7 @@ export default function App() {
                       <button
                         type="submit"
                         disabled={authLoading}
-                        className="w-full font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                        className="w-full font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                       >
                         {authLoading ? (
                           <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -9525,13 +9639,13 @@ export default function App() {
                       </p>
                       
                       <div className="space-y-1.5">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Workspace Email</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Workspace Email</label>
                         <input
                           type="email"
                           value={resetEmail}
                           onChange={(e) => setResetEmail(e.target.value)}
                           placeholder="Enter email"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
@@ -9540,14 +9654,14 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => setAuthTab('login')}
-                          className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#3a342a] bg-transparent border border-[#cfcac0] hover:bg-[#ebdcca]/20 py-2.5 rounded-xl transition-all"
+                          className="w-1/2 font-sans text-sm font-semibold text-on-surface bg-transparent border border-outline-variant hover:bg-surface-container py-2.5 rounded-xl transition-all"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
                           disabled={authLoading}
-                          className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                          className="w-1/2 font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                         >
                           {authLoading ? (
                             <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -9590,13 +9704,13 @@ export default function App() {
                       </div>
 
                       <div className="space-y-1.5 pt-2 border-t border-[#ebdcca]/60">
-                        <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">New Master Password</label>
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">New Master Password</label>
                         <input
                           type="password"
                           value={resetNewPassword}
                           onChange={(e) => setResetNewPassword(e.target.value)}
                           placeholder="Enter your new password"
-                          className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                          className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                           required
                         />
                       </div>
@@ -9605,14 +9719,14 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => setAuthTab('reset-request')}
-                          className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#3a342a] bg-transparent border border-[#cfcac0] hover:bg-[#ebdcca]/20 py-2.5 rounded-xl transition-all"
+                          className="w-1/2 font-sans text-sm font-semibold text-on-surface bg-transparent border border-outline-variant hover:bg-surface-container py-2.5 rounded-xl transition-all"
                         >
                           Back
                         </button>
                         <button
                           type="submit"
                           disabled={authLoading}
-                          className="w-1/2 font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                          className="w-1/2 font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                         >
                           {authLoading ? (
                             <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -9657,7 +9771,7 @@ export default function App() {
                     setViewWordsPassword('');
                     setViewWordsError('');
                   }}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -9675,9 +9789,9 @@ export default function App() {
                     These are your 12 unique recovery words, securely decrypted via your custom Data Encryption Key. Write them down securely.
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2.5 bg-[#f5f2eb] p-4 rounded-2xl border border-[#ebdcca]">
+                  <div className="grid grid-cols-3 gap-2.5 bg-surface-container p-4 rounded-2xl border border-outline-variant">
                     {viewWordsResult.map((word, idx) => (
-                      <div key={idx} className="bg-white border border-[#ebdcca] rounded-xl py-2 px-2.5 flex items-center gap-1.5 font-mono text-[11px]">
+                      <div key={idx} className="bg-surface-container-lowest border border-outline-variant rounded-xl py-2 px-2.5 flex items-center gap-1.5 font-mono text-[11px]">
                         <span className="text-[#8a8172] font-bold text-[9px] w-4 text-right">{idx + 1}.</span>
                         <span className="text-[#3a342a] font-bold">{word}</span>
                       </div>
@@ -9701,13 +9815,13 @@ export default function App() {
                   </p>
 
                   <div className="space-y-1.5">
-                    <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Verify Password</label>
+                    <label className="block text-xs font-sans font-medium text-on-surface-variant">Verify Password</label>
                     <input
                       type="password"
                       value={viewWordsPassword}
                       onChange={(e) => setViewWordsPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                      className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       required
                     />
                   </div>
@@ -9715,7 +9829,7 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={viewWordsLoading}
-                    className="w-full font-mono text-[10px] uppercase font-bold text-[#f4f1ea] bg-[#3a342a] hover:bg-[#52493b] py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full font-sans text-sm font-semibold text-white bg-primary hover:bg-primary-pressed py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
                   >
                     {viewWordsLoading ? (
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -10178,7 +10292,7 @@ export default function App() {
                 </span>
                 <button
                   onClick={() => setLikesModalPost(null)}
-                  className="text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/30 p-1 rounded-full transition-all"
+                  className="text-on-surface-variant hover:text-primary hover:bg-[#ebdcca]/30 p-1 rounded-full transition-all"
                 >
                   <X size={16} />
                 </button>
@@ -10194,7 +10308,7 @@ export default function App() {
                   likesModalPost.likedByUsers.map((likedUser: any) => (
                     <div 
                       key={likedUser.id} 
-                      className="flex items-center justify-between p-2 hover:bg-[#ebdcca]/20 rounded-xl transition-all"
+                      className="flex items-center justify-between p-2 hover:bg-surface-container rounded-xl transition-all"
                     >
                       <div 
                         className="flex items-center gap-3 cursor-pointer group min-w-0"
@@ -10252,7 +10366,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setIsAnonPasswordConfirmOpen(false)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1 rounded-md hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1 rounded-md hover:bg-surface-container transition-colors"
                 >
                   <X size={14} />
                 </button>
@@ -10299,7 +10413,7 @@ export default function App() {
                 className="space-y-3"
               >
                 <div>
-                  <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold mb-1">
+                  <label className="block text-xs font-sans font-medium text-on-surface-variant mb-1">
                     Enter Workspace Password
                   </label>
                   <input
@@ -10307,7 +10421,7 @@ export default function App() {
                     value={anonConfirmPassword}
                     onChange={(e) => setAnonConfirmPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172]"
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     required
                     autoFocus
                   />
@@ -10320,7 +10434,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setIsAnonPasswordConfirmOpen(false)}
-                    className="flex-1 font-mono text-[9px] uppercase font-bold text-[#8a8172] border border-[#cfcac0] bg-white hover:bg-[#ebdcca]/20 py-2 rounded-xl transition-colors"
+                    className="flex-1 font-mono text-[9px] uppercase font-bold text-[#8a8172] border border-[#cfcac0] bg-white hover:bg-surface-container py-2 rounded-xl transition-colors"
                   >
                     Cancel
                   </button>
@@ -10371,7 +10485,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setIsSettingsOpen(false)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -10477,7 +10591,7 @@ export default function App() {
                   {/* Admin console (master-key gated) */}
                   <button
                     onClick={() => setIsAdminOpen(true)}
-                    className="w-full flex items-center justify-center gap-2 pt-2.5 border-t border-[#ebdcca]/60 text-[10px] font-mono uppercase tracking-wider font-bold text-[#8a8172] hover:text-[#3a342a]"
+                    className="w-full flex items-center justify-center gap-2 pt-2.5 border-t border-[#ebdcca]/60 text-[10px] font-mono uppercase tracking-wider font-bold text-on-surface-variant hover:text-primary"
                   >
                     <Shield size={12} /> Admin Console
                   </button>
@@ -10493,7 +10607,7 @@ export default function App() {
                     <button
                       onClick={() => isDarkMode && toggleDarkMode()}
                       className={`w-1/2 flex items-center justify-center gap-1 text-[9px] font-mono font-bold uppercase transition-colors duration-200 py-1 rounded-full ${
-                        !isDarkMode ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-[#8a8172] hover:text-[#3a342a]'
+                        !isDarkMode ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-on-surface-variant hover:text-primary'
                       }`}
                     >
                       <Sun size={10} />
@@ -10502,7 +10616,7 @@ export default function App() {
                     <button
                       onClick={() => !isDarkMode && toggleDarkMode()}
                       className={`w-1/2 flex items-center justify-center gap-1 text-[9px] font-mono font-bold uppercase transition-colors duration-200 py-1 rounded-full ${
-                        isDarkMode ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-[#8a8172] hover:text-[#3a342a]'
+                        isDarkMode ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-on-surface-variant hover:text-primary'
                       }`}
                     >
                       <Moon size={10} />
@@ -10527,7 +10641,7 @@ export default function App() {
                         showToast("Reactions and menu aligned to the left");
                       }}
                       className={`w-1/2 text-center text-[9px] font-mono font-bold uppercase transition-colors duration-200 py-1 rounded-full ${
-                        postButtonsAlignment === 'left' ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-[#8a8172] hover:text-[#3a342a]'
+                        postButtonsAlignment === 'left' ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-on-surface-variant hover:text-primary'
                       }`}
                     >
                       Left
@@ -10541,7 +10655,7 @@ export default function App() {
                         showToast("Reactions and menu aligned to the right");
                       }}
                       className={`w-1/2 text-center text-[9px] font-mono font-bold uppercase transition-colors duration-200 py-1 rounded-full ${
-                        postButtonsAlignment === 'right' ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-[#8a8172] hover:text-[#3a342a]'
+                        postButtonsAlignment === 'right' ? 'bg-[#3a342a] text-[#f4f1ea]' : 'text-on-surface-variant hover:text-primary'
                       }`}
                     >
                       Right
@@ -10921,7 +11035,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setIsFriendsListOpen(false)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -11001,7 +11115,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setIsCreatePostOpen(false)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1 rounded-lg hover:bg-surface-container transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -11067,7 +11181,7 @@ export default function App() {
                     className={`py-2 px-3 rounded-xl font-mono text-[9px] font-bold uppercase tracking-wider text-center transition-all ${
                       !isTimeCapsule && !isNeedPost
                         ? "bg-amber-900 text-[#fcfaf4] shadow-sm"
-                        : "text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/30"
+                        : "text-on-surface-variant hover:text-primary hover:bg-[#ebdcca]/30"
                     }`}
                   >
                     Instant Post
@@ -11092,7 +11206,7 @@ export default function App() {
                     className={`py-2 px-3 rounded-xl font-mono text-[9px] font-bold uppercase tracking-wider text-center transition-all ${
                       isTimeCapsule
                         ? "bg-amber-900 text-[#fcfaf4] shadow-sm"
-                        : "text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/30"
+                        : "text-on-surface-variant hover:text-primary hover:bg-[#ebdcca]/30"
                     }`}
                   >
                     Time Capsule
@@ -11106,7 +11220,7 @@ export default function App() {
                     className={`py-2 px-3 rounded-xl font-mono text-[9px] font-bold uppercase tracking-wider text-center transition-all ${
                       isNeedPost
                         ? "bg-rose-900 text-[#fcfaf4] shadow-sm"
-                        : "text-[#8a8172] hover:text-[#3a342a] hover:bg-[#ebdcca]/30"
+                        : "text-on-surface-variant hover:text-primary hover:bg-[#ebdcca]/30"
                     }`}
                   >
                     Need Post 🆘
@@ -11119,7 +11233,19 @@ export default function App() {
                 {!isTimeCapsule && !isNeedPost && (
                   <div className="space-y-4">
                     <div className="space-y-1 relative">
-                      <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Post Content</label>
+                      <div className="flex items-center justify-between gap-2">
+                        <label className="block text-xs font-sans font-medium text-on-surface-variant">Post Content</label>
+                        <button
+                          type="button"
+                          onClick={() => void generateAiCaption()}
+                          disabled={isGeneratingAiCaption}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-mono font-bold uppercase tracking-wider bg-violet-700/10 text-violet-800 dark:bg-violet-500/10 dark:text-violet-300 hover:bg-violet-700/20 transition-all disabled:opacity-40"
+                          title="Generate a caption + hashtags with AI (works offline via local fallback)"
+                        >
+                          <Sparkles size={10} />
+                          {isGeneratingAiCaption ? 'Writing…' : '✨ AI Caption'}
+                        </button>
+                      </div>
                       <textarea
                         name="postContent"
                         value={postContent}
@@ -11138,7 +11264,7 @@ export default function App() {
                         }}
                         rows={4}
                         placeholder="Write here"
-                        className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172] resize-none"
+                        className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                       />
 
                       {/* Mention suggestions */}
@@ -11170,7 +11296,7 @@ export default function App() {
                                   }
                                   setShowPostMentions(false);
                                 }}
-                                className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] text-[#3a342a] hover:bg-[#ebdcca]/20 rounded-lg text-left transition-all"
+                                className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] text-[#3a342a] hover:bg-surface-container rounded-lg text-left transition-all"
                               >
                                 <div className="w-4 h-4 rounded bg-amber-100 flex items-center justify-center font-bold text-[8px] text-amber-800 shrink-0 uppercase">
                                   {(follower.name || 'F').charAt(0)}
@@ -11192,7 +11318,7 @@ export default function App() {
                 {isTimeCapsule && (
                   <div className="space-y-4">
                     <div className="space-y-1 relative">
-                      <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Capsule Content</label>
+                      <label className="block text-xs font-sans font-medium text-on-surface-variant">Capsule Content</label>
                       <textarea
                         name="postContent"
                         value={postContent}
@@ -11211,7 +11337,7 @@ export default function App() {
                         }}
                         rows={4}
                         placeholder="Write here"
-                        className="w-full bg-white border border-[#cfcac0] rounded-xl px-3 py-2 font-sans text-xs text-[#5c5446] focus:outline-none focus:ring-1 focus:ring-[#8a8172] resize-none"
+                        className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-3.5 py-2.5 font-sans text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                       />
 
                       {/* Mention suggestions */}
@@ -11243,7 +11369,7 @@ export default function App() {
                                   }
                                   setShowPostMentions(false);
                                 }}
-                                className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] text-[#3a342a] hover:bg-[#ebdcca]/20 rounded-lg text-left transition-all"
+                                className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] text-[#3a342a] hover:bg-surface-container rounded-lg text-left transition-all"
                               >
                                 <div className="w-4 h-4 rounded bg-amber-100 flex items-center justify-center font-bold text-[8px] text-amber-800 shrink-0 uppercase">
                                   {(follower.name || 'F').charAt(0)}
@@ -11360,7 +11486,7 @@ export default function App() {
                                   }
                                   setShowPostMentions(false);
                                 }}
-                                className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] text-[#3a342a] hover:bg-[#ebdcca]/20 rounded-lg text-left transition-all"
+                                className="w-full flex items-center gap-1.5 px-2 py-1 text-[10px] text-[#3a342a] hover:bg-surface-container rounded-lg text-left transition-all"
                               >
                                 <div className="w-4 h-4 rounded bg-amber-100 flex items-center justify-center font-bold text-[8px] text-amber-800 shrink-0 uppercase">
                                   {(follower.name || 'F').charAt(0)}
@@ -11378,7 +11504,7 @@ export default function App() {
 
                     {/* Urgency Status */}
                     <div className="space-y-1.5">
-                      <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">Urgency Status</label>
+                      <label className="block text-xs font-sans font-medium text-on-surface-variant">Urgency Status</label>
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
@@ -11407,7 +11533,7 @@ export default function App() {
 
                     {/* Location */}
                     <div className="space-y-1">
-                      <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">📍 Location</label>
+                      <label className="block text-xs font-sans font-medium text-on-surface-variant">📍 Location</label>
                       <input
                         type="text"
                         required={isNeedPost}
@@ -11420,7 +11546,7 @@ export default function App() {
 
                     {/* Timeline */}
                     <div className="space-y-1">
-                      <label className="block text-[9px] font-mono text-[#8a8172] uppercase tracking-wider font-bold">🕒 Timeline</label>
+                      <label className="block text-xs font-sans font-medium text-on-surface-variant">🕒 Timeline</label>
                       <input
                         type="text"
                         required={isNeedPost}
@@ -11581,7 +11707,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setShowCanvasDesign(true)}
-                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-[#ebdcca]/20 transition-all cursor-pointer"
+                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-surface-container transition-all cursor-pointer"
                         title="1080×1080 design canvas — text, stickers, shapes"
                       >
                         <PenTool size={16} className="text-[#8a8172]" />
@@ -11590,7 +11716,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setShowWhiteboard(true)}
-                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-[#ebdcca]/20 transition-all cursor-pointer"
+                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-surface-container transition-all cursor-pointer"
                         title="Infinite whiteboard — freehand, arrows, shapes"
                       >
                         <PenLine size={16} className="text-[#8a8172]" />
@@ -11599,7 +11725,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setShowStoryEditor(true)}
-                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-[#ebdcca]/20 transition-all cursor-pointer"
+                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-surface-container transition-all cursor-pointer"
                         title="9:16 story overlay — annotate for Ocean Stories"
                       >
                         <Smartphone size={16} className="text-[#8a8172]" />
@@ -11608,7 +11734,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setShowCutVideo(true)}
-                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-[#ebdcca]/20 transition-all cursor-pointer"
+                        className="flex flex-col items-center gap-1 p-2.5 bg-white rounded-xl border border-[#ebdcca] hover:border-[#8a8172] hover:bg-surface-container transition-all cursor-pointer"
                         title="Trim / speed / audio-merge video with FFmpeg WASM"
                       >
                         <Scissors size={16} className="text-[#8a8172]" />
@@ -11852,7 +11978,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setSharingPost(null)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -12636,7 +12762,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setIsArchivedChatsPopupOpen(false)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors"
+                  className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -12737,7 +12863,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setLikedUsersPost(null)}
-                  className="text-[#8a8172] hover:text-[#3a342a] p-1.5 rounded-lg hover:bg-[#ebdcca]/20 transition-colors cursor-pointer"
+                  className="text-on-surface-variant hover:text-primary p-1.5 rounded-lg hover:bg-surface-container transition-colors cursor-pointer"
                 >
                   <X size={15} />
                 </button>
@@ -12845,7 +12971,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setPostToDeleteId(null)}
-                  className="flex-1 font-mono text-[10px] uppercase font-bold text-[#8a8172] bg-white hover:bg-[#ebdcca]/20 border border-[#cfcac0] py-2.5 rounded-xl transition-all cursor-pointer"
+                  className="flex-1 font-mono text-[10px] uppercase font-bold text-[#8a8172] bg-white hover:bg-surface-container border border-[#cfcac0] py-2.5 rounded-xl transition-all cursor-pointer"
                 >
                   Cancel
                 </button>

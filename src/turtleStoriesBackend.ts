@@ -124,10 +124,22 @@ export function registerStoriesRoutes(app: express.Express) {
   const sweep = setInterval(pruneExpired, 5 * 60 * 1000);
   if (typeof sweep.unref === 'function') sweep.unref();
 
-  // --- Create a story -------------------------------------------------------
-  app.post('/api/stories', requireAuth, (req, res) => {
+  /** Shared creation logic — mounted at both /api/stories and the legacy
+   *  /api/stories/create alias (the App.tsx tldraw story editor posts the
+   *  legacy { story: { imageUrl, caption } } shape). */
+  function createStory(req: express.Request, res: express.Response) {
     const me = (req as any).user;
-    const { mediaUrl, kind, caption, closeFriends, musicId, poll, question, location } = req.body || {};
+    const body = (req.body || {}) as any;
+    // Accept both the canonical flat shape and the legacy { story: {...} } envelope.
+    const storyPayload = body.story && typeof body.story === 'object' ? body.story : body;
+    const mediaUrl = storyPayload.mediaUrl || storyPayload.imageUrl || '';
+    const kind = storyPayload.kind || (String(mediaUrl).match(/\.(mp4|webm|mov)(\?|$)/i) ? 'video' : 'image');
+    const caption = storyPayload.caption ?? storyPayload.text ?? '';
+    const closeFriends = !!storyPayload.closeFriends;
+    const musicId = storyPayload.musicId;
+    const poll = storyPayload.poll;
+    const question = storyPayload.question;
+    const location = storyPayload.location;
     if (!mediaUrl || typeof mediaUrl !== 'string' || !mediaUrl.startsWith('/uploads/')) {
       return res.status(400).json({ error: 'A story requires a mediaUrl from /api/upload.' });
     }
@@ -142,7 +154,7 @@ export function registerStoriesRoutes(app: express.Express) {
       mediaUrl,
       kind: stKind,
       caption: String(caption || '').slice(0, 200),
-      closeFriends: !!closeFriends,
+      closeFriends,
       private: false,
       recipientIds: [],
       location: location && typeof location.lat === 'number' ? { lat: location.lat, lng: location.lng, label: String(location.label || '') } : undefined,
@@ -166,7 +178,12 @@ export function registerStoriesRoutes(app: express.Express) {
     store.load().stories.unshift(story);
     store.persist();
     res.json({ story });
-  });
+  }
+
+  // --- Create a story -------------------------------------------------------
+  app.post('/api/stories', requireAuth, createStory);
+  // Legacy alias used by the tldraw story editor (posts the { story } shape).
+  app.post('/api/stories/create', requireAuth, createStory);
 
   // --- Feed ------------------------------------------------------------------
   app.get('/api/stories', requireAuth, (req, res) => {

@@ -1,10 +1,42 @@
+# ── Dependencies / build ────────────────────────────────────────────────────
 node_modules/
 build/
 dist/
 coverage/
-.DS_Store
+bun.lock
+*.tsbuildinfo
+
+# ── Uploads / backups / logs ────────────────────────────────────────────────
+uploads/
+backups/
 *.log
+
+# ── Secrets / env ───────────────────────────────────────────────────────────
 .env*
 !.env.example
+firebase-applet-config.json
+firebase-blueprint.json
+
+# ── Runtime data (synced to Firestore; local copies are disposable) ────────
+database.json
+community.json
+sessions.json
+stories.json
+databrain.json
+miniapps.json
+liveeco.json
+snapmap.json
+data/
+
+# ── Archived / dead code ────────────────────────────────────────────────────
+src/archive/
+
+# ── OS / editor ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Misc ─────────────────────────────────────────────────────────────────────
 *.wasm
 dist/ffmpeg/*
+repomix-output.xml
+repomix-output.md

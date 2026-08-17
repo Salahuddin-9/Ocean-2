@@ -580,6 +580,109 @@ export class SupabaseLongFormVideoService {
 }
 
 // ============================================================================
+// 4b. EXPRESS WIRING (Ocean JSON-DB adapter, feature #61)
+// ----------------------------------------------------------------------------
+// The channels + long-form video feature is served by /api/channels/* in
+// server.ts. This module adapts the long-form engagement surface (watch
+// progress, like/save/report, recommendations) onto the same db.channelVideos
+// collection so the Ocean Cut / Creator Studio flows have full endpoints.
+// ============================================================================
+
+import express from 'express';
+import { getCtx } from './turtleServerContext';
+
+export function registerLongFormVideoRoutes(app: express.Express): void {
+  const { requireAuth, loadDatabase, saveDatabase } = getCtx();
+
+  function findVideo(db: any, videoId: string) {
+    return (db.channelVideos || []).find((v: any) => v.id === videoId) || null;
+  }
+
+  // POST /api/channels/:id/videos/:videoId/watch  { elapsedSeconds } -> resume offset + completion
+  app.post('/api/channels/:id/videos/:videoId/watch', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    const video = findVideo(db, req.params.videoId);
+    if (!video) return res.status(404).json({ error: 'Video not found.' });
+    const elapsed = Math.max(0, Number(req.body?.elapsedSeconds) || 0);
+    db.watchHistory = db.watchHistory || [];
+    const key = `${user.id}:${video.id}`;
+    let entry = db.watchHistory.find((w: any) => w.key === key);
+    if (!entry) {
+      entry = { key, userId: user.id, videoId: video.id, watchedSeconds: 0, completed: false, updatedAt: Date.now() };
+      db.watchHistory.push(entry);
+    }
+    entry.watchedSeconds = Math.max(entry.watchedSeconds || 0, elapsed);
+    const duration = Number(video.durationSeconds || req.body?.durationSeconds || 0);
+    if (duration > 0 && elapsed / duration >= 0.9) entry.completed = true;
+    entry.updatedAt = Date.now();
+    // Views: only count a fresh watch (1 per user per 10 min).
+    if (!entry.lastViewAt || Date.now() - entry.lastViewAt > 10 * 60 * 1000) {
+      video.views = (video.views || 0) + 1;
+      entry.lastViewAt = Date.now();
+    }
+    saveDatabase(db);
+    res.json({ ok: true, resumeSeconds: entry.watchedSeconds, completed: entry.completed, views: video.views });
+  });
+
+  // POST /api/channels/:id/videos/:videoId/like  -> toggle like
+  app.post('/api/channels/:id/videos/:videoId/like', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    const video = findVideo(db, req.params.videoId);
+    if (!video) return res.status(404).json({ error: 'Video not found.' });
+    video.likedBy = Array.isArray(video.likedBy) ? video.likedBy : [];
+    const idx = video.likedBy.indexOf(user.id);
+    if (idx === -1) video.likedBy.push(user.id); else video.likedBy.splice(idx, 1);
+    video.likes = video.likedBy.length;
+    saveDatabase(db);
+    res.json({ liked: idx === -1, likes: video.likes });
+  });
+
+  // POST /api/channels/:id/videos/:videoId/save  -> toggle saved
+  app.post('/api/channels/:id/videos/:videoId/save', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    const video = findVideo(db, req.params.videoId);
+    if (!video) return res.status(404).json({ error: 'Video not found.' });
+    video.savedBy = Array.isArray(video.savedBy) ? video.savedBy : [];
+    const idx = video.savedBy.indexOf(user.id);
+    if (idx === -1) video.savedBy.push(user.id); else video.savedBy.splice(idx, 1);
+    saveDatabase(db);
+    res.json({ saved: idx === -1 });
+  });
+
+  // POST /api/channels/:id/videos/:videoId/report  { reason } -> moderation log
+  app.post('/api/channels/:id/videos/:videoId/report', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    const video = findVideo(db, req.params.videoId);
+    if (!video) return res.status(404).json({ error: 'Video not found.' });
+    const reason = String(req.body?.reason || 'other').slice(0, 40);
+    db.videoReports = db.videoReports || [];
+    db.videoReports.push({ id: `vr-${Date.now()}-${Math.floor(Math.random() * 1000)}`, reporterId: user.id, videoId: video.id, reason, status: 'pending', createdAt: Date.now() });
+    video.reportsCount = (video.reportsCount || 0) + 1;
+    saveDatabase(db);
+    res.json({ ok: true, reason });
+  });
+
+  // GET /api/channels/:id/videos/:videoId/recommendations  -> tag/creator overlap
+  app.get('/api/channels/:id/videos/:videoId/recommendations', (req, res) => {
+    const db = loadDatabase();
+    const video = findVideo(db, req.params.videoId);
+    if (!video) return res.status(404).json({ error: 'Video not found.' });
+    const channel = (db.channels || []).find((c: any) => c.id === video.channelId);
+    const sameChannel = (db.channelVideos || [])
+      .filter((v: any) => v.channelId === video.channelId && v.id !== video.id)
+      .slice(0, 12);
+    const others = (db.channelVideos || [])
+      .filter((v: any) => v.id !== video.id && v.channelId !== video.channelId && (v.category || '') === (video.category || ''))
+      .slice(0, 12);
+    res.json({ recommendations: [...sameChannel, ...others].slice(0, 12), channel: channel ? { id: channel.id, name: channel.name } : null });
+  });
+}
+
+// ============================================================================
 // 5. POSTGRES ROW LEVEL SECURITY (RLS) & DATABASE SCHEMA MIGRATION
 // ============================================================================
 

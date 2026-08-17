@@ -100,7 +100,7 @@ export default function VisualSearch({ token, currentUser, onClose }: VisualSear
   // ---- auth gate (after hooks so render order stays stable) ----------------
   if (!token) {
     return (
-      <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+      <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
         <div className="max-w-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg font-bold text-[#3a342a] dark:text-zinc-100 flex items-center gap-2">
@@ -244,7 +244,7 @@ export default function VisualSearch({ token, currentUser, onClose }: VisualSear
   };
 
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-4xl mx-auto space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">

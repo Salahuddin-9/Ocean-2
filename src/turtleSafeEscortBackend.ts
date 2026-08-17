@@ -866,4 +866,82 @@ export function registerSafeEscortRoutes(app: express.Express): void {
       .sort((a, b) => b.ratingCount - a.ratingCount);
     res.json({ coverage: coverage.slice(0, 100), count: coverage.length });
   });
+
+  // POST /api/safety/route — Safe Route Navigator (feature #124): given a
+  // start→destination pair (fuzzy labels or coords), returns a safety score
+  // computed from community route ratings. Degrades gracefully to a heuristic
+  // baseline when the route has no ratings yet.
+  app.post('/api/safety/route', requireAuth, (req, res) => {
+    const body = req.body || {};
+    const db = loadDatabase();
+    const s = ensureSafeEscort(db);
+    const ratings = (s.ratings || []).filter((rt: any) => rt && rt.score >= 1 && rt.score <= 5);
+
+    const startLabel = str(body.startLabel, 120);
+    const destLabel = str(body.destLabel, 120);
+    if (!startLabel && !destLabel) {
+      return res.status(400).json({ error: 'Provide a startLabel and/or destLabel (e.g. Gulshan 2, Banani).' });
+    }
+
+    // Find ratings that touch either end of the route (fuzzy label match).
+    const query = `${startLabel} ${destLabel}`.toLowerCase();
+    const matched = ratings.filter((rt: any) => {
+      const label = String(rt.areaLabel || '').toLowerCase();
+      return (
+        (startLabel && label.includes(startLabel.toLowerCase())) ||
+        (destLabel && label.includes(destLabel.toLowerCase())) ||
+        (startLabel && startLabel.toLowerCase().includes(label)) ||
+        (destLabel && destLabel.toLowerCase().includes(label))
+      );
+    });
+
+    const NEG_TAGS = ['dark', 'isolated', 'construction', 'no_footpath', 'stray_animals'];
+    const POS_TAGS = ['well_lit', 'busy', 'cameras', 'police_patrol', 'public_transport'];
+
+    let avg = 3; // neutral heuristic baseline when unrated
+    let confidence = 0;
+    let topTags: string[] = [];
+    if (matched.length > 0) {
+      const sum = matched.reduce((a: number, b: any) => a + clamp(b.score, 1, 5), 0);
+      avg = sum / matched.length;
+      confidence = Math.min(1, matched.length / 10);
+      const tagCounts: Record<string, number> = {};
+      matched.forEach((rt: any) =>
+        (rt.tags || []).forEach((tg: string) => {
+          tagCounts[tg] = (tagCounts[tg] || 0) + 1;
+        })
+      );
+      topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([t]) => t);
+    }
+
+    // Blend in tag signals when ratings exist; final score 0-100.
+    let tagAdjust = 0;
+    if (topTags.length > 0) {
+      const neg = topTags.filter((t) => NEG_TAGS.includes(t)).length;
+      const pos = topTags.filter((t) => POS_TAGS.includes(t)).length;
+      tagAdjust = (pos - neg) * 2;
+    }
+    const raw = avg * 20 + tagAdjust;
+    const score = Math.max(0, Math.min(100, Math.round(raw)));
+
+    const band = score >= 75 ? 'safe' : score >= 45 ? 'caution' : 'unsafe';
+    const tip =
+      band === 'safe'
+        ? 'This route is rated safe by the community. Prefer well-lit, busy streets.'
+        : band === 'caution'
+          ? 'Mixed ratings — travel with a companion or during daylight, and avoid isolated stretches.'
+          : 'This route has low safety ratings. Consider an alternative or arrange an escort.';
+
+    res.json({
+      startLabel: startLabel || destLabel,
+      destLabel: destLabel || startLabel,
+      safetyScore: score,
+      band,
+      confidence: Math.round(confidence * 100),
+      ratingCount: matched.length,
+      averageRating: matched.length ? Math.round(avg * 10) / 10 : null,
+      topTags,
+      tip,
+    });
+  });
 }

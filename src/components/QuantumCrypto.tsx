@@ -4,6 +4,7 @@ import { X, KeyRound, Send, ShieldCheck, Loader2, Atom, Lock, Eye } from 'lucide
 import { x25519 } from '@noble/curves/ed25519.js';
 import { hkdf as nobleHkdf } from '@noble/hashes/hkdf.js';
 import { sha256 as nobleSha256 } from '@noble/hashes/sha2.js';
+import SimulationModeBadge from './SimulationModeBadge';
 
 /**
  * Ocean — Quantum-Resistant Cryptography (Feature 240)
@@ -282,7 +283,7 @@ export default function QuantumCrypto({ token, currentUser, onClose }: QuantumCr
     } catch (e: any) { toast('Decrypt failed: ' + e.message, 'destructive'); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -312,6 +313,11 @@ export default function QuantumCrypto({ token, currentUser, onClose }: QuantumCr
                   ? <span className="flex items-center gap-1 font-mono text-[9px] uppercase text-emerald-700 dark:text-emerald-400"><ShieldCheck size={11} /> hybrid key active</span>
                   : <button onClick={register} disabled={busy} className={btnPrimary}><KeyRound size={11} /> {busy ? <Loader2 size={11} className="animate-spin" /> : 'Generate hybrid key'}</button>}
               </div>
+
+              <SimulationModeBadge
+                title="Kyber-768 leg is simulated (RSA-OAEP stand-in)"
+                detail="The X25519 ECDH leg is real cryptography, but the ML-KEM-768 (Kyber) encapsulation is a faithful API-shaped placeholder implemented with RSA-OAEP — RSA is NOT post-quantum. True quantum resistance requires liboqs / kyber-js (WebAssembly) or a hardware PQC module; the KEM surface here (keygen → encaps → decaps) matches those drop-in so the swap is in-place."
+              />
 
               <p className="text-[10px] text-[#8a8172] dark:text-zinc-500 leading-relaxed">
                 Real X25519 ECDH + a faithful KEM placeholder (RSA-OAEP seed-encapsulation standing in for ML-KEM-768 — swap in liboqs/kyber-js for true post-quantum security; same API), combined via HKDF-SHA256 into an AES-GCM seal. Private keys never leave this device.

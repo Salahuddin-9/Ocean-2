@@ -1,0 +1,1542 @@
+[
+  {
+    "badge": 2,
+    "id": "relationtimeline",
+    "component": "RelationshipTimeline",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 4,
+    "id": "splitbill",
+    "component": "SplitBillView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 5,
+    "id": "voicesummary",
+    "component": "VoiceSummary",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 6,
+    "id": "studyrooms",
+    "component": "StudyRooms",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 6,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 9,
+    "id": "marketplace",
+    "component": "Marketplace",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 11,
+    "id": "eventgroups",
+    "component": "EventGroups",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 14,
+    "id": "offlinedrafts",
+    "component": "OfflineDrafts",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 19,
+    "id": "oceanpay",
+    "component": "OceanPay",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 20,
+    "id": "digitallegacy",
+    "component": "DigitalLegacy",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 109,
+    "id": "whiteboard",
+    "component": "CallWhiteboard",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 110,
+    "id": "visualsearch",
+    "component": "VisualSearch",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 111,
+    "id": "collabreels",
+    "component": "CollaborativeReels",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 8,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 112,
+    "id": "revenue",
+    "component": "RevenueShare",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 113,
+    "id": "subscriptions",
+    "component": "MicroSubscriptions",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 6,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 114,
+    "id": "costream",
+    "component": "CoStreaming",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 8,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 115,
+    "id": "bounties",
+    "component": "ReelBounties",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 116,
+    "id": "faceless",
+    "component": "FacelessVideoGenerator",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 117,
+    "id": "trendingsounds",
+    "component": "TrendingSounds",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 118,
+    "id": "smartcommunity",
+    "component": "SmartCommunity",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 119,
+    "id": "safesos",
+    "component": "SafeSOSView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 11,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 120,
+    "id": "safetyshield",
+    "component": "SafetyShieldView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 11,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 121,
+    "id": "safeshelter",
+    "component": "SafeShelterView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 14,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 122,
+    "id": "blooddonor",
+    "component": "BloodDonorRegistry",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 12,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 123,
+    "id": "missingperson",
+    "component": "MissingPersonView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 10,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 125,
+    "id": "safeescort",
+    "component": "SafeEscortView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 15,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 126,
+    "id": "sosalert",
+    "component": "SOSAlertView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 127,
+    "id": "safewatch",
+    "component": "SafeWatchView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 9,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 128,
+    "id": "offlinemesh",
+    "component": "OfflineChatView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 129,
+    "id": "safehaven",
+    "component": "SafeHavenView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 11,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 130,
+    "id": "flooddepth",
+    "component": "FloodDepthMapperView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 10,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 131,
+    "id": "datasovereignty",
+    "component": "DataSovereigntyView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 132,
+    "id": "e2ee",
+    "component": "E2EEMessenger",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 10,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 133,
+    "id": "privacydashboard",
+    "component": "PrivacyDashboard",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 134,
+    "id": "anonymous",
+    "component": "AnonymousMode",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 135,
+    "id": "securevault",
+    "component": "SecureVaultView",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 6,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 136,
+    "id": "did",
+    "component": "DecentralizedProfiles",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 137,
+    "id": "humanity",
+    "component": "HumanityScore",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 138,
+    "id": "botbounty",
+    "component": "BotBounty",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 139,
+    "id": "triggerwarnings",
+    "component": "TriggerWarnings",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 140,
+    "id": "feedexplain",
+    "component": "FeedExplainer",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 141,
+    "id": "profilesummary",
+    "component": "ProfileSummary",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 142,
+    "id": "commentsummary",
+    "component": "CommentSummary",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 143,
+    "id": "aimoderator",
+    "component": "AIModerator",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 144,
+    "id": "factchecker",
+    "component": "FactChecker",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 145,
+    "id": "ghostmode",
+    "component": "GhostMode",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 146,
+    "id": "localtranscriber",
+    "component": "LocalTranscriber",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 147,
+    "id": "dailyPodcast",
+    "component": "DailyPodcast",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 148,
+    "id": "marketNegotiator",
+    "component": "MarketNegotiator",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 149,
+    "id": "digitalTwin",
+    "component": "DigitalTwin",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 150,
+    "id": "debateModerator",
+    "component": "DebateModerator",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 151,
+    "id": "algoPanel",
+    "component": "AlgoPanel",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 152,
+    "id": "auditLog",
+    "component": "AuditLog",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 153,
+    "id": "zeroDoomscroll",
+    "component": "ZeroDoomscroll",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 154,
+    "id": "intentionalScroll",
+    "component": "IntentionalScroll",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 155,
+    "id": "focusLock",
+    "component": "FocusLock",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 156,
+    "id": "upliftFeed",
+    "component": "UpliftFeed",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 157,
+    "id": "sensorySafe",
+    "component": "SensorySafeMode",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 158,
+    "id": "takeABreath",
+    "component": "TakeABreath",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 160,
+    "id": "memoryRecaps",
+    "component": "MemoryRecaps",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 162,
+    "id": "collabPosts",
+    "component": "CollabPosts",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 163,
+    "id": "storyChains",
+    "component": "StoryChains",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 164,
+    "id": "streaks",
+    "component": "Streaks",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 165,
+    "id": "achievements",
+    "component": "Achievements",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 166,
+    "id": "reputation",
+    "component": "Reputation",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 167,
+    "id": "silentDrop",
+    "component": "SilentDrop",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 168,
+    "id": "stealthRec",
+    "component": "StealthRec",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 171,
+    "id": "escrow",
+    "component": "Escrow",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 172,
+    "id": "p2pRenting",
+    "component": "P2PRenting",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 173,
+    "id": "barter",
+    "component": "BarterExchange",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 174,
+    "id": "gigRadar",
+    "component": "GigRadar",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 175,
+    "id": "groupBuy",
+    "component": "GroupBuy",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 176,
+    "id": "buyNothing",
+    "component": "BuyNothing",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 177,
+    "id": "garageSale",
+    "component": "GarageSaleMap",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 179,
+    "id": "chitFund",
+    "component": "ChitFund",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 180,
+    "id": "savingCircle",
+    "component": "SavingCircle",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 181,
+    "id": "subscriptionManager",
+    "component": "SubscriptionManager",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 182,
+    "id": "dataMarketplace",
+    "component": "DataMarketplace",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 184,
+    "id": "mandiPrices",
+    "component": "MandiPrices",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 185,
+    "id": "farmLive",
+    "component": "FarmLive",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 186,
+    "id": "cropDiagnosis",
+    "component": "CropDiagnosis",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 187,
+    "id": "irrigation",
+    "component": "IrrigationScheduler",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 188,
+    "id": "farmToolPool",
+    "component": "FarmToolPool",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 189,
+    "id": "carbonLedger",
+    "component": "CarbonLedger",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 190,
+    "id": "afforestation",
+    "component": "Afforestation",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 191,
+    "id": "plasticWealth",
+    "component": "PlasticWealth",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 192,
+    "id": "interview",
+    "component": "InterviewRoom",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 193,
+    "id": "portfolio",
+    "component": "Portfolio",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 194,
+    "id": "resume",
+    "component": "ResumeBuilder",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 195,
+    "id": "paircoding",
+    "component": "PairCoding",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 196,
+    "id": "internships",
+    "component": "InternshipBoard",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 197,
+    "id": "jobalerts",
+    "component": "JobAlerts",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 198,
+    "id": "tutor",
+    "component": "TutorMatch",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 199,
+    "id": "assignmenthelp",
+    "component": "AssignmentHelp",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 200,
+    "id": "examroom",
+    "component": "ExamWarRoom",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 201,
+    "id": "scholarships",
+    "component": "ScholarshipTracker",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 202,
+    "id": "familycircle",
+    "component": "FamilyCircle",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 6,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 203,
+    "id": "contentgate",
+    "component": "ContentGate",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 204,
+    "id": "eldermode",
+    "component": "ElderMode",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 205,
+    "id": "guardian",
+    "component": "GuardianApproval",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 206,
+    "id": "periodtracker",
+    "component": "PeriodTracker",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 0,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 207,
+    "id": "evidencevault",
+    "component": "EvidenceVault",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 208,
+    "id": "lawyermatch",
+    "component": "LawyerMatch",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 209,
+    "id": "legalaid",
+    "component": "LegalAid",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 210,
+    "id": "contracts",
+    "component": "ContractBuilder",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 211,
+    "id": "rtifiler",
+    "component": "RTIFiler",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 212,
+    "id": "digitalfir",
+    "component": "DigitalFIR",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 213,
+    "id": "wardbudget",
+    "component": "WardCivic",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 214,
+    "id": "wardsabha",
+    "component": "WardCivic",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 215,
+    "id": "civicescalation",
+    "component": "CivicEscalation",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 216,
+    "id": "tenders",
+    "component": "TenderTracker",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 217,
+    "id": "landtrust",
+    "component": "LandTrust",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 218,
+    "id": "biodata",
+    "component": "BioDataBuilder",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 219,
+    "id": "chaperone",
+    "component": "ChaperoneMode",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 220,
+    "id": "compatibility",
+    "component": "CompatibilityMatrix",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 221,
+    "id": "halaltimeline",
+    "component": "HalalTimeline",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 222,
+    "id": "matchmaker",
+    "component": "CommunityMatchmaker",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 223,
+    "id": "azan",
+    "component": "AzanAutoMute",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 224,
+    "id": "zakat",
+    "component": "ZakatCalculator",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 225,
+    "id": "venues",
+    "component": "VenueStatus",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 226,
+    "id": "qurancircle",
+    "component": "QuranCircle",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 227,
+    "id": "religousevents",
+    "component": "ReligiousEvents",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 228,
+    "id": "travelbuddy",
+    "component": "TravelBuddy",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 229,
+    "id": "hiddengems",
+    "component": "HiddenGems",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 230,
+    "id": "grouptrip",
+    "component": "GroupTrip",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 231,
+    "id": "carpool",
+    "component": "Carpool",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 232,
+    "id": "bikepool",
+    "component": "Carpool",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 233,
+    "id": "cngfare",
+    "component": "CNGFare",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 234,
+    "id": "parking",
+    "component": "ParkingShare",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 235,
+    "id": "trafficwitness",
+    "component": "TrafficWitness",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 236,
+    "id": "fediverse",
+    "component": "FediverseBridge",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 237,
+    "id": "zkkyc",
+    "component": "ZKKYC",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 238,
+    "id": "hardwarewallet",
+    "component": "HardwareWallet",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 239,
+    "id": "satellite",
+    "component": "SatelliteFallback",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 240,
+    "id": "quantumcrypto",
+    "component": "QuantumCrypto",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 241,
+    "id": "federatedlearning",
+    "component": "FederatedLearning",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 242,
+    "id": "watermark",
+    "component": "WatermarkStudio",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 243,
+    "id": "redteam",
+    "component": "RedTeamArena",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 4,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 244,
+    "id": "personas",
+    "component": "Personas",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 245,
+    "id": "moodfeed",
+    "component": "MoodFeed",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 246,
+    "id": "deepdive",
+    "component": "DeepDive",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 247,
+    "id": "skillexchange",
+    "component": "SkillExchange",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 248,
+    "id": "alumni",
+    "component": "AlumniNetwork",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 249,
+    "id": "stories2",
+    "component": "Stories2",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 250,
+    "id": "oceancutvideo",
+    "component": "OceanCutVideo",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 3,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 251,
+    "id": "oceancutphoto",
+    "component": "OceanCutPhoto",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 252,
+    "id": "liveecosystem",
+    "component": "LiveEcosystem",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 8,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 253,
+    "id": "miniapps",
+    "component": "MiniAppStore",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 254,
+    "id": "communitiespro",
+    "component": "CommunitiesPro",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 11,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 255,
+    "id": "creatormonetization",
+    "component": "CreatorMonetization",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 8,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 256,
+    "id": "prograph",
+    "component": "ProGraph",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 7,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 257,
+    "id": "creationlab",
+    "component": "CreationLab",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 1,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 258,
+    "id": "snapmap",
+    "component": "SnapMap",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 259,
+    "id": "oslayer",
+    "component": "OSLayer",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 5,
+    "missingRoutes": [],
+    "status": "Wired"
+  },
+  {
+    "badge": 260,
+    "id": "databrain",
+    "component": "DataBrain",
+    "compExists": true,
+    "rendered": true,
+    "apiCalls": 2,
+    "missingRoutes": [],
+    "status": "Wired"
+  }
+]

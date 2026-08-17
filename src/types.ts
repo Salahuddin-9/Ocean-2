@@ -85,6 +85,7 @@ export interface Post {
   impressionsCount?: number;
   impressionsData?: { date: string; impressions: number }[];
   viewsByCountry?: Record<string, number>;
+  aiCaptionGenerated?: boolean;
 }
 
 export interface UserProfile {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Podcast, Play, Square, RefreshCw, History, Volume2 } from 'lucide-react';
+import { X, Podcast, Play, Square, RefreshCw, History, Volume2, Download } from 'lucide-react';
 
 /**
  * Ocean — Personal Daily Podcast (Feature 147)
@@ -101,8 +101,32 @@ export default function DailyPodcast({ token, currentUser, onClose }: DailyPodca
     setPlaying(true);
   };
 
+  /** Export the episode as a plain-text script. Browsers can't capture
+   *  speechSynthesis output into an audio file, so the honest "download" is the
+   *  script itself; a production deployment swaps in a server-side TTS (e.g.
+   *  Gemini/Neural voices) to produce an MP3 of the same script. */
+  const downloadScript = () => {
+    if (!podcast) return;
+    const text = [
+      podcast.title,
+      `Generated ${new Date(podcast.createdAt).toLocaleString()}`,
+      '',
+      ...podcast.script.map((l) => l.text),
+      '',
+      '— In this episode —',
+      ...podcast.items.map((it, i) => `${i + 1}. “${it.title}” — ${it.type} by ${it.by} (${it.reason})`),
+    ].join('\n');
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ocean-podcast-${podcast.date || Date.now()}.txt`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  };
+
   return (
-    <div className="fixed inset-0 z-[115] bg-[#f6f1e7]/97 dark:bg-zinc-950/97 backdrop-blur-sm overflow-y-auto py-6 px-4">
+    <div className="fixed inset-0 z-[115] bg-[#141b2b]/60 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4">
       <div className="max-w-xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -130,9 +154,10 @@ export default function DailyPodcast({ token, currentUser, onClose }: DailyPodca
                   <button onClick={playSpeech} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-800 dark:bg-amber-400 text-white dark:text-zinc-950 text-[10px] font-bold hover:brightness-110 transition-all"><Play size={10} /> Listen</button>
                 )}
                 <button onClick={regenerate} disabled={busy} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-[#ebdcca] dark:border-zinc-700 text-[#5c5446] dark:text-zinc-300 text-[10px] font-bold hover:border-amber-400 transition-all"><RefreshCw size={10} className={busy ? 'animate-spin' : ''} /> Rebuild</button>
+                <button onClick={downloadScript} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-[#ebdcca] dark:border-zinc-700 text-[#5c5446] dark:text-zinc-300 text-[10px] font-bold hover:border-amber-400 transition-all" title="Download the episode script (browsers can't capture TTS audio — a server TTS service produces the MP3 in production)"><Download size={10} /> Script</button>
               </div>
             </div>
-            <p className="text-[9px] text-[#8a8172] dark:text-zinc-500 mb-3">Playback via browser speech synthesis — nothing is uploaded.</p>
+            <p className="text-[9px] text-[#8a8172] dark:text-zinc-500 mb-3">Playback via browser speech synthesis — nothing is uploaded. Download the script for offline reading; a server TTS service can turn it into an MP3 in production.</p>
 
             <div className="rounded-xl border border-[#ebdcca] dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 mb-3 max-h-44 overflow-y-auto">
               {podcast.script.map((l, i) => (

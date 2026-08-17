@@ -322,7 +322,7 @@ export default function OfflineChatView({ token, currentUser, onClose }: Offline
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[116] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4"
+      className="fixed inset-0 z-[116] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4"
     >
       <div className="max-w-3xl mx-auto space-y-4">
         {/* ============ Header ============ */}

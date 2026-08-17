@@ -53,7 +53,7 @@ export function PostTimestamp({ post }: { post: Post }) {
         e.stopPropagation();
         setShowAbsolute(!showAbsolute);
       }}
-      className="font-mono text-[9px] text-[#8a8172] hover:text-[#3a342a] hover:underline cursor-pointer select-none transition-all duration-150 inline-block mt-0.5"
+      className="font-mono text-[9px] text-[#8a8172] hover:text-primary hover:underline cursor-pointer select-none transition-all duration-150 inline-block mt-0.5"
       title="Click to view uploaded date, day & time"
     >
       {showAbsolute ? `📅 ${getAbsoluteString()}` : `⏳ ${getRelativeString()}`}
@@ -235,7 +235,7 @@ export default function PostsSection({
               <button
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="text-[#8a8172] hover:text-[#3a342a] p-1 rounded-lg transition-colors"
+                className="text-[#8a8172] hover:text-primary p-1 rounded-lg transition-colors"
               >
                 <X size={14} />
               </button>
@@ -355,7 +355,7 @@ export default function PostsSection({
                 transition={{ type: 'spring', stiffness: 160, damping: 12, mass: 0.7 }}
                 style={{ perspective: 1000 }}
               >
-                <article className={`post-card group relative border-y sm:border sm:rounded-xl border-[#ebdcca] sm:border-[#ebdcca]/40 hover:border-[#cfcac0]/60 overflow-hidden shadow-xs transition-all duration-150 w-full ${
+                <article className={`post-card group relative border-y sm:border sm:rounded-2xl border-outline-variant hover:border-primary/40 overflow-hidden nexus-shadow-1 transition-all duration-150 w-full ${
                   (post.isTimeCapsule && !isCapsuleLocked)
                     ? 'bg-emerald-50/20 border-emerald-600/30 hover:border-emerald-500/50 ring-1 ring-emerald-500/5'
                     : 'bg-white'
@@ -453,7 +453,7 @@ export default function PostsSection({
                               e.stopPropagation();
                               setActiveDropdownId(activeDropdownId === post.id ? null : post.id);
                             }}
-                            className="text-[#8a8172] hover:text-[#3a342a] p-1 rounded-lg hover:bg-stone-50 transition-all flex items-center justify-center cursor-pointer"
+                            className="text-[#8a8172] hover:text-primary p-1 rounded-lg hover:bg-stone-50 transition-all flex items-center justify-center cursor-pointer"
                             title="Options"
                           >
                             <MoreVertical size={13} />
@@ -633,7 +633,7 @@ export default function PostsSection({
                                 e.stopPropagation();
                                 if (onShowLikesList) onShowLikesList(post);
                               }}
-                              className="text-[10.5px] font-bold text-[#8a8172] hover:text-[#3a342a] hover:underline cursor-pointer px-1 py-0.5"
+                              className="text-[10.5px] font-bold text-[#8a8172] hover:text-primary hover:underline cursor-pointer px-1 py-0.5"
                               title="View who starred this post"
                             >
                               {post.likes || 0}
@@ -642,7 +642,7 @@ export default function PostsSection({
 
                           {/* 2. Comment (with number showing) */}
                           <button 
-                            className="flex items-center gap-1.5 text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all"
+                            className="flex items-center gap-1.5 text-[#8a8172] hover:text-primary hover:scale-110 active:scale-95 transition-all"
                             onClick={() => onCommentPost && onCommentPost(post)}
                             title="Comment on post"
                           >
@@ -654,7 +654,7 @@ export default function PostsSection({
                           {onRepostPost && currentUser && (
                             <button
                               onClick={() => onRepostPost(post)}
-                              className="text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5"
+                              className="text-[#8a8172] hover:text-primary hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5"
                               title="Repost to stream"
                             >
                               <Repeat size={14} />
@@ -686,7 +686,7 @@ export default function PostsSection({
                                 e.stopPropagation();
                                 onSharePost(post);
                               }}
-                              className="text-[#8a8172] hover:text-[#3a342a] hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5"
+                              className="text-[#8a8172] hover:text-primary hover:scale-110 active:scale-95 transition-all flex items-center gap-1.5"
                               title="Share post"
                             >
                               <Share2 size={14} />

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, BadgeCheck, Fingerprint, Plus, Loader2, Check } from 'lucide-react';
+import SimulationModeBadge from './SimulationModeBadge';
 
 /**
  * Ocean — Privacy-Preserving Verification (Feature 237)
@@ -74,23 +75,29 @@ export default function ZKKYC({ token, currentUser, onClose }: ZKKYCProps) {
   useEffect(() => { load(); }, [load]);
 
   // Client-side commitments + zk-style proofs — the server never sees the secret.
+  // The commitment binds a fresh server-issued challenge (nonce) so a captured
+  // digest can never be replayed to claim the same credential again.
   const issue = async () => {
     if (!attribute.trim() || !secret.trim()) return toast('Attribute and secret value are required.');
     setBusy(true);
     try {
-      const commitment = await sha256(`${attribute}:${secret}`);
-      const proof = await sha256(`${attribute}:${secret}:${predicate}`);
+      const ch = await api('/api/zkkyc/challenge', 'GET');
+      const challenge = String(ch.challenge || '');
+      if (!challenge) throw new Error('Could not obtain a challenge nonce.');
+      const commitment = await sha256(`${attribute}:${secret}:${challenge}`);
+      const proof = await sha256(`${attribute}:${secret}:${predicate}:${challenge}`);
       await api('/api/zkkyc/submit', 'POST', {
+        challenge,
         commitments: [{ field: attribute.trim(), digest: commitment }],
         proofs: [{ property: `${attribute} ${predicate}`, proof }],
       });
-      toast('Credential submitted — secret never sent to the server.');
+      toast('Credential submitted — secret never sent to the server (challenge-bound).');
       setAttribute(''); setSecret('');
       await load();
     } catch (e: any) { toast(e.message, 'destructive'); } finally { setBusy(false); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -114,9 +121,14 @@ export default function ZKKYC({ token, currentUser, onClose }: ZKKYCProps) {
                 </span>
                 <div className="flex-1">
                   <h2 className="font-display text-lg font-bold text-[#3a342a] dark:text-zinc-100">Privacy-Preserving Verification</h2>
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-[#8a8172] dark:text-zinc-400">Salted-hash commitments, not zk-SNARK · feature 237</p>
+                  <p className="font-mono text-[9px] uppercase tracking-wider text-[#8a8172] dark:text-zinc-400">Challenge-response proofs · not a full zk-SNARK · feature 237</p>
                 </div>
               </div>
+
+              <SimulationModeBadge
+                title="Privacy-preserving challenge-response (salted commitments, not zk-SNARK)"
+                detail="Proves an attribute via a client-side salted SHA-256 commitment bound to a fresh per-submission server challenge (nonce) — the server never sees the raw secret, and captured digests can't be replayed. This is NOT a full zero-knowledge proof: a real zk-SNARK/STARK proves range/property predicates without revealing anything, which requires a trusted setup + prover circuit (circom + snarkjs). The challenge-response design here is the drop-in shape for that upgrade."
+              />
 
               {currentUser && (
                 <div className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3 space-y-2">

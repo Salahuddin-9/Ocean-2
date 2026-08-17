@@ -116,14 +116,12 @@ function Composer({ token, onDone }: { token: string | null; onDone: (s: Story) 
 
   const publishCaptured = async () => {
     if (!captured) return;
-    const kind: 'image' | 'video' = captured.startsWith('blob:') ? 'video' : 'image';
-    if (kind === 'video') {
-      const blob = await fetch(captured).then((r) => r.blob());
-      const url = await uploadFile(token, blob);
-      publish(url, 'video');
-    } else {
-      publish(captured, 'image');
-    }
+    const isVideo = captured.startsWith('blob:');
+    // Always upload the raw bytes first: the backend only accepts /uploads/ URLs,
+    // so a data-URL photo must be pushed through /api/upload before publishing.
+    const blob = await fetch(captured).then((r) => r.blob());
+    const url = await uploadFile(token, blob);
+    publish(url, isVideo ? 'video' : 'image');
   };
 
   return (

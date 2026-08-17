@@ -9,6 +9,7 @@ import {
   listenDelivered,
   type QueuedEmergency,
 } from '../lib/satQueue';
+import SimulationModeBadge from './SimulationModeBadge';
 
 /**
  * Ocean — Offline Emergency Relay (Feature 239)
@@ -109,7 +110,7 @@ export default function SatelliteFallback({ token, currentUser, onClose }: Satel
     } catch (e: any) { toast(e.message, 'destructive'); } finally { setBusy(false); }
   };
 
-  const shell = 'fixed inset-0 z-[115] bg-[#f6f1e7]/95 dark:bg-zinc-950/95 backdrop-blur-sm overflow-y-auto py-6 px-4';
+  const shell = 'fixed inset-0 z-[115] bg-[#141b2b]/55 dark:bg-[#05060c]/85 backdrop-blur-sm overflow-y-auto py-6 px-4';
   const card = 'bg-[#fcfaf4] dark:bg-zinc-900 border border-[#ebdcca] dark:border-zinc-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs';
   const btnPrimary = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#3a342a] text-[#f4f1ea] text-[10px] font-mono uppercase font-bold hover:bg-[#52493b] disabled:opacity-50';
   const input = 'w-full bg-white dark:bg-zinc-800 border border-[#ebdcca] dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-[#3a342a] dark:text-zinc-100 placeholder-[#8a8172]/60 outline-none focus:border-amber-400 transition-colors';
@@ -139,6 +140,11 @@ export default function SatelliteFallback({ token, currentUser, onClose }: Satel
                   ? <span className="flex items-center gap-1 font-mono text-[9px] uppercase text-emerald-700 dark:text-emerald-400"><CheckCircle2 size={11} /> online</span>
                   : <span className="flex items-center gap-1 font-mono text-[9px] uppercase text-rose-700 dark:text-rose-400"><WifiOff size={11} /> offline</span>}
               </div>
+
+              <SimulationModeBadge
+                title="No satellite hardware — offline queue only"
+                detail="Messages are stored on this device and auto-delivered over the internet when the network returns. A real satellite/IoT uplink (e.g. Iridium, Starlink Direct-to-Cell) requires hardware + a paid sat-com provider; this build wires the same relay contract (/api/sat/relay) so a hardware gateway can be dropped in without app changes."
+              />
 
               <div className="rounded-2xl border border-[#ebdcca] dark:border-zinc-800 p-3 space-y-2">
                 <div className="font-mono text-[9px] uppercase font-bold tracking-wider text-[#5c5446] dark:text-zinc-300"><Send size={11} className="inline" /> Compose emergency message (queued if offline)</div>

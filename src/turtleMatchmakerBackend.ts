@@ -14,6 +14,9 @@
  *   GET  /api/matchmaker           (auth) suggestions about me
  *   POST /api/matchmaker           (auth) suggest a match (person A for person B)
  *   POST /api/matchmaker/:id/respond (auth) accept/decline as one of the two
+ *   GET  /api/match/suggest        (auth) preference-based auto-suggestions:
+ *          ranks other users by shared interests / city / faith and excludes
+ *          anyone already suggested, already paired, or self.
  */
 
 import express from 'express';
@@ -110,5 +113,63 @@ export function registerMatchmakerRoutes(app: express.Express): void {
     else if (s_.forResponse === 'declined' || s_.withResponse === 'declined') s_.status = 'declined';
     saveDatabase(db);
     res.json({ suggestion: s_ });
+  });
+
+  /**
+   * Preference-based suggestions. Excludes: self, users already paired with me
+   * in a pending/accepted suggestion, and users I have already suggested/been
+   * suggested with (so the pool is always fresh). Ranked by shared interests,
+   * same city, same faith — a lightweight compatibility score.
+   */
+  app.get('/api/match/suggest', requireAuth, (req, res) => {
+    const user = (req as any).user;
+    const db = loadDatabase();
+    ensureCollection(db);
+    const users: any[] = (db.users || []).filter((u: any) => u && u.id !== user.id);
+    if (users.length === 0) return res.json({ suggestions: [] });
+    const my = (db.users || []).find((u: any) => u && u.id === user.id) || user;
+    const myInterests = new Set<string>(
+      (my.profile?.interests || my.interests || []).map((i: unknown) => String(i).toLowerCase().trim()),
+    );
+    const myCity = String(my.profile?.city || my.city || '').toLowerCase().trim();
+    const myFaith = String(my.profile?.faith || my.faith || my.profile?.religion || '').toLowerCase().trim();
+    // Already-connected ids (suggestions touching me, in either role)
+    const touched = new Set<string>();
+    (db.matchSuggestions as MatchSuggestion[]).forEach((m) => {
+      if (m.forId === user.id) touched.add(m.withId);
+      if (m.withId === user.id) touched.add(m.forId);
+    });
+    const scored = users
+      .filter((u) => !touched.has(u.id))
+      .map((u) => {
+        const theirInterests = new Set<string>(
+          (u.profile?.interests || u.interests || []).map((i: unknown) => String(i).toLowerCase().trim()),
+        );
+        const shared = [...myInterests].filter((i) => theirInterests.has(i));
+        const theirCity = String(u.profile?.city || u.city || '').toLowerCase().trim();
+        const theirFaith = String(u.profile?.faith || u.faith || u.profile?.religion || '').toLowerCase().trim();
+        let score = shared.length * 2;
+        if (myCity && theirCity && myCity === theirCity) score += 3;
+        if (myFaith && theirFaith && myFaith === theirFaith) score += 2;
+        return {
+          user: {
+            id: u.id,
+            name: u.name || u.username || u.id,
+            username: u.username || '',
+            avatarUrl: u.profile?.avatarUrl || u.avatarUrl || '',
+            city: u.profile?.city || u.city || '',
+            faith: u.profile?.faith || u.faith || '',
+            interests: (u.profile?.interests || u.interests || []).slice(0, 6),
+          },
+          score,
+          sharedInterests: shared,
+          sameCity: !!(myCity && theirCity && myCity === theirCity),
+          sameFaith: !!(myFaith && theirFaith && myFaith === theirFaith),
+        };
+      })
+      .filter((m) => m.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 12);
+    res.json({ suggestions: scored });
   });
 }
